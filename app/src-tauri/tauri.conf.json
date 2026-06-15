@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Skill Tree",
+  "version": "0.2.2",
+  "identifier": "com.skilltree.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bash ../scripts/vendor-deps.sh && npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Skill Tree",
+        "width": 1200,
+        "height": 800,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "../../hub.py": "hub/hub.py",
+      "../../harnesses.py": "hub/harnesses.py",
+      "../../agent_docs.py": "hub/agent_docs.py",
+      "../../snippets.py": "hub/snippets.py",
+      "../../mcp_adapters.py": "hub/mcp_adapters.py",
+      "../../permissions.py": "hub/permissions.py",
+      "../../permission_adapters.py": "hub/permission_adapters.py",
+      "../../permission_presets.py": "hub/permission_presets.py",
+      "../../risks.py": "hub/risks.py",
+      "../../requirements.txt": "hub/requirements.txt",
+      "../../vendor": "hub/vendor",
+      "../../VERSION": "hub/VERSION"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4NzVGMDIyMzczREYwOTMKUldTVDhEMDNJdkIxT0RWZ2FnVzhocklOclJqV2ptNkxCd0dpME9Ca0hDaDVyV21kTXFqWUNtVnUK",
+      "endpoints": [
+        "https://github.com/Ramtoi/skill-tree/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}
