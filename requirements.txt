@@ -1,0 +1,8 @@
+# Skill Hub Python dependencies (hub.py CLI).
+# Install:  python3 -m pip install --user -r requirements.txt
+
+PyYAML>=6.0,<7.0
+tomlkit>=0.12,<1.0
+
+# Development:
+# pytest>=8.0,<9.0   (installed separately for tests/)

@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PresetsSheet — snapshot > matches the git-safe baseline structure (no edit controls) 1`] = `
+[
+  "Bash(git status*)",
+  "Bash(git log*)",
+  "Bash(git diff*)",
+  "Bash(git show*)",
+  "Bash(git branch*)",
+  "Bash(git remote*)",
+  "Bash(git stash list*)",
+  "Bash(git stash show*)",
+  "Bash(git tag*)",
+  "Bash(git ls-files*)",
+  "Bash(git blame*)",
+  "Bash(git shortlog*)",
+  "Bash(git fetch*)",
+  "Bash(git describe*)",
+  "Bash(git rev-parse*)",
+  "Bash(git cat-file*)",
+]
+`;
