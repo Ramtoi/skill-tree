@@ -1,0 +1,13 @@
+# Skill Hub Python dependencies (hub.py CLI).
+# Install:  python3 -m pip install --user -r requirements.txt
+
+PyYAML>=6.0,<7.0
+tomlkit>=0.12,<1.0
+# ruamel.yaml is pure-Python and used for comment/format-preserving round-trip
+# edits of remote `config.yaml` (the Hermes connector). The optional
+# `ruamel.yaml.clib` C-extension is NOT required — ruamel falls back to its pure
+# loader; the vendor script strips all `.so` so the bundle stays arch-independent.
+ruamel.yaml>=0.18,<0.19
+
+# Development:
+# pytest>=8.0,<9.0   (installed separately for tests/)

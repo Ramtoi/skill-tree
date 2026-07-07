@@ -1,0 +1,323 @@
+{
+  "comment": "Shared agent-docs canonical-status corpus. Each case describes an on-disk layout, the effective policy, and the expected verdict+flags per instruction directory ('' = project root). Asserted by BOTH tests/test_agent_docs_canonical.py (Python classifier) and app/src-tauri agent_docs.rs #[test] (Rust scanner) so the two implementations can never diverge.",
+  "cases": [
+    {
+      "name": "canonical_symlink_root",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Root\nbody\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": [] } }
+    },
+    {
+      "name": "canonical_import_root",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "import",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Root\nbody\n" },
+        { "path": "CLAUDE.md", "kind": "file", "content": "@AGENTS.md\n" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": [] } }
+    },
+    {
+      "name": "claude_only_project_root",
+      "requires_claude": true,
+      "requires_agent": false,
+      "strategy": "symlink",
+      "files": [{ "path": "CLAUDE.md", "kind": "file", "content": "# C\n" }],
+      "expect": { "": { "verdict": "canonical", "flags": [] } }
+    },
+    {
+      "name": "claude_only_project_ignores_agents",
+      "requires_claude": true,
+      "requires_agent": false,
+      "strategy": "symlink",
+      "files": [
+        { "path": "CLAUDE.md", "kind": "file", "content": "# C\n" },
+        { "path": "AGENTS.md", "kind": "file", "content": "# different\n" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": [] } }
+    },
+    {
+      "name": "agent_only_project_root",
+      "requires_claude": false,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [{ "path": "AGENTS.md", "kind": "file", "content": "# A\n" }],
+      "expect": { "": { "verdict": "canonical", "flags": [] } }
+    },
+    {
+      "name": "agent_only_claude_real_needs_promote",
+      "requires_claude": false,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [{ "path": "CLAUDE.md", "kind": "file", "content": "# C\n" }],
+      "expect": { "": { "verdict": "claude_only", "flags": [] } }
+    },
+    {
+      "name": "multi_claude_only_root",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [{ "path": "CLAUDE.md", "kind": "file", "content": "# C\n" }],
+      "expect": { "": { "verdict": "claude_only", "flags": [] } }
+    },
+    {
+      "name": "multi_agents_only_root_needs_derive",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [{ "path": "AGENTS.md", "kind": "file", "content": "# A\n" }],
+      "expect": { "": { "verdict": "agents_only", "flags": [] } }
+    },
+    {
+      "name": "nested_agents_without_derived_is_canonical",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Root\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "core/AGENTS.md", "kind": "file", "content": "# Core\n" }
+      ],
+      "expect": {
+        "": { "verdict": "canonical", "flags": [] },
+        "core": { "verdict": "canonical", "flags": [] }
+      }
+    },
+    {
+      "name": "nested_claude_only_is_deviation",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Root\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "cli/CLAUDE.md", "kind": "file", "content": "# CLI\n" }
+      ],
+      "expect": {
+        "": { "verdict": "canonical", "flags": [] },
+        "cli": { "verdict": "claude_only", "flags": [] }
+      }
+    },
+    {
+      "name": "claude_only_project_nested_canonical",
+      "requires_claude": true,
+      "requires_agent": false,
+      "strategy": "symlink",
+      "files": [
+        { "path": "CLAUDE.md", "kind": "file", "content": "# Root\n" },
+        { "path": "agents/CLAUDE.md", "kind": "file", "content": "# Mod\n" }
+      ],
+      "expect": {
+        "": { "verdict": "canonical", "flags": [] },
+        "agents": { "verdict": "canonical", "flags": [] }
+      }
+    },
+    {
+      "name": "replaced_derived_identical",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Same\nbody\n" },
+        { "path": "CLAUDE.md", "kind": "file", "content": "# Same\nbody\n" }
+      ],
+      "expect": { "": { "verdict": "replaced_derived", "flags": [] } }
+    },
+    {
+      "name": "conflict_divergent_roots",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A version\n" },
+        { "path": "CLAUDE.md", "kind": "file", "content": "# C version\n" }
+      ],
+      "expect": { "": { "verdict": "conflict", "flags": [] } }
+    },
+    {
+      "name": "derived_drift_symlink_under_import",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "import",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" }
+      ],
+      "expect": { "": { "verdict": "derived_drift", "flags": [] } }
+    },
+    {
+      "name": "derived_drift_import_under_symlink",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "file", "content": "@AGENTS.md\n" }
+      ],
+      "expect": { "": { "verdict": "derived_drift", "flags": [] } }
+    },
+    {
+      "name": "derived_drift_materialized_symlink",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "file", "content": "AGENTS.md" }
+      ],
+      "expect": { "": { "verdict": "derived_drift", "flags": [] } }
+    },
+    {
+      "name": "pointer_plus_content_memory_append",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "import",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        {
+          "path": "CLAUDE.md",
+          "kind": "file",
+          "content": "@AGENTS.md\n\n- remember: run tests first\n"
+        }
+      ],
+      "expect": { "": { "verdict": "pointer_plus_content", "flags": [] } }
+    },
+    {
+      "name": "legacy_symlink_with_claude_only",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "CLAUDE.md", "kind": "file", "content": "# C\n" },
+        { "path": "AGENT.md", "kind": "symlink", "target": "CLAUDE.md" }
+      ],
+      "expect": { "": { "verdict": "claude_only", "flags": ["legacy"] } }
+    },
+    {
+      "name": "legacy_composes_with_canonical",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "AGENT.md", "kind": "symlink", "target": "CLAUDE.md" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": ["legacy"] } }
+    },
+    {
+      "name": "legacy_real_file_flagged",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "AGENT.md", "kind": "file", "content": "# unique prose\n" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": ["legacy"] } }
+    },
+    {
+      "name": "legacy_broken_symlink",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "AGENT.md", "kind": "symlink", "target": "missing.md" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": ["broken_link", "legacy"] } }
+    },
+    {
+      "name": "broken_derived_link_agents_deleted",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [{ "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" }],
+      "expect": { "": { "verdict": "empty", "flags": ["broken_link"] } }
+    },
+    {
+      "name": "external_claude_link_is_left_alone",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# A\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "__outside__/CLAUDE.md" }
+      ],
+      "expect": { "": { "verdict": "canonical", "flags": ["external_link"] } }
+    },
+    {
+      "name": "reverse_link_agents_to_claude",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "CLAUDE.md", "kind": "file", "content": "# C\n" },
+        { "path": "AGENTS.md", "kind": "symlink", "target": "CLAUDE.md" }
+      ],
+      "expect": { "": { "verdict": "claude_only", "flags": [] } }
+    },
+    {
+      "name": "multi_empty_root",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [],
+      "expect": { "": { "verdict": "empty", "flags": [] } }
+    },
+    {
+      "name": "no_effective_harness",
+      "requires_claude": false,
+      "requires_agent": false,
+      "strategy": "symlink",
+      "files": [{ "path": "CLAUDE.md", "kind": "file", "content": "# C\n" }],
+      "expect": { "": { "verdict": "none", "flags": [] } }
+    },
+    {
+      "name": "nested_legacy_chain_screenshot_case",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "CLAUDE.md", "kind": "file", "content": "# Root\n" },
+        { "path": "AGENT.md", "kind": "symlink", "target": "CLAUDE.md" },
+        { "path": "agents/CLAUDE.md", "kind": "file", "content": "# Agents\n" },
+        { "path": "agents/AGENT.md", "kind": "symlink", "target": "CLAUDE.md" },
+        { "path": "cli/CLAUDE.md", "kind": "file", "content": "# CLI\n" },
+        { "path": "cli/AGENT.md", "kind": "symlink", "target": "CLAUDE.md" }
+      ],
+      "expect": {
+        "": { "verdict": "claude_only", "flags": ["legacy"] },
+        "agents": { "verdict": "claude_only", "flags": ["legacy"] },
+        "cli": { "verdict": "claude_only", "flags": ["legacy"] }
+      }
+    },
+    {
+      "name": "nested_drift_and_conflict",
+      "requires_claude": true,
+      "requires_agent": true,
+      "strategy": "symlink",
+      "files": [
+        { "path": "AGENTS.md", "kind": "file", "content": "# Root\n" },
+        { "path": "CLAUDE.md", "kind": "symlink", "target": "AGENTS.md" },
+        { "path": "core/AGENTS.md", "kind": "file", "content": "# Core\n" },
+        { "path": "core/CLAUDE.md", "kind": "file", "content": "@AGENTS.md\n" },
+        { "path": "web/AGENTS.md", "kind": "file", "content": "# Web A\n" },
+        { "path": "web/CLAUDE.md", "kind": "file", "content": "# Web C\n" }
+      ],
+      "expect": {
+        "": { "verdict": "canonical", "flags": [] },
+        "core": { "verdict": "derived_drift", "flags": [] },
+        "web": { "verdict": "conflict", "flags": [] }
+      }
+    }
+  ]
+}
