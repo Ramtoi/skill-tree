@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Node / frontend
+node_modules/
+dist/
+
+# Tauri / Rust build
+app/src-tauri/target/
+
+# Vendored Python deps — generated at build time from requirements.txt by
+# scripts/vendor-deps.sh; never checked in (requirements.txt is the source of truth).
+/vendor/
+
+# OS / editor
+.DS_Store
+.env
+
+# Skill Hub user data (data_home content — never commit)
+registry.yaml
+_hub-backups/
+.lock
+.agents/
+.pi-lens/
+
+# Local agent state
+.claude/
+.pi/
+state/
+skills/_archive/
+
+# Private overlay — own nested git repo with a private remote; never published
+private/
+
+# In-flight OpenSpec proposals (kept private by default)
+openspec/changes/
+
+# Scratch/working docs — local-only
+docs/temp/
+
+# Stray
+false

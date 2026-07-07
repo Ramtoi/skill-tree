@@ -1,0 +1,144 @@
+/* ─── ux-command-layer ─────────────────────────────────────────────────────
+ * All CSS for the command layer (chord indicator, cheatsheet, palette stage
+ * machine, list-nav focus ring) lives here and is imported from main.tsx so it
+ * never collides with the parallel ux-editor-platform edits to App.css.
+ * Tokens (--fg-*, --violet, --border, --radius-*, --font-mono) come from
+ * App.css :root.
+ */
+
+/* Visually-hidden but screen-reader-available (chord aria-live region). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Chord pending indicator (StatusBar status slot) ── */
+.chord-pending-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  color: var(--violet-2);
+}
+.chord-pending-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border: 1px solid color-mix(in oklab, var(--violet) 45%, transparent);
+  border-radius: var(--radius-sm, 4px);
+  background: color-mix(in oklab, var(--violet) 16%, transparent);
+  font-size: 10px;
+  line-height: 1;
+}
+.chord-pending-ellipsis {
+  animation: chord-pending-pulse 1.1s ease-in-out infinite;
+}
+@keyframes chord-pending-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chord-pending-ellipsis {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+/* ── Shortcut cheatsheet ── */
+.cheatsheet {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cheatsheet-group {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 12px 2px 4px;
+}
+.cheatsheet-group:first-child {
+  padding-top: 2px;
+}
+.cheatsheet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 2px;
+}
+.cheatsheet-label {
+  color: var(--fg-mid, var(--fg));
+  font-size: 13px;
+}
+.cheatsheet-hint {
+  display: inline-flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Palette stage machine (breadcrumb + text stage) ── */
+.palette-crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 9px 16px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.palette-crumb {
+  color: var(--fg-mute);
+}
+.palette-crumb:first-child {
+  color: var(--violet-2);
+}
+.palette-crumb-sep {
+  color: var(--fg-dim);
+}
+.palette-text-stage {
+  padding: 14px 16px 18px;
+}
+.palette-text-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.palette-text-hint .text-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+}
+.palette-text-hint .text-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--amber);
+}
+
+/* ── List-nav roving focus (Library) ── */
+[data-listnav-active="true"] {
+  outline: none;
+}
+.skill-row[data-listnav-active="true"] {
+  box-shadow: inset 2px 0 0 0 var(--violet);
+}
+.skill-row[data-listnav-active="true"]:focus-visible,
+.skill-row:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--violet) 60%, transparent);
+  outline-offset: -2px;
+}
