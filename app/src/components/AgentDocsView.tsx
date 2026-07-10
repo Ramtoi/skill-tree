@@ -688,7 +688,8 @@ export function AgentDocsView({
 	const toast = useToast();
 	const queryClient = useQueryClient();
 	const allHarnesses = useHarnesses();
-	const listing = useAgentDocsListing(projectPath);
+	const [showAllMarkdown, setShowAllMarkdown] = useState(false);
+	const listing = useAgentDocsListing(projectPath, showAllMarkdown);
 
 	const [selected, setSelected] = useState<string | null>(null);
 	const [buffers, setBuffers] = useState<Record<string, Buffer>>({});
@@ -710,6 +711,7 @@ export function AgentDocsView({
 		setConflict(null);
 		setPendingDiscard(null);
 		setExternalEditTarget(null);
+		setShowAllMarkdown(false);
 	}, [projectPath]);
 
 	const data = listing.data;
@@ -920,7 +922,7 @@ export function AgentDocsView({
 
 	// ── Layout verdicts — read straight from the scanner, never re-derived ──
 	const policy = data?.policy ?? null;
-	const instructionSets = data?.instruction_sets ?? [];
+	const instructionSets = showAllMarkdown ? [] : (data?.instruction_sets ?? []);
 	const rootSet =
 		instructionSets.find((s) => s.relative_dir === "") ?? null;
 	const deviations = useMemo(
@@ -931,7 +933,7 @@ export function AgentDocsView({
 	// The root pair folds into one unified row only when the scanner says the
 	// layout is canonical (real AGENTS.md + derived CLAUDE.md).
 	const unifyRootMode =
-		policy?.derived && rootSet?.verdict === "canonical"
+		!showAllMarkdown && policy?.derived && rootSet?.verdict === "canonical"
 			? policy.strategy
 			: null;
 
@@ -1000,7 +1002,7 @@ export function AgentDocsView({
 	const doRefresh = useCallback(async () => {
 		if (!selected) {
 			await queryClient.invalidateQueries({
-				queryKey: ["agent-docs", projectPath],
+				queryKey: ["agent-docs", projectPath, showAllMarkdown],
 			});
 			toast.push({
 				kind: "info",
@@ -1010,7 +1012,7 @@ export function AgentDocsView({
 			return;
 		}
 		await queryClient.invalidateQueries({
-			queryKey: ["agent-docs", projectPath],
+			queryKey: ["agent-docs", projectPath, showAllMarkdown],
 		});
 		try {
 			const res = await readAgentDoc(projectPath, selected);
@@ -1053,7 +1055,7 @@ export function AgentDocsView({
 				toastForError(body, String(err));
 			}
 		}
-	}, [selected, projectPath, queryClient, toast]);
+	}, [selected, projectPath, queryClient, toast, showAllMarkdown]);
 
 	function refresh() {
 		if (selectedDirty) {
@@ -1067,7 +1069,7 @@ export function AgentDocsView({
 	// no dirty guard (mutations are blocked while dirty).
 	const reloadSelectedSilently = useCallback(async () => {
 		await queryClient.invalidateQueries({
-			queryKey: ["agent-docs", projectPath],
+			queryKey: ["agent-docs", projectPath, showAllMarkdown],
 		});
 		if (!selected) return;
 		try {
@@ -1092,7 +1094,7 @@ export function AgentDocsView({
 				return next;
 			});
 		}
-	}, [selected, projectPath, queryClient]);
+	}, [selected, projectPath, queryClient, showAllMarkdown]);
 
 	async function performWrite(force: boolean) {
 		if (!selected || !selectedBuffer) return;
@@ -1127,7 +1129,7 @@ export function AgentDocsView({
 			setExternalEditTarget(null);
 			setConflict(null);
 			await queryClient.invalidateQueries({
-				queryKey: ["agent-docs", projectPath],
+				queryKey: ["agent-docs", projectPath, showAllMarkdown],
 			});
 			const names = res.written.map((w) => w.rel).join(" + ");
 			toast.push({
@@ -1207,6 +1209,12 @@ export function AgentDocsView({
 
 	// ── Render ──
 	const existingCount = allRels.filter((r) => fileMap.get(r)?.exists).length;
+	const mapTitle = showAllMarkdown ? "Markdown files" : "Instruction map";
+	const mapCount = showAllMarkdown
+		? `${existingCount} files`
+		: instructionSets.length > 0
+			? `${instructionSets.length} sets`
+			: `${existingCount}/${allRels.length}`;
 
 	return (
 		<>
@@ -1303,15 +1311,26 @@ export function AgentDocsView({
 					<div className="agent-docs-map-head">
 						<div className="agent-docs-eyebrow">
 							<Icon name="doc" size={12} />
-							<span>Instruction map</span>
-							<span className="ad-count">
-								{instructionSets.length > 0
-									? `${instructionSets.length} sets`
-									: `${existingCount}/${allRels.length}`}
-							</span>
+							<span>{mapTitle}</span>
+							<span className="ad-count">{mapCount}</span>
 						</div>
+						<label className="agent-docs-md-toggle">
+							<input
+								type="checkbox"
+								checked={showAllMarkdown}
+								onChange={(e) => {
+									setShowAllMarkdown(e.currentTarget.checked);
+									setSelected(null);
+									setExpanded({});
+								}}
+								data-testid="agent-docs-show-all-markdown"
+							/>
+							<span>Show all Markdown files</span>
+						</label>
 						<div className="agent-docs-tagline">
-							Sync does not read or write these files.
+							{showAllMarkdown
+								? "Browsing project-scoped .md files."
+								: "Sync does not read or write these files."}
 						</div>
 						{data?.truncated && (
 							<div
@@ -1608,9 +1627,10 @@ export function AgentDocsView({
 											project. Editing is disabled here.
 										</p>
 									</div>
-								) : selected === "CLAUDE.md" &&
+								) : !showAllMarkdown &&
+									selected === "CLAUDE.md" &&
 									selectedBuffer.isDerivedPointer ? (
-									<div className="agent-docs-symlink-stub ad-derived-stub">
+					<div className="agent-docs-symlink-stub ad-derived-stub">
 										<Icon name="link" size={28} />
 										<h4>
 											Derived from <span className="text-mono">AGENTS.md</span>
@@ -1646,7 +1666,8 @@ export function AgentDocsView({
 														{selectedFile?.absolute_path ??
 															`${projectPath}/${selected}`}
 													</span>
-													{policy?.derived &&
+													{!showAllMarkdown &&
+													policy?.derived &&
 													(selected === "CLAUDE.md" ||
 														selected === "AGENTS.md") ? (
 														<>
@@ -1685,7 +1706,8 @@ export function AgentDocsView({
 							{/* Snippet blocks live at the end of the file, so the strip
 							    sits below the freeform content it appends to. */}
 							{selected &&
-								selectedFile?.exists &&
+								!showAllMarkdown &&
+				selectedFile?.exists &&
 								!selectedFile.is_symlink &&
 								!selectedBuffer.isDerivedPointer &&
 								!selectedBuffer.isNew && (

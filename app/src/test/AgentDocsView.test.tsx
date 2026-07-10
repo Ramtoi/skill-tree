@@ -506,7 +506,7 @@ function writeResult(rel: string, hash: string): AgentDocWriteResult {
 
 function setupInvoke(
 	handlers: Partial<{
-		list_agent_docs: AgentDocsListing;
+		list_agent_docs: AgentDocsListing | ((args: Record<string, unknown>) => AgentDocsListing);
 		read_agent_doc: (rel: string) => AgentDocContent;
 		write_agent_doc:
 			| AgentDocWriteResult
@@ -518,6 +518,11 @@ function setupInvoke(
 ) {
 	vi.mocked(invoke).mockImplementation(async (cmd: string, args?: unknown) => {
 		if (cmd === "list_agent_docs") {
+			if (typeof handlers.list_agent_docs === "function") {
+				return handlers.list_agent_docs(
+					(args ?? {}) as Record<string, unknown>,
+				);
+			}
 			return handlers.list_agent_docs ?? listing();
 		}
 		if (cmd === "read_agent_doc") {
@@ -577,6 +582,115 @@ function renderView() {
 }
 
 describe("AgentDocsView", () => {
+	it("toggle lists all project Markdown files and edits them through the same save flow", async () => {
+		const defaultListing = listing();
+		const markdownListing = listing({
+			all_rels: [
+				...defaultListing.all_rels,
+				"README.md",
+				"docs/guides/setup.md",
+			],
+			root: {
+				...defaultListing.root,
+				files: [
+					...defaultListing.root.files,
+					{
+						rel: "README.md",
+						name: "README.md",
+						label: "README.md",
+						absolute_path: "/p/README.md",
+						exists: true,
+						is_known: false,
+						is_discovered: true,
+						is_symlink: false,
+						symlink_to: null,
+						symlink_target_in_project: false,
+						can_read: true,
+						can_write: true,
+						size: 20,
+						modified_at: 1716_000_000,
+						hash: "hashReadme",
+						error: null,
+					},
+				],
+				dirs: [
+					...defaultListing.root.dirs,
+					{
+						name: "docs",
+						path: "docs",
+						files: [],
+						dirs: [
+							{
+								name: "guides",
+								path: "docs/guides",
+								dirs: [],
+								files: [
+									{
+										rel: "docs/guides/setup.md",
+										name: "setup.md",
+										label: "docs/guides/setup.md",
+										absolute_path: "/p/docs/guides/setup.md",
+										exists: true,
+										is_known: false,
+										is_discovered: true,
+										is_symlink: false,
+										symlink_to: null,
+										symlink_target_in_project: false,
+										can_read: true,
+										can_write: true,
+										size: 30,
+										modified_at: 1716_000_000,
+										hash: "hashSetup",
+										error: null,
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		});
+		setupInvoke({
+			list_agent_docs: (args) =>
+				args.includeAllMarkdown ? markdownListing : defaultListing,
+			read_agent_doc: (rel) =>
+				content(rel, rel === "docs/guides/setup.md" ? "# Setup\n" : "# Readme\n", rel),
+			write_agent_doc: (args) =>
+				writeResult(String(args.relativePath), "hashAfter"),
+		});
+
+		renderView();
+		await waitFor(() => {
+			expect(screen.getByTestId("agent-docs-show-all-markdown")).toBeInTheDocument();
+		});
+		expect(screen.queryByText("setup.md")).not.toBeInTheDocument();
+
+		fireEvent.click(screen.getByTestId("agent-docs-show-all-markdown"));
+		await waitFor(() => {
+			expect(screen.getByText("Markdown files")).toBeInTheDocument();
+			expect(screen.getByText("setup.md")).toBeInTheDocument();
+		});
+		expect(vi.mocked(invoke)).toHaveBeenCalledWith("list_agent_docs", {
+			projectPath: "/p",
+			includeAllMarkdown: true,
+		});
+
+		fireEvent.click(screen.getByText("setup.md"));
+		await waitFor(() => expect(editorText()).toBe("# Setup\n"));
+		act(() => setEditorContent("# Setup\nupdated\n"));
+		await waitFor(() => expect(screen.getAllByText("UNSAVED").length).toBeGreaterThan(0));
+		fireEvent.click(screen.getByTestId("agent-docs-save"));
+		await waitFor(() => {
+			expect(vi.mocked(invoke)).toHaveBeenCalledWith("write_agent_doc", {
+				projectPath: "/p",
+				relativePath: "docs/guides/setup.md",
+				content: "# Setup\nupdated\n",
+				expectedHash: "docs/guides/setup.md",
+				overwrite: false,
+			});
+		});
+	});
+
 	it("renders header with project name, path, and disk-source-of-truth crumb", async () => {
 		setupInvoke({});
 		renderView();

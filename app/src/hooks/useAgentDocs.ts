@@ -13,13 +13,17 @@ import type {
 	AgentDocsListing,
 } from "@/types/agentDocs";
 
-export function useAgentDocsListing(projectPath: string | undefined) {
+export function useAgentDocsListing(
+	projectPath: string | undefined,
+	includeAllMarkdown = false,
+) {
 	return useQuery<AgentDocsListing>({
-		queryKey: ["agent-docs", projectPath ?? ""],
+		queryKey: ["agent-docs", projectPath ?? "", includeAllMarkdown],
 		queryFn: async () => {
 			if (!projectPath) throw new Error("missing project path");
 			return invoke<AgentDocsListing>("list_agent_docs", {
 				projectPath,
+				includeAllMarkdown,
 			});
 		},
 		enabled: !!projectPath,

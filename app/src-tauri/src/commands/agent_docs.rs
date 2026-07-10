@@ -62,6 +62,13 @@ pub const MAX_DEPTH: usize = 8;
 pub const MAX_FILES: usize = 500;
 pub const MAX_EDITOR_BYTES: u64 = 1024 * 1024; // 1 MiB
 
+fn is_markdown_rel(rel: &str) -> bool {
+    match rel.rsplit('/').next() {
+        Some(name) => name.ends_with(".md"),
+        None => false,
+    }
+}
+
 // ─── DTOs ───────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize)]
@@ -576,7 +583,11 @@ fn build_file_meta(
 /// Walk the project root looking for nested `CLAUDE.md` / `AGENT.md` files.
 /// Bounded by depth and file count; returns the set of discovered rels plus a
 /// truncation flag.
-fn discover_nested(project_root: &Path, already: &HashSet<String>) -> (Vec<String>, bool) {
+fn discover_nested(
+    project_root: &Path,
+    already: &HashSet<String>,
+    include_all_markdown: bool,
+) -> (Vec<String>, bool) {
     let mut out: Vec<String> = Vec::new();
     let mut truncated = false;
     let ignored_dir_names: HashSet<&str> = IGNORED_DIR_NAMES.iter().copied().collect();
@@ -615,7 +626,8 @@ fn discover_nested(project_root: &Path, already: &HashSet<String>) -> (Vec<Strin
                     stack.push((entry.path(), depth + 1, new_rel));
                 }
             } else if (file_type.is_file() || file_type.is_symlink())
-                && ALLOWED_BASENAMES.contains(&name_str.as_str())
+                && (ALLOWED_BASENAMES.contains(&name_str.as_str())
+                    || (include_all_markdown && name_str.ends_with(".md")))
             {
                 if already.contains(&new_rel) {
                     continue;
@@ -1206,23 +1218,39 @@ fn insert_file_into_tree(root: &mut AgentDocFolder, file: AgentDocFileMeta) {
 static AGENT_DOCS_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 #[tauri::command]
-pub async fn list_agent_docs(project_path: String) -> Result<AgentDocsListing, String> {
+pub async fn list_agent_docs(
+    project_path: String,
+    include_all_markdown: Option<bool>,
+) -> Result<AgentDocsListing, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let _guard = AGENT_DOCS_LOCK.lock().unwrap();
-        list_agent_docs_impl(project_path)
+        list_agent_docs_impl_with_options(project_path, include_all_markdown.unwrap_or(false))
     })
     .await
     .map_err(|e| format!("list_agent_docs task failed: {e}"))?
 }
 
 fn list_agent_docs_impl(project_path: String) -> Result<AgentDocsListing, String> {
+    list_agent_docs_impl_with_options(project_path, false)
+}
+
+fn list_agent_docs_impl_with_options(
+    project_path: String,
+    include_all_markdown: bool,
+) -> Result<AgentDocsListing, String> {
     let canonical = canonicalize_project_root(&project_path).map_err(|e| e.to_string_payload())?;
 
-    let known: Vec<String> = KNOWN_RELS.iter().map(|s| s.to_string()).collect();
+    let known: Vec<String> = if include_all_markdown {
+        Vec::new()
+    } else {
+        KNOWN_RELS.iter().map(|s| s.to_string()).collect()
+    };
     let mut all_set: HashSet<String> = known.iter().cloned().collect();
 
-    // Discover nested files.
-    let (discovered, truncated) = discover_nested(&canonical, &all_set);
+    // Discover nested files. In all-Markdown mode this switches the same
+    // project-scoped tree to actual `.md` files only; default Agent Docs behavior
+    // stays limited to known agent-doc basenames and its virtual placeholders.
+    let (discovered, truncated) = discover_nested(&canonical, &all_set, include_all_markdown);
     for rel in &discovered {
         all_set.insert(rel.clone());
     }
@@ -1240,7 +1268,7 @@ fn list_agent_docs_impl(project_path: String) -> Result<AgentDocsListing, String
     let mut metas: Vec<AgentDocFileMeta> = Vec::new();
     for rel in &all_rels {
         let abs = canonical.join(rel);
-        let is_known = KNOWN_RELS.contains(&rel.as_str());
+        let is_known = !include_all_markdown && KNOWN_RELS.contains(&rel.as_str());
         let is_discovered = !is_known;
         let meta = build_file_meta(rel, &abs, &canonical, is_known, is_discovered);
         metas.push(meta.clone());
@@ -1292,7 +1320,7 @@ fn read_agent_doc_impl(
     relative_path: String,
 ) -> Result<AgentDocContent, String> {
     let rel = normalize_rel(&relative_path).map_err(|e| e.to_string_payload())?;
-    if !is_allowed_agent_doc_rel(&rel) {
+    if !is_allowed_agent_doc_rel(&rel) && !is_markdown_rel(&rel) {
         return Err(AgentDocError::NotAllowedBasename { rel }.to_string_payload());
     }
     let project_root =
@@ -1483,7 +1511,7 @@ fn write_agent_doc_impl(
     overwrite: Option<bool>,
 ) -> Result<AgentDocWriteResult, String> {
     let rel = normalize_rel(&relative_path).map_err(|e| e.to_string_payload())?;
-    if !is_allowed_agent_doc_rel(&rel) {
+    if !is_allowed_agent_doc_rel(&rel) && !is_markdown_rel(&rel) {
         return Err(AgentDocError::NotAllowedBasename { rel }.to_string_payload());
     }
     let project_root =
@@ -2051,19 +2079,93 @@ mod tests {
     }
 
     #[test]
+    fn all_markdown_mode_finds_project_markdown_files() {
+        let td = setup_project();
+        let nested = td.path().join("docs").join("guides");
+        fs::create_dir_all(&nested).unwrap();
+        fs::write(td.path().join("README.md"), "# Readme").unwrap();
+        fs::write(td.path().join("AGENTS.md"), "# Agents").unwrap();
+        fs::write(nested.join("setup.md"), "# Setup").unwrap();
+        fs::write(nested.join("notes.txt"), "not markdown").unwrap();
+
+        let default_listing = list_agent_docs_impl(project_str(&td)).expect("list");
+        assert!(!default_listing.all_rels.iter().any(|r| r == "README.md"));
+        assert!(!default_listing
+            .all_rels
+            .iter()
+            .any(|r| r == "docs/guides/setup.md"));
+
+        let markdown_listing =
+            list_agent_docs_impl_with_options(project_str(&td), true).expect("list markdown");
+        assert!(markdown_listing.all_rels.iter().any(|r| r == "README.md"));
+        assert!(markdown_listing.all_rels.iter().any(|r| r == "AGENTS.md"));
+        let agents_meta = markdown_listing
+            .root
+            .files
+            .iter()
+            .find(|f| f.rel == "AGENTS.md")
+            .expect("AGENTS.md listed as a markdown file");
+        assert!(!agents_meta.is_known);
+        assert!(agents_meta.is_discovered);
+        assert!(!markdown_listing.all_rels.iter().any(|r| r == "CLAUDE.md"));
+        assert!(markdown_listing
+            .all_rels
+            .iter()
+            .any(|r| r == "docs/guides/setup.md"));
+        assert!(!markdown_listing
+            .all_rels
+            .iter()
+            .any(|r| r == "docs/guides/notes.txt"));
+    }
+
+    #[test]
+    fn generic_markdown_read_write_uses_existing_editor_flow_guards() {
+        let td = setup_project();
+        let docs = td.path().join("docs");
+        fs::create_dir_all(&docs).unwrap();
+        fs::write(docs.join("guide.md"), "# Guide\nold").unwrap();
+
+        let content = read_agent_doc_impl(project_str(&td), "docs/guide.md".into())
+            .expect("read generic markdown");
+        assert_eq!(content.content, "# Guide\nold");
+
+        let res = write_agent_doc_impl(
+            project_str(&td),
+            "docs/guide.md".into(),
+            "# Guide\nnew".into(),
+            Some(content.hash),
+            false,
+        )
+        .expect("write generic markdown");
+        assert_eq!(res.written[0].rel, "docs/guide.md");
+        assert_eq!(fs::read_to_string(docs.join("guide.md")).unwrap(), "# Guide\nnew");
+
+        let err = read_agent_doc_impl(project_str(&td), "docs/guide.txt".into()).unwrap_err();
+        assert!(err.contains("not_allowed_basename"));
+    }
+
+    #[test]
     fn ignored_dirs_skipped() {
         let td = setup_project();
         for d in &["node_modules", "target", ".git"] {
             let sub = td.path().join(d);
             fs::create_dir_all(&sub).unwrap();
             fs::write(sub.join("CLAUDE.md"), "# hidden").unwrap();
+            fs::write(sub.join("README.md"), "# hidden").unwrap();
         }
         let listing = list_agent_docs_impl(project_str(&td)).expect("list");
+        let markdown_listing =
+            list_agent_docs_impl_with_options(project_str(&td), true).expect("list markdown");
         for d in &["node_modules", "target", ".git"] {
             let rel = format!("{d}/CLAUDE.md");
             assert!(
                 !listing.all_rels.contains(&rel),
                 "should skip ignored dir {d}"
+            );
+            let readme_rel = format!("{d}/README.md");
+            assert!(
+                !markdown_listing.all_rels.contains(&readme_rel),
+                "all-markdown mode should skip ignored dir {d}"
             );
         }
     }
