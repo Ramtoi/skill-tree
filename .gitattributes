@@ -1,0 +1,10 @@
+# Paths omitted from `git archive` (the public publish snapshot).
+# Custom, non-publishable connectors — private infra.
+connectors_private/ export-ignore
+
+# Private-connector test suites — import connectors_private (absent in the mirror).
+tests/test_codex_workers_connector.py export-ignore
+tests/test_codex_workers_helper_transport.py export-ignore
+tests/test_codex_skill_apply_helper.py export-ignore
+tests/test_goalrunner_orchestrator_connector.py export-ignore
+tests/test_remote_credential_lifecycle.py export-ignore

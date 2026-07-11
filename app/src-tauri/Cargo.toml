@@ -1,0 +1,34 @@
+[package]
+name = "skill-tree"
+version = "0.7.0"
+description = "Skill Tree - Native desktop app for Skill Hub"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "skill_tree_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+sha2 = "0.10"
+# OS-keychain secret access for remote connectors. The CLI path uses the Python
+# `keyring` binding against the SAME OS keychain, so both resolve one secret.
+# On macOS the default backend is the Security-framework Keychain (no extra
+# feature or system dep needed); Linux/Windows use their native stores.
+keyring = "2"
+
+[dev-dependencies]
+tempfile = "3"
