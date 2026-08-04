@@ -1,0 +1,38 @@
+# Built-in `lsp-report` hook (hooks-surface D5 / spec builtin-lsp-hook).
+#
+# One-shot per-language diagnostics after a file edit. Resolved by name at
+# runtime with provenance: builtin (never stored in registry.yaml). The DIR name
+# `lsp-report` is authoritative — a `name:` key here would be ignored.
+#
+# NOTE on `command`: this is a TEMPLATE / placeholder. At sync time hub REWRITES
+# the command per scope — baking the resolved absolute Python interpreter
+# (SKILL_TREE_PYTHON → bundled runtime → system python3, mirroring detect_python)
+# and the absolute `--config <data_home>/state/hooks/lsp-report.<scope>.json`
+# path (see lsp_report_sync.materialize_lsp_report / bake_resolved_hooks). The raw
+# string below documents intent; it is never what actually reaches a harness for
+# this built-in.
+description: "One-shot language diagnostics after file edits"
+event: PostToolUse
+tools:
+  - Edit
+  - Write
+  - MultiEdit
+command: "python3 lsp_report.py --config lsp-report.json"
+settings:
+  languages:
+    python:
+      enabled: true
+      mode: advisory
+      timeout: 30
+    go:
+      enabled: true
+      mode: advisory
+      timeout: 30
+    typescript:
+      enabled: false
+      mode: advisory
+      timeout: 30
+    rust:
+      enabled: false
+      mode: advisory
+      timeout: 30

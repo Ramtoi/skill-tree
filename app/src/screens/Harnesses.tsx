@@ -1,0 +1,439 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { invoke } from "@/lib/ipc";
+
+import { ScreenHeader } from "@/components/ScreenHeader";
+import { Button } from "@/components/Button";
+import { Tag } from "@/components/Tag";
+import { Toggle } from "@/components/Toggle";
+import { Icon } from "@/components/Icon";
+import { InfoBanner } from "@/components/InfoBanner";
+import { HarnessGlyph } from "@/components/harness/HarnessGlyph";
+import {
+	HARNESS_IDENTITY,
+	harnessFile,
+	harnessTint,
+	type RootFile,
+} from "@/components/harness/harnessRegistry";
+import { useHarnesses } from "@/hooks/useHarnesses";
+import { useRegistry } from "@/hooks/useRegistry";
+import { useSubagentList } from "@/hooks/useSubagents";
+import type { SubagentHarness } from "@/lib/subagents";
+import { useToast } from "@/components/Toast";
+import { useAppStore } from "@/store";
+import { queryClient } from "@/lib/queryClient";
+import type { HarnessStatus } from "@/store";
+
+export function Harnesses() {
+	const harnesses = useHarnesses();
+	const { data: registry } = useRegistry();
+	const navigate = useNavigate();
+	const toast = useToast();
+	const rescan = useAppStore((s) => s.rescanHarnesses);
+	const setMutating = useAppStore((s) => s.setMutating);
+	const mutating = useAppStore((s) => s.mutating);
+	const [scanning, setScanning] = useState(false);
+
+	const total = harnesses.length;
+	const installedCount = harnesses.filter((h) => h.installed).length;
+
+	// A harness counts as "active" only when it is both enabled globally AND
+	// installed. If some harness is enabled globally but none of the enabled ones
+	// are installed, every sync is a silent no-op — surface that honestly.
+	const globalHarnesses = harnesses.filter((h) => h.on_globally);
+	const noActiveHarness =
+		globalHarnesses.length > 0 && globalHarnesses.every((h) => !h.installed);
+
+	// Projects requiring a given root file = any project whose effective
+	// harnesses (global ∪ project) include an agent that reads that file.
+	const projectsByFile = useMemo(() => {
+		const out: Record<RootFile, string[]> = {
+			"CLAUDE.md": [],
+			"AGENTS.md": [],
+		};
+		if (!registry) return out;
+		const globals = registry.harnesses_global ?? [];
+		for (const [name, proj] of Object.entries(registry.projects)) {
+			const ids = new Set([...globals, ...(proj.harnesses ?? [])]);
+			const files = new Set<RootFile>();
+			for (const id of ids) files.add(harnessFile(id));
+			for (const f of files) out[f].push(name);
+		}
+		return out;
+	}, [registry]);
+
+	// Group known harnesses by the root file they read (for the bottom overview).
+	const fileGroups = useMemo(() => {
+		const groups: Record<RootFile, string[]> = {
+			"CLAUDE.md": [],
+			"AGENTS.md": [],
+		};
+		for (const id of Object.keys(HARNESS_IDENTITY)) {
+			groups[harnessFile(id)].push(id);
+		}
+		return (Object.keys(groups) as RootFile[])
+			.filter((f) => groups[f].length > 0)
+			.sort()
+			.map((f) => ({ file: f, harnessIds: groups[f] }));
+	}, []);
+
+	async function doRescan() {
+		setScanning(true);
+		try {
+			await rescan();
+			await queryClient.invalidateQueries({ queryKey: ["registry"] });
+			const list = useAppStore.getState().harnesses;
+			const inst = list.filter((h) => h.installed).length;
+			toast.push({
+				kind: "success",
+				title: "Harness scan complete",
+				body: `${inst} installed · ${list.length - inst} missing`,
+			});
+		} finally {
+			setScanning(false);
+		}
+	}
+
+	async function toggleGlobal(h: HarnessStatus, enabled: boolean) {
+		setMutating(true);
+		try {
+			await invoke("harness_set_global", { id: h.id, enabled });
+			await rescan();
+			await queryClient.invalidateQueries({ queryKey: ["registry"] });
+			toast.push({
+				kind: "info",
+				title: `Global ${h.label}`,
+				body: enabled
+					? "Every capable project picks this up."
+					: "No longer applied to every project.",
+			});
+		} catch (err) {
+			toast.error("Couldn't update harness", String(err));
+		} finally {
+			setMutating(false);
+		}
+	}
+
+	const labelOf = useMemo(
+		() => new Map(harnesses.map((h) => [h.id, h.label])),
+		[harnesses],
+	);
+
+	return (
+		<>
+			<ScreenHeader
+				leading={<Icon name="plug" size={14} />}
+				title="Harnesses"
+				meta={
+					<Tag size="sm">
+						{installedCount}/{total} installed
+					</Tag>
+				}
+				subline="Coding agents this machine can talk to · skills sync to the root file each one reads"
+				primary={
+					<Button
+						variant="primary"
+						icon="refresh"
+						disabled={scanning}
+						onClick={() => void doRescan()}
+					>
+						{scanning ? "Rescanning…" : "Rescan"}
+					</Button>
+				}
+			/>
+
+			<div className="harnesses-screen">
+				{noActiveHarness && (
+					<InfoBanner
+						className="harnesses-no-active-banner"
+						style={{ margin: "0 0 16px" }}
+					>
+						<strong>No active harness</strong> — synced skills won't reach any
+						harness yet. Enable one of the installed harnesses below.
+					</InfoBanner>
+				)}
+				<div className="harnesses-grid">
+					{harnesses.map((h) => {
+						const installed = h.installed;
+						const users = h.used_by_projects;
+						return (
+							<div
+								key={h.id}
+								className="harness-card"
+								data-installed={installed || undefined}
+								style={{
+									["--harness-accent" as string]: harnessTint(h.id),
+								}}
+							>
+								<div className="harness-card-head">
+									<HarnessGlyph id={h.id} label={h.label} size={32} decorative />
+									<div className="harness-card-id">
+										<div className="harness-card-name">{h.label}</div>
+										<div className="harness-card-file">
+											reads{" "}
+											<span className="text-mono">{harnessFile(h.id)}</span>
+										</div>
+									</div>
+									<div className="harness-card-state">
+										<span
+											className="harness-card-pill"
+											data-tone={installed ? "ok" : "missing"}
+										>
+											<span className="dot" />
+											{installed ? "installed" : "not installed"}
+										</span>
+									</div>
+								</div>
+
+								<div className="harness-card-meta">
+									{installed ? (
+										<>
+											{h.version && (
+												<div className="harness-meta-row">
+													<span>version</span>
+													<span className="text-mono">v{h.version}</span>
+												</div>
+											)}
+											{h.path && (
+												<div className="harness-meta-row">
+													<span>path</span>
+													<span className="text-mono harness-meta-path">
+														{h.path}
+													</span>
+												</div>
+											)}
+											{!h.version && !h.path && (
+												<div className="harness-meta-row">
+													<span>status</span>
+													<span className="text-mono">detected</span>
+												</div>
+											)}
+										</>
+									) : (
+										<div className="harness-card-cta">
+											<Icon name="warning" size={11} />
+											<span>
+												Install <strong>{h.label}</strong> locally to use it
+												from Skill Tree.
+											</span>
+										</div>
+									)}
+								</div>
+
+								<Toggle
+									className="harness-card-toggle"
+									variant="switch"
+									checked={h.on_globally}
+									disabled={!installed || mutating}
+									ariaLabel={`Enable ${h.label} globally`}
+									onChange={(checked) => void toggleGlobal(h, checked)}
+									label={
+										<span className="harness-toggle-copy">
+											<span className="toggle-title">Enable globally</span>
+											<span className="toggle-sub">
+												Every project that supports {harnessFile(h.id)} picks
+												this up automatically.
+											</span>
+										</span>
+									}
+								/>
+
+								<div className="harness-card-users">
+									<div className="harness-users-head">
+										<span>Used by</span>
+										<span className="text-mono text-dim">{users.length}</span>
+									</div>
+									{users.length === 0 ? (
+										<div className="harness-users-empty">
+											No projects use {h.label} yet.
+										</div>
+									) : (
+										<div className="harness-users-list">
+											{users.map((p) => (
+												<button
+													key={p}
+													type="button"
+													className="harness-user-chip"
+													onClick={() =>
+														navigate(`/project/${encodeURIComponent(p)}`)
+													}
+												>
+													<span className="project-dot" />
+													<span>{p}</span>
+												</button>
+											))}
+										</div>
+									)}
+								</div>
+
+								{(h.agents?.supported ?? h.id === "claude-code") && (
+									<ConfigureAffordance
+										harness={h}
+										installed={installed}
+										enabled={h.on_globally || users.length > 0}
+										onOpen={() => navigate(`/harness/${h.id}`)}
+									/>
+								)}
+
+								{h.global_doc && (
+									<InstructionsAffordance
+										harness={h}
+										onOpen={() => navigate(`/harness/${h.id}/doc`)}
+									/>
+								)}
+							</div>
+						);
+					})}
+				</div>
+
+				<div className="harnesses-files">
+					<div className="harnesses-section-eyebrow">
+						<Icon name="doc" size={12} />
+						<span>Root files that agents read</span>
+					</div>
+					<div className="harnesses-files-grid">
+						{fileGroups.map(({ file, harnessIds }) => {
+							const projectsWithFile = projectsByFile[file] ?? [];
+							return (
+								<div className="harness-file-card" key={file}>
+									<div className="harness-file-card-head">
+										<Icon name="doc" size={14} />
+										<span className="text-mono harness-file-card-name">
+											{file}
+										</span>
+									</div>
+									<div className="harness-file-card-readers">
+										{harnessIds.map((id) => (
+											<span
+												key={id}
+												className="harness-inline-pill harness-inline-pill-icon-only"
+												style={{
+													["--harness-accent" as string]: harnessTint(id),
+												}}
+												title={labelOf.get(id) ?? id}
+												aria-label={labelOf.get(id) ?? id}
+											>
+												<HarnessGlyph
+													id={id}
+													label={labelOf.get(id) ?? id}
+													size={16}
+													decorative
+												/>
+											</span>
+										))}
+									</div>
+									<div className="harness-file-card-foot">
+										<span className="text-dim text-mono">
+											required by {projectsWithFile.length} project
+											{projectsWithFile.length === 1 ? "" : "s"}
+										</span>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+					<div className="harnesses-files-explainer">
+						<Icon name="link" size={12} />
+						<span>
+							When a project enables agents that read different files, Skill
+							Tree makes <strong>AGENTS.md the one real root</strong> and
+							derives CLAUDE.md from it — a symlink, or a file that imports
+							<span className="text-mono"> @AGENTS.md</span>. You edit
+							AGENTS.md; CLAUDE.md follows. Choose the strategy in Agent Docs.
+						</span>
+					</div>
+				</div>
+			</div>
+		</>
+	);
+}
+
+/**
+ * "Configure →" entry on an agent-capable harness card (per its `agents`
+ * capability from `harness_list`). Shown only when the harness is installed
+ * AND enabled (globally or used by ≥1 project); carries a live agent-count as
+ * info-scent. Hidden with a one-line reason otherwise.
+ */
+function ConfigureAffordance({
+	harness,
+	installed,
+	enabled,
+	onOpen,
+}: {
+	harness: HarnessStatus;
+	installed: boolean;
+	enabled: boolean;
+	onOpen: () => void;
+}) {
+	// Only fetch the count when the affordance will actually render.
+	const ready = installed && enabled;
+	const harnessId = (
+		harness.id === "codex" ? "codex" : "claude-code"
+	) as SubagentHarness;
+	const { data } = useSubagentList("user", null, ready, harnessId);
+	const count = data?.agents.length;
+
+	if (!installed) {
+		return (
+			<div className="harness-card-configure" data-disabled>
+				<span className="text-dim" style={{ fontSize: 11.5 }}>
+					Install {harness.label} to configure sub-agents.
+				</span>
+			</div>
+		);
+	}
+	if (!enabled) {
+		return (
+			<div className="harness-card-configure" data-disabled>
+				<span className="text-dim" style={{ fontSize: 11.5 }}>
+					Enable {harness.label} to configure sub-agents.
+				</span>
+			</div>
+		);
+	}
+	return (
+		<div className="harness-card-configure">
+			<Button variant="soft" size="sm" icon="cog" onClick={onOpen}>
+				Configure
+			</Button>
+			<span className="text-dim text-mono" style={{ fontSize: 11 }}>
+				{count === undefined
+					? "sub-agents"
+					: `${count} sub-agent${count === 1 ? "" : "s"}`}
+			</span>
+			<span className="stretch" />
+			<Icon name="arrow-right" size={12} />
+		</div>
+	);
+}
+
+/**
+ * "Instructions" entry: edit the harness's USER-GLOBAL instruction doc
+ * (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, …). Shown for every harness that
+ * declares a global doc — even uninstalled ones, since the file is just a
+ * dotfile — with a subtle "not created yet" hint when it doesn't exist.
+ */
+function InstructionsAffordance({
+	harness,
+	onOpen,
+}: {
+	harness: HarnessStatus;
+	onOpen: () => void;
+}) {
+	const path = harness.global_doc ?? "";
+	const fileName = path.split(/[/\\]/).pop() || path;
+	const exists = harness.global_doc_exists ?? false;
+	return (
+		<div className="harness-card-configure harness-card-instructions">
+			<Button variant="soft" size="sm" icon="doc" onClick={onOpen}>
+				Instructions
+			</Button>
+			<span className="text-dim text-mono" style={{ fontSize: 11 }}>
+				{fileName}
+				{!exists && " · not created"}
+			</span>
+			<span className="stretch" />
+			<Icon name="arrow-right" size={12} />
+		</div>
+	);
+}

@@ -1,0 +1,12 @@
+# Paths omitted from `git archive` (the public publish snapshot).
+#
+# Private connector plugins no longer live in this tree at all — they are
+# drop-ins under `data_home()/connectors/` (see docs/remote-connectors.md), and
+# their test suites moved with them. Nothing about them needs excluding.
+#
+# The one remaining exclusion is the guard's own input: the private-identifier
+# list names the very strings that must never be published, so publishing it
+# would defeat its purpose. `scripts/guard-bundle-privacy.sh` treats an absent
+# list as "identifier check not applicable" (a mirror-sourced tree has nothing
+# private to find) and keeps its other checks fail-closed.
+scripts/private-identifiers.txt export-ignore
