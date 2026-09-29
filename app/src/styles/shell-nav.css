@@ -1,0 +1,635 @@
+/* ─── Navigator (the contextual second pane) ─────────────────────────────── */
+/* The rail picks the SECTION; this panel shows that section's CONTENTS. One
+   scroll area under one header, so the on-screen item's row is the active row.
+   Contract: COMPONENTS.md §Navigator. */
+.side-nav {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+}
+/* The navigator PLATE — the content surface below the head, inset in the
+   chrome frame's 90° corner. No inset shadow: a raised plate has no shadowed
+   edge. Holds the nav, the recent strip and the quick-jump footer. Its
+   material comes from ONE token (`--plate-bg`) so the opaque and the glass
+   build differ in the token block, not in this rule. */
+.side-plate {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  /* Sheen over sheet: a white diagonal across the top of the glass — the one
+     Apple cue that lands on no edge the chrome contour already draws. It is
+     `background-attachment: fixed`, i.e. positioned against the VIEWPORT, so
+     the rail's active tab can paint the identical field and the two surfaces
+     stay one sheet across the seam (see shell-rail.css). */
+  background-image: linear-gradient(158deg, var(--plate-sheen) 0%, transparent 46%);
+  background-attachment: fixed;
+  background-color: var(--plate-bg);
+  -webkit-backdrop-filter: var(--plate-blur);
+          backdrop-filter: var(--plate-blur);
+  /* A lit INNER top edge at ~30% of --edge-hi. At full strength, and on the
+     left edge, it measured as a second stroke inside the chrome contour — a
+     doubled hairline at a junction that must read as ONE line. Top only, faint. */
+  box-shadow: inset 0 1px 0 var(--plate-top-hi);
+}
+/* Panel header — the navigator's cell in the header band (height, surface, wash
+   and bottom edge come from the shared `.app-topbar, .side-head, .main-header`
+   rule). Names the section (and only that). Not a button. */
+.side-head {
+  /* Chrome-lamp offset: this cell sits --panel-x from the lamp's corner. */
+  --lamp-x: calc(-1 * var(--panel-x));
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 8px 0 var(--side-head-inset);
+  /* It now covers part of the title bar, so it drags the window like the strip
+     beside it; the one interactive child opts back out. */
+  -webkit-app-region: drag;
+}
+.side-head-glyph {
+  display: grid; place-items: center;
+  color: var(--section);
+  flex-shrink: 0;
+}
+.side-head-name {
+  flex: 1; min-width: 0;
+  font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--section);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.side-head-count {
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-mute);
+  flex-shrink: 0;
+}
+.side-head-add {
+  width: 20px; height: 20px; display: grid; place-items: center;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--fg-mute); border-radius: 3px; flex-shrink: 0;
+  /* Opt out of the head's drag region, or the click is swallowed by the
+     window-move gesture. */
+  -webkit-app-region: no-drag;
+}
+.side-head-add:hover { background: var(--bg-3); color: var(--fg); }
+
+.side-scroll { overflow-y: auto; flex: 1; padding: 0 8px 16px; } /* no padding-top: a sticky legend parks at the padding edge */
+.side-scroll::-webkit-scrollbar { width: 8px; }
+.side-scroll::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 4px; }
+
+/* Recent strip (sticky horizontal chips, between scroll and footer) */
+.side-recent {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  background: transparent; /* the panel's well ground carries through */
+  flex-shrink: 0;
+  min-height: 36px;
+}
+.side-recent-label {
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em;
+  color: var(--fg-mute); text-transform: uppercase; /* the group-legend register */
+  flex-shrink: 0;
+}
+.side-recent-track {
+  flex: 1; min-width: 0;
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+.side-recent-track::-webkit-scrollbar { display: none; height: 0; width: 0; }
+.side-recent-chips {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.side-recent-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 4px;
+  background: transparent;
+  border: 0;
+  color: var(--fg-mute);
+  font: inherit; font-size: var(--fs-5); font-family: var(--font-mono);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+.side-recent-chip svg { color: var(--fg-dim); flex-shrink: 0; }
+.side-recent-chip:hover { color: var(--fg); }
+.side-recent-chip:hover svg { color: var(--fg); }
+.side-recent-chip[aria-current="true"] { color: var(--nav-accent); }
+.side-recent-chip[aria-current="true"] svg { color: var(--nav-accent); }
+.side-recent-empty {
+  font-size: var(--fs-3); color: var(--fg-dim); font-family: var(--font-mono);
+}
+
+/* Group header — a REAL full-row button (aria-expanded); the add affordance is
+   a SIBLING so nothing interactive nests. */
+.side-group { margin-top: 12px; }
+.side-group:first-child { margin-top: 6px; } /* 2px + the scroller's former padding-top */
+/* Sticky legend (spec §3.4/§6.4): its opaque background covers rows passing
+   under; the negative inset margin extends that cover across the gutter. */
+.side-group-head {
+  display: flex; align-items: center; gap: 2px;
+  padding: 2px 4px 4px 2px;
+  margin: 0 -2px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  /* The legend REBUILDS the sheet rather than approximating it with one flat
+     colour — the rail tab's move. Bottom to top: opaque chrome ground, lamp,
+     backlight, translucent `--plate-bg` sheet, sheen. The arithmetic lands on
+     what the plate composites to at this y, while the opaque BASE means no row
+     text can read through (translucency leaks: a nested backdrop-filter is
+     inert inside the plate's own — probed at 60%, rows came through crisp).
+     Ground layers are viewport-fixed, so a legend stuck at any scroll offset
+     still matches the plate around it. */
+  background-image:
+    linear-gradient(158deg, var(--plate-sheen) 0%, transparent 46%),
+    linear-gradient(var(--plate-bg), var(--plate-bg)),
+    radial-gradient(320px 480px at var(--panel-x) var(--header-row-1),
+      var(--panel-backlight), transparent 70%),
+    radial-gradient(1000px 560px at 0 0,
+      color-mix(in oklab, var(--section-lifted, var(--section)) 14%, transparent), transparent 70%);
+  background-attachment: fixed, scroll, fixed, fixed;
+  background-color: var(--layer-rail);
+}
+.side-group-toggle {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 4px;
+  background: transparent; border: 0; cursor: pointer;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  user-select: none;
+}
+.side-group-toggle:hover { background: var(--bg-3); }
+.side-group-toggle:hover .t-name { color: var(--fg); }
+.side-group-toggle .chev {
+  display: grid; place-items: center; color: var(--fg-dim);
+  width: 12px; height: 12px;
+}
+.side-group-toggle .chev svg { transition: transform var(--dur-6) ease; }
+.side-group[data-collapsed="true"] .chev svg { transform: rotate(-90deg); }
+.side-group-toggle .t-name {
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: 0.12em;
+  color: var(--fg-mute); text-transform: uppercase;
+}
+.side-group-toggle .t-count {
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim);
+}
+/* Guild legend: the group label INTERRUPTS a hairline rule (the carved-legend
+   register from card footers) — the boundary and its name are one line, at no
+   extra vertical cost. The rule is part of the toggle, so the hover wash spans
+   it too: the whole header row honestly reads as the click target it is. */
+.side-group-toggle::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  margin-left: 8px;
+}
+/* Non-collapsible titled group (SideStatic) — same label styling as a real
+   group's `.t-name`, minus the button/chevron: nothing here ever collapses. */
+.side-group-static .side-group-head { padding-bottom: 2px; }
+.side-group-static-title {
+  flex: 1; display: flex; align-items: center;
+  padding: 3px 4px;
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: 0.12em;
+  color: var(--fg-mute); text-transform: uppercase;
+}
+/* Same carved-legend rule as a collapsible group — a static title is still a
+   group boundary. */
+.side-group-static-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  margin-left: 8px;
+}
+
+.side-group-head .g-icon {
+  width: 18px; height: 18px; display: grid; place-items: center;
+  border-radius: 3px; background: transparent; border: 0; cursor: pointer;
+  color: var(--fg-mute); flex-shrink: 0;
+}
+.side-group-head .g-icon:hover { background: var(--bg-3); color: var(--fg); }
+[data-side-search][aria-expanded="true"] { color: var(--anchor); }
+.side-group-items {
+  display: flex; flex-direction: column; gap: 0;
+}
+/* Shared entrance (also used by the StatusBar sync-report drawer). */
+@keyframes sb-fade-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Plaque — the base engraved surface (spec §6) ────────────────────────
+   Shared by the T2 steady tiles (.side-stat) and the T1 attention rollup
+   (.side-attn). `overflow: visible` (NOT `.stat-card`'s `overflow: hidden`):
+   both carve a legend into the top edge, and that label sits OUTSIDE the box. */
+.side-plaque {
+  background: var(--surface-panel);
+  box-shadow: var(--engrave);
+  border-radius: var(--radius-frame);
+  position: relative;
+  overflow: visible;
+}
+
+/* ─── Glance layer — T1 attention plaque + T2 steady tiles (spec §1, §6.1–6.2).
+   Outside the `nav` landmark and non-scrolling: the "read this" layer survives
+   a long row list. No border — the plaques' engrave rings are the boundaries
+   (Guild doctrine: guild the boundaries, not the surfaces). */
+/* DERIVED top padding: the first plaque's carved legend sits `--legend-rise`
+   above its box, so the box starts that much below `--content-line` for the
+   legend's ink to land ON it. The rail reaches the line from the other side. */
+.side-dash { padding: calc(var(--content-line) + var(--legend-rise)) 8px 0; flex-shrink: 0; }
+
+/* Tiles — engraved plaque, legend carved in the frame (spec §6.1). A tile
+   NEVER changes hue (R3): only its `sub` may carry a tone. No corner ticks —
+   steady content is uncharged (ledger 2c: ornament = state). */
+.side-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  /* No top margin: as the glance layer's first child the tiles are already on
+     the content line. The gap BELOW a plaque is a separate, larger figure. */
+  margin: 0 2px 6px;
+}
+/* Air under a plaque is measured to the TILE LABEL, not the tile box: the label
+   is carved `--legend-rise` above the frame, and at the old 8px it collided with
+   the plaque's bottom stroke (itself 2px outside the box, on the `--engrave`
+   ring). 19px leaves ~11px clear between that stroke and the label's cap. */
+.side-attn + .side-stats { margin-top: 19px; }
+.side-stat {
+  padding: 12px 8px 7px;
+  height: 48px;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.side-stat-label {
+  position: absolute;
+  top: -7px;
+  left: 8px;
+  padding: 0 4px;
+  background: var(--plate-cut);
+  font: var(--fs-1) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+.side-stat-value {
+  display: flex;
+  align-items: center;
+  font: var(--fs-5) / 1.25 var(--font-mono);
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-stat-value .fresh-dot { margin-right: 6px; }
+.side-stat-sub {
+  font: var(--fs-1) / 1.2 var(--font-mono);
+  color: var(--fg-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-stat-sub[data-tone="error"] { color: var(--red); }
+.side-stat-sub[data-tone="warn"]  { color: var(--blue); }
+
+/* Attention plaque — the ONE charged element in the glance layer (spec §6.2).
+   Corner ticks (from `.stat-card::after`, minus its `@property` transition and
+   `overflow: hidden`) are ALWAYS lit in the worst tone: an alarm does not
+   wait for hover. */
+.side-attn {
+  padding: 6px 4px;
+  /* No top margin: the derived `.side-dash` padding puts this on the content
+     line; a margin here would fight that derivation. */
+  margin: 0 2px 0;
+}
+.side-attn::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--tick-c), var(--tick-c)) left top / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left top / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right top / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right top / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left bottom / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left bottom / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right bottom / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right bottom / 1px 7px no-repeat;
+}
+.side-attn[data-worst="error"] { --tick-c: color-mix(in oklab, var(--red) 60%, transparent); }
+.side-attn[data-worst="warn"]  { --tick-c: color-mix(in oklab, var(--blue) 60%, transparent); }
+.side-attn-legend {
+  position: absolute;
+  top: -7px;
+  left: 8px;
+  padding: 0 4px;
+  background: var(--plate-cut);
+  font: var(--fs-1) / 1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+.side-attn[data-worst="error"] .side-attn-legend { color: var(--red); }
+.side-attn[data-worst="warn"]  .side-attn-legend { color: var(--blue); }
+.side-attn-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  line-height: 1.25;
+  font: var(--fs-4) var(--font-sans);
+  color: var(--fg-mid);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+.side-attn-line[data-tone="error"] { color: var(--red); }
+.side-attn-line[data-tone="warn"]  { color: var(--blue); }
+.side-attn-line > .text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Every queue row opens an explanation dialog. */
+button.side-attn-line { cursor: pointer; }
+button.side-attn-line:hover { color: var(--fg-strong); }
+button.side-attn-line:hover svg:last-child { color: var(--anchor-2); }
+.side-attn-more {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 2px 4px;
+  font: var(--fs-3) / 1.25 var(--font-sans);
+  color: var(--fg-mute);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.side-attn-more:hover { color: var(--fg); }
+
+/* ─── Detail block — the lower half of the lit compartment (spec §6.3) ────
+   An expanded row and the block under it are ONE bordered compartment: the row
+   draws the ring's top + sides, this block its sides + bottom, meeting on the
+   row's own bottom edge with no stroke between. The ring encloses the parent
+   row AND its nested rows; a nested row gets none of its own (below). Renders
+   only under the `aria-current` row, so no unpaired half can exist. */
+.side-item-detail {
+  padding: 2px 0 6px;
+  border-radius: 0 0 var(--radius-frame) var(--radius-frame);
+  background: var(--slot-fill);
+  box-shadow: var(--slot-glow);
+  z-index: 1;
+  position: relative;
+}
+.side-item-detail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--slot-ring);
+  border-top: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.side-item.is-nested .side-item-main {
+  padding-left: 24px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: var(--fs-5);
+}
+/* A hover inside the compartment must not lift it out of the lit fill. */
+.side-item.is-nested:hover {
+  background: color-mix(in oklab, var(--bg-3) 60%, transparent);
+}
+.side-detail-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px 2px 24px;
+  font: var(--fs-3) / 1.25 var(--font-mono);
+  color: var(--fg-mute);
+}
+.side-detail-line[data-tone="error"] { color: var(--red); }
+.side-detail-line[data-tone="warn"]  { color: var(--blue); }
+
+/* Filter input — always visible above a long list (no icon-toggle mode).
+   Same recessed register as SearchInput (inputs are wells; focus = charged rim),
+   scaled to the panel. */
+.side-filter {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0 2px 6px;
+  padding: 4px 8px;
+  background: var(--surface-well);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  box-shadow: var(--shadow-well);
+  color: var(--fg-mute);
+  transition: border-color var(--dur-4), box-shadow var(--dur-4);
+}
+.side-filter:focus-within {
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-well), 0 0 16px color-mix(in oklab, var(--anchor) 10%, transparent);
+}
+.side-filter input {
+  flex: 1; min-width: 0;
+  background: transparent; border: 0; outline: 0;
+  font: inherit; font-size: var(--fs-5); color: var(--fg);
+}
+.side-filter input::placeholder { color: var(--fg-dim); }
+.side-filter .clear {
+  width: 14px; height: 14px; display: grid; place-items: center;
+  background: transparent; border: 0; color: var(--fg-dim); cursor: pointer;
+  border-radius: 3px;
+}
+.side-filter .clear:hover { color: var(--fg); background: var(--bg-3); }
+
+.side-empty {
+  padding: 6px 10px;
+  font-size: var(--fs-4); color: var(--fg-dim); font-style: italic;
+}
+
+/* ─── Side row ─────────────────────────────────────────────────────────────
+   A WRAPPER holding two sibling buttons: the nav target and (projects +
+   bundles) the pin. Never nested — nested interactives are invalid HTML and
+   the inner one is unreachable by keyboard. Active = LIT SLOT (brand ring +
+   wash + inner glow), never a left stripe, and no right-hand dot. */
+.side-item {
+  display: flex; align-items: center;
+  border-radius: var(--radius-sm);
+  position: relative;
+  /* Legend height (22px) + 4 — a focused/scrolled-to row never parks under
+     the sticky group legend above it (spec §3.4/§6.4). */
+  scroll-margin-top: 26px;
+}
+.side-item-main {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  color: var(--fg-mid);
+  font-size: var(--fs-6);
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+.side-item:hover { background: var(--bg-3); }
+.side-item:hover .side-item-main { color: var(--fg); }
+/* Focus ring — the row register (`rows-cards.css:23-24`). `outline-offset:
+   -2px` draws the ring INSIDE the box, so a fused active row's default
+   `overflow` never clips it at the panel edge. */
+/* Focus stays DISTINCT from selection now that selection is also a ring: the
+   focus ring is brighter (violet-2), thicker (2px) and drawn 3px in, so a
+   focused active row shows the slot's hairline with a clear gap inside it
+   rather than one fat stroke. */
+.side-item-main:focus-visible,
+.side-attn-line:focus-visible,
+.side-attn-more:focus-visible {
+  outline: 2px solid var(--anchor-2);
+  outline-offset: -3px;
+}
+/* Selection is a GUILD LIT SLOT: the row keeps its place and lights up inside
+   a hairline ring in its own shape — the register the library rows and chips
+   already use (`--slot-*`). It does not bleed across the panel's edge: a
+   selected row is a chosen slot, not a tongue of the page beside it. The ring
+   is a pseudo-element, so nothing shifts by a pixel when a row is chosen. */
+.side-item[data-active="true"] {
+  background: var(--slot-fill);
+  box-shadow: var(--slot-glow);
+  border-radius: var(--radius-frame);
+  z-index: 1;
+}
+.side-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--slot-ring);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.side-item[data-active="true"] .side-item-main { color: var(--fg-strong); }
+/* An EXPANDED row is the TOP HALF of one compartment: the ring's bottom
+   stroke is dropped and the bottom corners squared off, so the ring runs on
+   into `.side-item-detail` below and the two read as one enclosure. Must
+   follow `[data-active]` above (equal specificity; last wins) — expansion
+   only ever applies to the active row. */
+.side-item[data-expanded="true"] {
+  border-radius: var(--radius-frame) var(--radius-frame) 0 0;
+}
+.side-item[data-expanded="true"]::before { border-bottom: 0; }
+/* Rows INSIDE the compartment never get a ring of their own — a ring inside a
+   ring reads as two selections. A nested current row takes the fill and the
+   bright name only. */
+.side-item.is-nested[data-active="true"] {
+  background: var(--slot-fill-soft);
+  box-shadow: none;
+  border-radius: var(--radius-sm);
+}
+.side-item.is-nested[data-active="true"]::before { display: none; }
+/* Leading box — reserved on EVERY row (empty or not) so a glyphless row's label
+   lines up with a glyph row's. */
+.side-item-lead {
+  width: 16px; height: 16px; flex-shrink: 0;
+  display: grid; place-items: center;
+}
+.side-item .glyph {
+  width: 16px; height: 16px; flex-shrink: 0;
+  display: grid; place-items: center;
+  color: var(--fg-mute); font-family: var(--font-mono);
+  /* Bundle emoji are full-saturation marks; hold them down so identity never
+     out-shouts the selected row. */
+  font-size: var(--fs-3); opacity: .8;
+}
+.side-item .name {
+  flex: 1; font-family: var(--font-mono); font-size: var(--fs-6);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.side-item .count {
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-dim);
+  flex-shrink: 0;
+}
+.side-item[data-active="true"] .count { color: var(--nav-accent); }
+.side-item .row-hint {
+  font-family: var(--font-mono); font-size: var(--fs-1);
+  color: var(--fg-dim); flex-shrink: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 84px;
+}
+.side-item .row-hint[data-tone="warn"]     { color: var(--blue); }
+.side-item .row-hint[data-tone="error"]    { color: var(--red); }
+.side-item .row-hint[data-tone="severity"] { color: var(--amber); }
+/* Health dots: filled = settled (green ok / red error), hollow ring = unsettled
+   (stale neutral / never dim). No amber — see Status dots note. */
+.side-item .health { width: 6px; height: 6px; border-radius: 50%; box-sizing: border-box; background: var(--green); flex-shrink: 0; }
+.side-item .health[data-state="stale"] { background: transparent; border: 1.5px solid var(--fg-mute); }
+.side-item .health[data-state="never"] { background: transparent; border: 1.5px solid var(--fg-dim); }
+.side-item .health[data-state="error"] { background: var(--red); }
+/* A source with an upstream update waiting — distinct from settled "ok" and
+   from "error", never amber (amber is provenance/severity only). */
+.side-item .health[data-state="warn"] { background: transparent; border: 1.5px solid var(--blue); }
+
+/* Pin — NEUTRAL, never amber (amber is provenance/severity only). */
+.side-item-pin {
+  width: 18px; height: 18px; margin-right: 4px; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--fg-dim);
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity var(--dur-4), color var(--dur-4), background var(--dur-4);
+}
+.side-item:hover .side-item-pin,
+.side-item-pin:focus-visible,
+.side-item-pin[aria-pressed="true"] { opacity: 1; }
+.side-item-pin[aria-pressed="true"] { color: var(--fg-mid); }
+.side-item-pin:hover { background: var(--bg-3); color: var(--fg); }
+
+/* Unavailable row (a harness this machine has not installed). */
+.side-item[data-dim="true"] .name,
+.side-item[data-dim="true"] .count { color: var(--fg-dim); }
+.side-item[data-dim="true"] .side-item-lead { opacity: .5; }
+
+/* Action row — "go do a thing" (Open sources, Add source, New hook). Quieter
+   than a nav row, same geometry — but never sub-AA: the resting label is --fg,
+   and on the active row it reaches --fg-strong like any other row. */
+.side-item.is-action .side-item-main {
+  color: var(--fg); font-size: var(--fs-5);
+}
+.side-item.is-action .name { font-family: var(--font-sans); }
+.side-item.is-action .side-item-main svg { color: var(--fg-mute); }
+.side-item.is-action:hover .side-item-main,
+.side-item.is-action:hover .side-item-main svg { color: var(--fg-strong); }
+.side-item.is-action[data-active="true"] .side-item-main { color: var(--fg-strong); }
+.side-item.is-action[data-active="true"] .side-item-main svg { color: var(--nav-accent); }
+
+/* "You are here" — the row's destination IS this route, so it is a marker, not
+   a control: no pointer, no hover lift. */
+.side-item.is-here .side-item-main { cursor: default; }
+.side-item.is-here:hover .side-item-main { color: var(--fg-strong); }
+.side-item.is-here:hover .side-item-main svg { color: var(--nav-accent); }
+
+/* Footer Quick-jump */
+.side-foot-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px;
+  margin: 0;
+  background: transparent; /* the panel's well ground carries through */
+  border: 0;
+  border-top: 1px solid var(--border);
+  color: var(--fg-mute);
+  font: inherit; font-size: var(--fs-5); font-family: var(--font-mono);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  flex-shrink: 0;
+}
+.side-foot-btn:hover { background: var(--bg-3); color: var(--fg); }
+.side-foot-btn svg { color: var(--anchor-2); flex-shrink: 0; }
+.side-foot-btn .lbl { flex: 1; letter-spacing: 0.02em; }
+.side-foot-btn .kb { margin-left: auto; }

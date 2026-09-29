@@ -1,0 +1,83 @@
+{
+  "session_id": "aaaaaaaa-1111-4111-8111-111111111111",
+  "records": [
+    {
+      "type": "assistant",
+      "uuid": "a",
+      "timestamp": "2026-09-17T08:00:00Z",
+      "gitBranch": "feature/native-parity",
+      "message": {
+        "id": "m",
+        "model": "claude-sonnet-4",
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "bash",
+            "name": "Bash",
+            "input": {
+              "command": "echo fixture"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "agent",
+            "name": "Agent",
+            "input": {
+              "description": "fixture"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "cost-state",
+      "totalLinesAdded": 12,
+      "totalLinesRemoved": 3,
+      "totalDuration": 60000
+    },
+    {
+      "type": "pr-link",
+      "uuid": "pr",
+      "timestamp": "2026-09-17T08:01:00Z",
+      "prNumber": 42,
+      "prUrl": "https://github.com/example/project/pull/42",
+      "prRepository": "example/project"
+    }
+  ],
+  "native": {
+    "own": {
+      "lines_added": 12,
+      "lines_removed": 3,
+      "duration_ms": 60000,
+      "branch": "feature/native-parity",
+      "tool_calls": 2,
+      "tool_breakdown": [
+        {
+          "name": "Agent",
+          "count": 1
+        },
+        {
+          "name": "Bash",
+          "count": 1
+        }
+      ],
+      "status": "observed",
+      "field_status": {
+        "lines_added": "observed",
+        "lines_removed": "observed",
+        "duration_ms": "observed",
+        "branch": "observed",
+        "tool_calls": "observed",
+        "tool_breakdown": "observed"
+      }
+    }
+  },
+  "latest_pr": {
+    "repository_id": "example/project",
+    "number": 42,
+    "url": "https://github.com/example/project/pull/42",
+    "relationship": "associated",
+    "last_evidenced_at": "2026-09-17T08:01:00Z",
+    "first_seen": "2026-09-17T08:01:00Z"
+  }
+}

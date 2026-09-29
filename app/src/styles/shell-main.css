@@ -1,0 +1,591 @@
+/* ─── Main area ────────────────────────────────────────────────────────── */
+/* Height, surface, section wash and bottom edge come from the shared header-band
+   rule (see §The header band); only the screen header's own box model lives
+   here. */
+.main-header {
+  /* Chrome-lamp offset: this cell sits --main-x from the lamp's corner. */
+  --lamp-x: calc(-1 * var(--main-x));
+  padding: 0 var(--pad-screen-x);
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: nowrap;
+}
+/* ─── Context chrome: the second lamp + the crossing contour ───────────────
+   When the CHROME group and the CONTENT group differ (`data-context-mix` on
+   `.app` — see context-mix.css), the screen header is the ONE place that shows
+   both. `.side-head` and `.app-topbar` stay single-hued: they belong to the
+   chrome region, which is wholly the section the user is in.
+
+   Not a painted stripe — a SECOND LIGHT SOURCE. The chrome lamp is one
+   1000×560 radial at the window's top-left corner; this is the same radial and
+   the same lifted-hue ladder, anchored at the band's top-right corner, but
+   BRIGHTER and WIDER (`--mix-lamp-register` / `--mix-lamp-reach`, tuned in
+   context-mix.css) because the screen header belongs to the content, not to
+   the chrome: matched to the chrome lamp it survived only as a corner tint.
+   The two fields still overlap across the header's first third, so the
+   hand-off is the physics of two lamps on one ground rather than a seam. Both
+   layers sit above the SAME `--bg-0`, so the ground never changes.
+
+   The band's bottom stroke crosses with them: `--chrome-edge` →
+   `--chrome-edge-2` between `--mix-line-start` and `--mix-line-end`, painted
+   through `border-image` on the border the shared band rule already declares,
+   so the box geometry is untouched — no extra background layer, no ::after, no
+   change to where the 1px lands.
+
+   Without the attribute this rule does not apply at all: the header keeps the
+   shared band's `background` and its solid `border-bottom`, byte for byte. */
+.app[data-context-mix="true"] .main-header {
+  --header-wash-2: var(--section-2-lifted, var(--section-2));
+  /* Stated explicitly, not left to the @property initial value: the reveal
+     animates FROM 0, so anything that suppresses animations (the visual
+     harness, reduced motion, a print stylesheet) must land on the mix being
+     fully ON, never fully off. */
+  --mix-strength: 1;
+  /* The far end of the stroke, crossfaded by the reveal: at strength 0 it is
+     the chrome tone (so the animation starts from today's uniform line) and at
+     1 it is the content tone. Declared HERE, not on `.app`, because a custom
+     property resolves its var()s on the declaring element and `--mix-strength`
+     lives on this one. */
+  --edge-far: color-mix(in oklab, var(--chrome-edge-2) calc(100% * var(--mix-strength)), var(--chrome-edge));
+  background:
+    radial-gradient(var(--mix-lamp-reach) 560px at 100% 0,
+      color-mix(in oklab, var(--header-wash-2) calc(var(--mix-lamp-register) * var(--mix-strength)), transparent), transparent 70%),
+    radial-gradient(1000px 560px at var(--lamp-x, 0px) var(--lamp-y, 0px),
+      color-mix(in oklab, var(--header-wash) 14%, transparent), transparent 70%),
+    var(--bg-0);
+  border-image-source: linear-gradient(90deg,
+    var(--chrome-edge) 0%,
+    var(--chrome-edge) var(--mix-line-start),
+    var(--edge-far) var(--mix-line-end),
+    var(--edge-far) 100%);
+  /* slice 1 + zero-width side borders ⇒ only the bottom edge region paints,
+     stretched to the full width; the 1×1 corner regions are 0px wide and are
+     never drawn. */
+  border-image-slice: 1;
+  animation: context-mix-reveal var(--dur-10) ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* `--mix-strength` is already 1 in the rule above, so dropping the animation
+     lands the mix at full strength with no motion. */
+  .app[data-context-mix="true"] .main-header { animation: none; }
+}
+
+.main-header-right {
+  margin-left: auto;
+  display: inline-flex; gap: 8px; align-items: center;
+  flex-shrink: 0;
+}
+/* C1 — the fixed identity column. ALWAYS rendered (an empty spacer when the
+   screen passes no identity), so the title's x-origin is
+   `--pad-screen-x + 52px` on every route. Before this the slot shrink-wrapped
+   whatever it held — an 8px project dot, a 28px section chip, a ~106px labelled
+   back button — swinging the title 24 → ~142px across screens. That was the
+   single largest contributor to the "the header jumps" report. */
+.header-identity {
+  width: 40px; height: 40px; flex: 0 0 40px;
+  display: inline-grid; place-items: center;
+}
+.header-leading {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+/* The return control borrows the header atmosphere, not a selection color. */
+.main-header .btn.back-button { --back-ambient: var(--section); }
+/* BackButton fills the identity slot; section glyphs retain their own size. */
+.main-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+/* C2 — fixed title block: 24 + 2 + 16 = 42px whatever the slots hold, so the
+   h2's optical centre stays put between a bare-title screen and one carrying
+   crumbs (a ~9px vertical hop before this). */
+.main-title h2 {
+  margin: 0; font-size: var(--fs-d-7); font-weight: 600; letter-spacing: -0.01em; color: var(--fg-strong);
+  display: flex; align-items: center; gap: 10px;
+  white-space: nowrap; overflow: hidden;
+  min-width: 0;
+  line-height: 24px; height: 24px;
+}
+/* Identity truncates LAST (D8 collapse ladder): the title spans hold a width
+   floor and shed only after the meta cluster + count have collapsed. */
+.main-title h2 .title-text {
+  overflow: hidden; text-overflow: ellipsis; min-width: 6ch; flex: 1 1 auto;
+}
+.main-title h2 .title-mono {
+  font-family: var(--font-mono); font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; min-width: 6ch; flex: 1 1 auto;
+  letter-spacing: 0;
+}
+
+/* ─── InlineName — an identifier that edits in place (COMPONENTS.md §InlineName) ──
+   At rest it IS the title: same font, same box, a 4px gutter pulled back into
+   the margin so the ink does not move when the rest-state wash paints on
+   hover. The pencil is the state channel (hidden → hover/focus), never a
+   permanent ornament; the field is a Guild recessed well (`--surface-well` +
+   `--shadow-well`, hairline `--border-active` frame, `--radius-frame`) sized
+   to its content in `ch`. */
+.inline-name {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-width: 0; max-width: 100%;
+  height: 24px; margin: 0 -4px; padding: 0 4px;
+  background: none; border: 0; border-radius: var(--radius-frame);
+  font: inherit; letter-spacing: inherit; color: inherit;
+  cursor: text;
+  transition: background var(--dur-4) ease;
+}
+.inline-name .inline-name-text {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.inline-name .inline-name-glyph {
+  flex-shrink: 0; color: var(--fg-dim);
+  opacity: 0; transition: opacity var(--dur-4) ease;
+}
+.inline-name:hover { background: var(--bg-2); }
+.inline-name:hover .inline-name-glyph,
+.inline-name:focus-visible .inline-name-glyph { opacity: 1; }
+.inline-name:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: -2px; }
+.inline-name.is-editing { cursor: default; }
+.inline-name-input {
+  box-sizing: content-box;
+  height: 22px; padding: 0 4px; margin: 0;
+  min-width: 4ch; max-width: 100%;
+  font: inherit; letter-spacing: inherit; color: var(--fg-strong);
+  background: var(--surface-well); box-shadow: var(--shadow-well);
+  border: 1px solid var(--border-active); border-radius: var(--radius-frame);
+  outline: none;
+}
+.inline-name-input[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--red) 55%, var(--border));
+}
+.inline-name-save { flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .inline-name, .inline-name .inline-name-glyph { transition: none; }
+}
+/* C2b — the STATUS cluster (meta + state) is a SIBLING of the title block, not
+   a child of the h2. Inside the h2 the chips rode the 24px title LINE, while
+   the row's `align-items: center` centres the 42px title BLOCK — so the chips
+   sat ~9px above the optical centre of the right-cluster buttons they read as a
+   row with. As a direct flex child of `.main-header` they take the row's own
+   centre line, and `.main-header-right`'s `margin-left: auto` still parks the
+   actions hard right with the standard 12px row gap between them. */
+.main-header .header-status {
+  display: inline-flex; align-items: center; gap: 10px;
+  flex: 0 1 auto; min-width: 0;
+}
+/* Status-cluster chip alignment. The cluster mixes chips of different intrinsic
+   heights (.scope-badge 21px, .tag ~22px, .source-chip ~16px). Each chip
+   inherited the ambient 1.45 leading, so its box grew asymmetrically around its
+   ink and `align-items: center` centred boxes whose ink never agreed.
+   Collapsing the chips to line-height 1 makes box == ink, so one shared centre
+   line lands on all of them.
+   Scoped to the header cluster on purpose — `.tag` is a shared primitive whose
+   1.45 leading is correct in rows/cards. */
+.main-header .header-status .tag,
+.main-header .header-status .source-chip { line-height: 1; }
+/* A stable box so the chips read as one row regardless of glyph/icon content.
+   C5: the header row takes `Tag size="sm"` only — there is no `.tag-md` rule
+   here because a medium tag never belongs on this line. */
+.main-header .header-status .tag-sm { height: 18px; padding-top: 0; padding-bottom: 0; }
+.main-header .header-status .title-meta {
+  display: inline-flex; align-items: center; gap: 10px;
+  flex: 0 1 auto; min-width: 0; overflow: hidden;
+}
+/* The state cluster never SHRINKS (a squeezed badge clips its own text), but it
+   must be allowed to size below its content so its children can shed under the
+   `@container appmain` ladder below. Without `min-width: 0` the flex item
+   floors at max-content and gets guillotined instead of the ladder dropping it
+   cleanly. */
+.main-header .header-status .title-state { display: inline-flex; flex-shrink: 0; min-width: 0; }
+/* C2 — the secondary line is ALWAYS in the DOM and always exactly 16px, empty
+   or not. A screen that has nothing to say here pays a blank line; the whole
+   app pays nothing for its silence. */
+.main-title .crumbs {
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mute);
+  display: flex; gap: 6px; align-items: center;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 16px; line-height: 16px;
+}
+.main-title .crumbs > * { flex-shrink: 0; }
+/* C5: the trailing token is what runs out of room first — a breadcrumb tail
+   ("… / sub-agents / code-reviev") or a subline composed after a crumb trail.
+   Everything here is flex-shrink:0 inside an `overflow: hidden` parent, so it
+   was guillotined mid-word with no ellipsis. Let the LAST token shrink and
+   ellipsize; `.path` keeps its own reverse-ellipsis treatment. */
+.main-title .crumbs > .crumb-subline,
+.main-title .crumbs > span:last-child:not(.path):not(.sep) {
+  flex: 0 1 auto;
+  min-width: 3ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A solo subline is a SENTENCE, not a crumb: sans per COMPONENTS.md §Type
+   (mono is for identifiers), and shrinkable so `.crumbs`'s `overflow: hidden`
+   ellipsizes it instead of guillotining it mid-word. */
+.main-title .crumbs > .header-subline {
+  font-family: var(--font-sans);
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* A crumb wrapper that contains an icon + a shrinkable .path inside.
+   Override the default flex-shrink:0 so the wrapper itself can shrink. */
+.main-title .crumbs > .crumb-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 2ch;
+  flex: 0 1 auto;
+  overflow: hidden;
+}
+.main-title .crumbs > .crumb-path > * { flex-shrink: 0; }
+
+/* Subtle inline shortcut crumb (e.g. open .env with default app) */
+.main-title .crumbs > .crumb-env {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--fs-3);
+  color: var(--fg-dim);
+  background: none; border: none; padding: 0;
+  cursor: pointer;
+  transition: color var(--dur-4) ease;
+}
+.main-title .crumbs > .crumb-env:hover { color: var(--fg-mid); }
+/* Create-affordance variant: nearly invisible until hovered */
+.main-title .crumbs > .crumb-env-add { opacity: 0.55; }
+.main-title .crumbs > .crumb-env-add:hover { opacity: 1; }
+
+/* A crumb that OPENS an editor (the project path → Edit path dialog): the
+   same rest state as its read-only twin, the `.crumb-env` colour lift on
+   hover, and a pencil that appears with it. The full-path tooltip stays. */
+.main-title .crumbs > .crumb-path-edit {
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; letter-spacing: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-frame);
+  transition: color var(--dur-4) ease;
+}
+.main-title .crumbs > .crumb-path-edit:hover { color: var(--fg-mid); }
+.main-title .crumbs > .crumb-path-edit:focus-visible {
+  outline: 2px solid var(--anchor-2); outline-offset: 1px;
+}
+/* The pencil takes the folder glyph's own 11px slot on hover (a crossfade in
+   place), so the crumb's width is identical at rest and hovered — a glyph
+   appended after the path would push the `/` separator over at rest. */
+.main-title .crumbs > .crumb-path-edit .crumb-glyph-swap {
+  position: relative; display: inline-flex; width: 11px; height: 11px;
+}
+.main-title .crumbs > .crumb-path-edit .crumb-glyph-swap > * {
+  position: absolute; inset: 0;
+  transition: opacity var(--dur-4) ease;
+}
+.main-title .crumbs > .crumb-path-edit .crumb-edit-glyph { color: var(--fg-dim); opacity: 0; }
+.main-title .crumbs > .crumb-path-edit:hover .crumb-edit-glyph,
+.main-title .crumbs > .crumb-path-edit:focus-visible .crumb-edit-glyph { opacity: 1; }
+.main-title .crumbs > .crumb-path-edit:hover .crumb-glyph-rest,
+.main-title .crumbs > .crumb-path-edit:focus-visible .crumb-glyph-rest { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .main-title .crumbs > .crumb-path-edit,
+  .main-title .crumbs > .crumb-path-edit .crumb-glyph-swap > * { transition: none; }
+}
+
+/* ─── StatusBadge base (one shape for every status family; never --anchor/--ctx) ── */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap; flex-shrink: 0; font-size: var(--fs-3); line-height: 1.4;
+}
+.status-badge[data-channel="ok"]      { color: var(--green); }
+.status-badge[data-channel="info"]    { color: var(--blue); }
+.status-badge[data-channel="warn"]    { color: var(--amber); }
+.status-badge[data-channel="error"]   { color: var(--red); }
+.status-badge[data-channel="neutral"] { color: var(--fg-mid); }
+.status-badge-label { display: inline-flex; align-items: center; }
+.status-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+/* Shapes carry the sub-distinction within a channel. */
+.status-badge[data-shape="pill"] {
+  padding: 2px 8px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, currentColor 35%, transparent);
+  background: color-mix(in oklab, currentColor 12%, transparent);
+}
+.status-badge[data-shape="ring"] {
+  padding: 2px 8px; border-radius: 999px;
+  border: 1px solid currentColor; background: transparent;
+}
+/* Transitional states signal via motion, not a stolen hue. */
+.status-badge[data-motion="pulse"] .status-badge-dot,
+.status-badge[data-motion="pulse"] { animation: badgePulse 1.6s ease-in-out infinite; }
+@keyframes badgePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@media (prefers-reduced-motion: reduce) {
+  .status-badge[data-motion="pulse"],
+  .status-badge[data-motion="pulse"] .status-badge-dot { animation: none; }
+}
+
+/* Inline state pill preset (UNSAVED / READ-ONLY / ✓ saved) — mono, uppercase,
+   square border; overrides the base pill fill (defined after, equal specificity). */
+.status-badge.state-pill {
+  font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: .1em;
+  padding: 2px 7px; border-radius: 3px; text-transform: uppercase;
+  border: 1px solid color-mix(in oklab, currentColor 40%, transparent);
+  background: transparent;
+}
+.status-badge.state-pill-readonly { border-color: var(--border-strong); }
+.status-badge.state-pill-saved { border-color: transparent; padding-left: 0; }
+
+/* Row 2 — view chips, filters, secondary actions. Always 40px even when empty. */
+.main-subheader {
+  height: var(--header-row-2);
+  padding: 0 var(--pad-screen-x);
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-0);
+  flex-shrink: 0;
+  /* Stays visible so dropdowns (OverflowMenu) in the right cluster escape the
+     40px band; horizontal chip overflow is contained by .main-subheader-left. */
+  overflow: visible;
+}
+.main-subheader-left {
+  display: inline-flex; gap: 8px; align-items: center;
+  flex: 1 1 auto; min-width: 0;
+  overflow-x: auto; overflow-y: visible;
+  scrollbar-width: none;
+  /* Containing block for a parked-off-flow measurement twin (Library's
+     `.library-facets[data-collapsed]`) — the twin absolute-positions against
+     this box while it measures its natural width, never painting. */
+  position: relative;
+}
+.main-subheader-left::-webkit-scrollbar { display: none; }
+/* C5/C11: below --bp-toolbar the row-2 controls stop fitting on one line — the
+   Sources status chips slid under the SORT cluster from ~1024 down and the
+   Snippets TAG chips were sliced at 520, both behind an invisible horizontal
+   scroll. Here the band GROWS to a second line instead: `min-height` keeps it
+   exactly one --header-row-2 band while everything still fits, so the one-line
+   contract above is unchanged at the widths where it holds. */
+@container appmain (max-width: 780px) {
+  .main-subheader {
+    height: auto;
+    min-height: var(--header-row-2);
+    padding-block: 4px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .main-subheader-left { flex-wrap: wrap; row-gap: 6px; }
+  /* W2: a chip GROUP is ONE flex item, so a track wider than the line could not
+     wrap — the Snippets TAG track ran past the row and was sliced mid-label
+     ("quali") behind an invisible horizontal scroll. The band already GROWS at
+     these widths, so let the track grow with it: the group gives ground and its
+     chips wrap onto a second line instead of hiding behind a clip. Short
+     segmented tracks (ALL/SKILL/MCP) always fit, so this is a no-op for them.
+     `overflow-x` stays as a backstop for a single chip wider than the row. */
+  .main-subheader-left > .subheader-group { flex-shrink: 1; min-width: 0; }
+  .main-subheader-left > .subheader-group > .chips {
+    min-width: 0; flex-shrink: 1;
+    flex-wrap: wrap; row-gap: 2px;
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .main-subheader-left > .subheader-group > .chips::-webkit-scrollbar { display: none; }
+}
+.main-subheader-right { margin-left: auto; flex-shrink: 0; display: inline-flex; gap: 6px; align-items: center; }
+
+/* Labelled control cluster in row 2 — consecutive groups auto-separate. */
+.subheader-group {
+  display: inline-flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.subheader-group + .subheader-group {
+  position: relative;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+  margin-left: 2px;
+}
+.subheader-group-label {
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em;
+  color: var(--fg-dim); text-transform: uppercase; white-space: nowrap;
+}
+/* In-header search input — collapses to icon-only at narrow widths via @container */
+.main-header .search-input { min-width: 280px; max-width: 380px; flex-shrink: 1; }
+.main-header .search-input input { min-width: 0; }
+
+.main-title .crumbs .path {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+/* has-tip variant: the wrapper stays visible so the overlay escapes; the inner
+   .path-text owns the truncation. */
+.main-title .crumbs .path.has-tip {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: visible;
+  cursor: default;
+}
+.main-title .crumbs .path-text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+.main-title .crumbs .path-tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: var(--z-tooltip);
+  direction: ltr;
+  white-space: nowrap;
+  padding: 5px 9px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-tip);
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
+  transition: opacity var(--dur-4), transform var(--dur-4);
+}
+.main-title .crumbs .path.has-tip:hover .path-tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .main-title .crumbs .path-tip { transition: none; }
+}
+.main-title .crumbs span.sep, .main-title .crumbs .sep { color: var(--fg-dim); }
+
+/* ─── Header leading-glyph helpers ─────────────────────────────────────────
+   Used by Project / Editor / Bundle / Permissions / Agent Docs in the
+   <leading> slot of <ScreenHeader>. Sized to align with the h2 baseline. */
+.project-dot {
+  width: 8px; height: 8px;
+  background: var(--anchor-2);
+  border-radius: 2px;
+  display: inline-block;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--anchor) 20%, transparent);
+}
+/* Section-icon slot chip (ScreenHeader `icon` prop): the screen's section
+   glyph in a section-tinted box with its live point always lit — the header
+   is the "you are here" surface, mirroring the rail's active glint.
+   The wash is 18% (up from 14%) so the chip still separates from the C6
+   section gradient now tinting the top edge behind it. */
+.header-glyph {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: inline-grid; place-items: center;
+  background: color-mix(in oklab, var(--section) 18%, transparent);
+  color: var(--fg-mid);
+  flex-shrink: 0;
+}
+
+/* ─── Container-query adaptivity (driven by the .app-main width, NOT the
+       viewport — so toggling the rail/sidebar reflows headers immediately) ──
+ *
+ * NAMED BREAKPOINT SCALE (D7/D8). CSS @container/@media conditions cannot
+ * interpolate var(), so these are documented *named constants*, not custom
+ * properties. Author new responsive rules against one of these values and
+ * reference the name in a comment (also codified in COMPONENTS.md §Responsive):
+ *
+ *   --bp-micro   360   single-column, icon-only chrome
+ *   --bp-tight   420   drop secondary meta, mono titles cap width
+ *   --bp-stack   480   two-column → stacked; grids collapse to 1col
+ *   --bp-compact 560   meta-grid → 1col; counts collapse
+ *   --bp-nav     680   header search collapses to an icon (container); editor
+ *                      split view no longer offered (pane width); low-signal
+ *                      StatusBar segments drop (viewport @media)
+ *   --bp-toolbar 780   header row 2 wraps: its control clusters (search +
+ *                      filter groups + sort) stop sharing one line
+ *   --bp-drawer  820   VIEWPORT width (App.tsx matchMedia → data-narrow): the
+ *                      navigator leaves the grid and becomes an off-canvas drawer
+ *
+ * COLLAPSE-LADDER CONVENTION (identity drops last): each responsive surface
+ * sheds elements in this order as width shrinks —
+ *   actions → counts/timestamps → meta chips → description → IDENTITY (name/
+ *   title) never, until the surface itself stacks.
+ */
+@container appmain (max-width: 360px) {
+  /* Last-resort: only fully hide crumbs at sub-tablet widths. Above this we
+     let individual crumb tokens (esp. .path) truncate via ellipsis instead. */
+  .main-title .crumbs { display: none; }
+}
+@container appmain (max-width: 520px) {
+  /* "description" rung of the collapse ladder: a one-line prose subline is the
+     first thing to go once the header row is tight — an ellipsized fragment of
+     a sentence informs nobody, and the title + state + primary must not shrink
+     to keep it. */
+  .main-title .crumbs > .header-subline { display: none; }
+}
+/* State pill (READ-ONLY / DROPPED UPSTREAM / …) collapses to its icon below
+   640px: the label previously had nowhere to go once `.header-status` was
+   squeezed by the header-right button cluster and ran text UNDER the primary
+   icon button instead of shrinking cleanly. `.title-state` never shrinks
+   (see above), so the fix sheds the label text itself; the full word survives
+   as the badge's own `title` tooltip (StatePill/inline StatusBadge usages set
+   one). Not one of the named breakpoints above — 640 is this rule's own. */
+@container appmain (max-width: 640px) {
+  .main-header .header-status .title-state .status-badge-label { display: none; }
+  .main-header .header-status .title-state .status-badge[data-shape="pill"] {
+    padding-inline: 6px;
+  }
+}
+@container appmain (max-width: 680px) {
+  .main-header .search-input {
+    min-width: 36px; max-width: 36px;
+    padding: 7px 9px; gap: 0;
+  }
+  .main-header .search-input input,
+  .main-header .search-input .slash { display: none; }
+  .main-header .search-input:focus-within {
+    min-width: 240px; max-width: 280px;
+    gap: 8px;
+  }
+  .main-header .search-input:focus-within input { display: block; }
+}
+@container appmain (max-width: 560px) {
+  /* --bp-compact: ladder step 1 — the line/char count sheds first.
+     (The back button has no label to shed at any width — C1 made it
+     icon-only, so it is already at its narrow-width size.) */
+    /* B4a-05: kind-chip counts (ALL 12 / SKILL 7 …) shed before they clip mid-
+     number against the neighbouring control — show just the label. */
+  .main-subheader-left .chips .chip .count { display: none; }
+  /* The title-row STATE cluster sheds in the same order as everything else:
+     ambient/transient first. "a global sync is running" is ambient — the
+     StatusBar already carries it app-wide — so it is the first state chip to
+     go, before the per-remote health verdict. */
+  .main-header .header-status .title-state .remote-syncing-chip { display: none; }
+}
+@container appmain (max-width: 480px) {
+  /* --bp-stack: ladder step 2 — meta chips shed before the identity title. */
+  .main-header-right .btn-primary .btn-label,
+  .main-header-right .btn .btn-label { display: none; }
+  .main-header-right .btn-primary,
+  .main-header-right .btn { padding: 8px 9px; }
+  .main-header-right .kbd-inline,
+  .main-header-right .kbd { display: none; }
+  .main-header .header-status .title-meta { display: none; }
+  /* Ladder step 2 for the health chip: drop the WORD, keep the tone dot. The
+     verdict still reads (green/red/neutral) and the chip's `title` spells it
+     out on hover — that is strictly more information than an ellipsized
+     "unreach…" clipped by the 24px title row. */
+  .main-header .header-status .title-state .remote-health-chip .remote-health-label { display: none; }
+  .main-header .header-status .title-state .remote-health-chip { gap: 0; padding: 2px 6px; }
+}
+@container appmain (max-width: 420px) {
+  .main-header { gap: 6px; padding: 0 14px; }
+  .main-subheader { padding: 0 14px; gap: 6px; }
+  .main-title h2 .title-mono,
+  .main-title h2 .title-text { max-width: 12em; }
+}
+
+.main-body { flex: 1; overflow: auto; padding: 0; position: relative; }
+.screen-pad { padding: var(--pad-screen-y) var(--pad-screen-x); }
+

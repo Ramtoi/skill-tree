@@ -1,0 +1,508 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_skill_refs.py"},
+    {"side": "python", "path": "tests/test_rename_cascade.py"},
+    {"side": "typescript", "path": "app/src/test/skillRefs.test.ts"},
+    {"side": "typescript", "path": "app/src/test/skillRefsPreview.test.tsx"}
+  ],
+  "cases": [
+    {
+      "name": "backtick-hit",
+      "text": "See `deliver-it` for details.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "backtick",
+          "offset": 4,
+          "length": 12
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "slash-hit",
+      "text": "See /deliver-it for details.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 4,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "both-forms-same-name",
+      "text": "See `deliver-it` and also /deliver-it in prose.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "backtick",
+          "offset": 4,
+          "length": 12
+        },
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 26,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 2
+      },
+      "preview_hits": 2
+    },
+    {
+      "name": "self-reference-excluded",
+      "text": "This skill is `deliver-it`, also written /deliver-it.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": "deliver-it",
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "frontmatter-only-mention",
+      "text": "---\nname: x\ndescription: see `deliver-it`\n---\n\nBody text with nothing.\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "unterminated-fence-counts-frontmatter",
+      "text": "---\nname: x\nSee `deliver-it` here.\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "backtick",
+          "offset": 16,
+          "length": 12
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "empty-frontmatter-is-body",
+      "text": "---\n---\nbody with /deliver-it\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 18,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "path-like-reference-excluded",
+      "text": "See references/plan-file.md for the layout.",
+      "names": [
+        "plan-file"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "slash-dot-extension-excluded",
+      "text": "Open /plan.md to read it.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "slash-trailing-slash-excluded",
+      "text": "Run /deliver-it/ from the shell.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "dot-slash-path-excluded",
+      "text": "Read ./plan for context.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "dotdot-path-excluded",
+      "text": "Read ../plan for context.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "tilde-path-excluded",
+      "text": "Read ~/plan for context.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "md-link-target-excluded",
+      "text": "See [x](/plan) for the details.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "parenthesised-prose-included",
+      "text": "As noted (see /plan) earlier.",
+      "names": [
+        "plan"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "plan",
+          "form": "slash",
+          "offset": 14,
+          "length": 5
+        }
+      ],
+      "counts": {
+        "plan": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "slash-sentence-end-included",
+      "text": "For more, see /deliver-it.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 14,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "fenced-code-block-included",
+      "text": "Some prose.\n\n```\nhub enable /deliver-it --project p\n```\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 28,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 0
+    },
+    {
+      "name": "inline-code-command-span",
+      "text": "Try `run /deliver-it` from the shell.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 9,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 0
+    },
+    {
+      "name": "backtick-with-leading-slash",
+      "text": "Try `/deliver-it` from the shell.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 4,
+          "length": 13
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 0
+    },
+    {
+      "name": "ignore-list-drops-target",
+      "text": "See `deliver-it` and /deliver-it here.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [
+        "deliver-it"
+      ],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "unknown-name-ignored",
+      "text": "See `unknown-skill` and /unknown-skill here.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "crlf-text",
+      "text": "Line one.\r\nSee /deliver-it here.\r\nLine three.\r\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 15,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "bom-prefix",
+      "text": "\ufeff---\nname: x\n---\n\nSee /deliver-it here.\n",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 22,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 1
+    },
+    {
+      "name": "non-skill-backtick",
+      "text": "Inject a `ViewModel` instance.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "case-sensitive-no-hit",
+      "text": "See `Deliver-It` and /Deliver-It here.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "stray-backtick-shifts-pairing",
+      "text": "use ` alone; see `deliver-it`",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [],
+      "counts": {},
+      "preview_hits": 0
+    },
+    {
+      "name": "markup-prefix-allowed",
+      "text": "**bold**/deliver-it and `x`/deliver-it too.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 8,
+          "length": 11
+        },
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 27,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 2
+      },
+      "preview_hits": 2
+    },
+    {
+      "name": "exotic-whitespace-span-is-single-token",
+      "text": "Try `/deliver-it ` from the shell.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 4,
+          "length": 14
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 0
+    },
+    {
+      "name": "ascii-space-span-is-multi-word",
+      "text": "Try `a\t/deliver-it` from the shell.",
+      "names": [
+        "deliver-it"
+      ],
+      "self": null,
+      "ignore": [],
+      "expect": [
+        {
+          "name": "deliver-it",
+          "form": "slash",
+          "offset": 7,
+          "length": 11
+        }
+      ],
+      "counts": {
+        "deliver-it": 1
+      },
+      "preview_hits": 0
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+version: "1"
+harnesses_global:
+  - claude-code
+  - codex
+skills:
+  brainstorm:
+    version: 1.0.0
+    description: Synthetic skill for Usage capture
+    source: /tmp/skill-hub-wave3-fixture/skills/brainstorm
+    type: claude-skill
+    scope: portable
+  verify-it:
+    version: 1.0.0
+    description: Synthetic verification skill for Usage capture
+    source: /tmp/skill-hub-wave3-fixture/skills/verify-it
+    type: claude-skill
+    scope: portable
+mcps:
+  touchpoint:
+    command: touchpoint-mcp
+projects:
+  alpha:
+    path: /tmp/skill-hub-wave3-fixture/alpha
+    enabled:
+      - brainstorm
+      - verify-it
+    bundles: []
+    harnesses: []
+    analytics:
+      verify_prefixes:
+        - python3 -m pytest
+        - npm run test:bundle
+bundles: {}

@@ -1,0 +1,159 @@
+/* ─── Library — bundle mode ─────────────────────────────────────────────── */
+/* Selecting a bundle in the Library turns the header band into an editable
+   bundle header; the list underneath stays the plain library, filtered to
+   the bundle's members. See COMPONENTS.md §Library bundle mode. */
+
+/* The identity chip (row 1, `leading`): same 28px/radius geometry as
+   `.header-glyph` (the section-icon chip), but the wash is the bundle's own
+   identity colour instead of the section hue — an identity accent, not a
+   status one (R5). Hidden automatically whenever `ScreenHeader` derives an
+   in-place back arrow instead (back beats leading). */
+.header-bundle-glyph {
+  width: 28px; height: 28px; border-radius: var(--radius-frame);
+  display: inline-grid; place-items: center;
+  background: color-mix(in oklab, var(--bundle-accent, var(--fg-mute)) 18%, transparent);
+  border: 0; padding: 0; cursor: pointer;
+  font-size: var(--fs-7);
+  flex-shrink: 0;
+}
+.header-bundle-glyph:hover {
+  background: color-mix(in oklab, var(--bundle-accent, var(--fg-mute)) 26%, transparent);
+}
+.header-bundle-glyph:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--anchor) 55%, transparent);
+}
+
+/* The one clickable crumb token — the referrer's own first crumb, always
+   targeting `back.path` so the crumb trail and the derived back arrow can
+   never name a different parent (COMPONENTS.md §Screen header). Plain mono
+   crumb typography at rest; only the hover/focus state marks it as a control. */
+.crumb-link {
+  font: inherit; color: inherit;
+  background: none; border: 0; padding: 0; margin: 0;
+  cursor: pointer;
+}
+.crumb-link:hover, .crumb-link:focus-visible { color: var(--anchor-2); text-decoration: underline; }
+.crumb-link:focus-visible { outline: none; }
+
+/* Row 2, left cluster: the description input + classification filter.
+   The Applied-to control lives in ScreenHeader's row-1 action cluster beside
+   Add skills, so the bundle's key actions stay visible above the list. */
+.library-bundle-band {
+  display: flex; align-items: center; gap: 10px;
+  flex: 1 1 auto; min-width: 0;
+}
+
+/* Match the compact Library filter's wrap behavior. The editable description
+   must shrink before its intrinsic width pushes the entire band to a new row. */
+.main-subheader-left:has(.library-bundle-band) { flex-basis: 120px; }
+
+/* Borderless at rest so it reads as prose until you reach for it; a hairline
+   on hover/focus is the only tell that it's a control (good-ux: state must
+   be visible). Never taller than the 28px row. */
+.bundle-desc-input {
+  flex: 1 1 auto; min-width: 0;
+  height: 26px; padding: 0 6px;
+  font: var(--fs-6) var(--font-sans);
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid transparent; border-radius: var(--radius-frame);
+  text-overflow: ellipsis;
+}
+.bundle-desc-input::placeholder { color: var(--fg-dim); }
+.bundle-desc-input:hover { border-color: var(--border); }
+.bundle-desc-input:focus-visible, .bundle-desc-input:focus {
+  border-color: var(--anchor); outline: none;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--anchor) 35%, transparent);
+}
+
+/* A plain inline-flex wrapper so a `Popover` can anchor to a `Button`
+   (which forwards no ref of its own) without a detached measurement box —
+   the span hugs the button's own rendered rect exactly. */
+.popover-anchor-inline { display: inline-flex; }
+
+/* The picker footer is the bridge from choosing an existing member to making
+   one. It stays a quiet full-width button so the picker rows remain primary. */
+.bundle-create-skill {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* A header meta `Tag` reading as a plain sentence fragment ("3 skills",
+   "auto-applied everywhere", "global") rather than a label — `Tag` uppercases
+   by default (COMPONENTS.md §Tag), so these opt back out. */
+.tag-sentence { text-transform: none; }
+
+/* The linked-bundle "Follows <source>" tag's source-colour dot. Geometry is
+   fixed; only the colour is per-source, carried in via the `--dot-color`
+   custom property (same pattern as `.header-bundle-glyph`'s `--bundle-accent`). */
+.bundle-source-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--dot-color, var(--fg-mute));
+  flex-shrink: 0;
+}
+/* Playbook sections retain the library's flat Guild row material. */
+.bundle-playbook { min-width: 0; }
+.playbook-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px var(--pad-screen-x); font-size: var(--fs-3); }
+.playbook-section { min-width: 0; padding-bottom: 8px; }
+.playbook-section-heading { display: flex; align-items: center; gap: 10px; padding: 14px var(--pad-screen-x) 4px; min-width: 0; }
+.playbook-section-heading .inline-name { min-width: 0; }
+.playbook-section-title { font-size: var(--fs-5); color: var(--fg-mute); }
+.playbook-guidance { display: block; width: calc(100% - 2 * var(--pad-screen-x)); margin: 0 var(--pad-screen-x) 8px; padding: 4px 0; background: transparent; color: var(--fg-mute); border: 0; border-bottom: 1px solid transparent; font: inherit; font-size: var(--fs-4); }
+.playbook-guidance:hover { border-color: var(--border); }
+.playbook-guidance:focus-visible { outline: none; border-color: var(--anchor); }
+.playbook-skill { position: relative; min-width: 0; }
+.bundle-playbook[data-dragging] { user-select: none; }
+.bundle-playbook[data-dragging] .resource-row, .bundle-playbook[data-dragging] .playbook-section-heading { cursor: grabbing; }
+.playbook-skill[data-moving] .resource-row, .playbook-section-heading[data-moving] { outline: 1px solid var(--anchor); outline-offset: -1px; background: var(--surface-well); opacity: 0.65; }
+.playbook-skill > .lib-nav-row { min-width: 0; }
+.playbook-section-actions { display: flex; margin-left: auto; opacity: 0; }
+.playbook-section-heading:hover .playbook-section-actions, .playbook-section-heading:focus-within .playbook-section-actions, .playbook-section-actions[data-open] { opacity: 1; }
+.playbook-move-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface-well); border: 1px solid var(--border); border-radius: var(--radius-frame); }
+.playbook-move-controls > span { overflow-wrap: anywhere; font-size: var(--fs-4); }
+.playbook-drop-end { min-height: 8px; margin: 0 var(--pad-screen-x); color: var(--fg-dim); font-size: var(--fs-4); }
+.playbook-drop-end:not(:empty) { padding: 12px; border: 1px dashed var(--border); border-radius: var(--radius-frame); }
+.playbook-skill[data-drop-before]::before, .playbook-drop-end[data-active]::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--anchor); }
+.playbook-drop-end[data-active] { position: relative; background: var(--surface-well); }
+.playbook-section[data-drop-section] { outline: 1px solid var(--anchor); outline-offset: -1px; }
+@container appmain (max-width: 600px) {
+  .playbook-toolbar { align-items: flex-start; }
+  .playbook-section-heading { flex-wrap: wrap; }
+  .playbook-section-actions { opacity: 1; }
+}
+
+.playbook-empty { display: flex; gap: 8px; flex-wrap: wrap; padding: 8px var(--pad-screen-x); font-size: var(--fs-4); color: var(--fg-mute); }
+
+/* The bundle description belongs to the screen, not a second dark header. */
+.main-subheader:has(.library-bundle-band) { background: transparent; height: auto; min-height: var(--header-row-2); padding: 8px var(--pad-screen-x); }
+.main-subheader-left:has(.library-bundle-band) { background: none; overflow: visible; }
+.library-bundle-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; width: 100%; }
+.library-bundle-band .bundle-desc-input { width: 100%; padding-inline: 0; }
+@container appmain (max-width: 600px) {
+  .library-bundle-band { grid-template-columns: minmax(0, 1fr) auto; }
+  .library-bundle-band .bundle-desc-input { grid-column: 1 / -1; }
+  .library-bundle-band > :last-child { justify-self: end; }
+}
+.playbook-skill .resource-row, .playbook-section-heading { cursor: grab; }
+.playbook-skill :is(button, a, [role="combobox"]), .playbook-section-heading :is(button, a) { cursor: pointer; }
+.playbook-skill :is(input, textarea), .playbook-guidance { cursor: text; }
+.playbook-skill .resource-detail { cursor: auto; }
+.bundle-playbook[data-dragging] .resource-row, .bundle-playbook[data-dragging] .playbook-section-heading { cursor: grabbing; }
+
+.playbook-skill button:disabled, .playbook-section-heading button:disabled { cursor: default; pointer-events: auto; }
+
+/* Section deletion replaces the heading actions in place. */
+.playbook-section-action-state { display: flex; align-items: center; gap: 2px; animation: playbook-confirm-in var(--dur-2) ease-out; }
+.playbook-delete-confirm { flex-wrap: wrap; gap: 8px; }
+.playbook-delete-copy { font-size: var(--fs-4); color: var(--fg); }
+.playbook-delete-copy > span { color: var(--fg-mute); }
+.playbook-section-actions:has(.playbook-delete-confirm) { min-width: 0; }
+@keyframes playbook-confirm-in { from { opacity: 0; transform: translateX(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .playbook-section-action-state { animation-name: playbook-confirm-fade; }
+}
+@keyframes playbook-confirm-fade { from { opacity: 0; } to { opacity: 1; } }
+@container appmain (max-width: 600px) {
+  .playbook-section-actions:has(.playbook-delete-confirm) { flex-basis: 100%; margin-left: 0; }
+  .playbook-delete-copy { flex-basis: 100%; }
+}

@@ -1,0 +1,13 @@
+.feedback-dialog .field textarea { resize: vertical; min-height: 100px; max-height: 35vh; }
+.feedback-intro { color: var(--fg); margin: 0 0 14px; }
+.feedback-privacy { color: var(--fg-mid); margin: 14px 0 8px; font-size: var(--fs-5); }
+.feedback-context { color: var(--fg-mid); font-size: var(--fs-5); }
+.feedback-context summary { cursor: pointer; width: fit-content; }
+.feedback-context dl { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.feedback-context dd { margin: 0; font-family: var(--font-mono); overflow-wrap: anywhere; }
+.feedback-provider { color: var(--fg-mute); font-size: var(--fs-3); line-height: 1.5; margin: 14px 0 0; }
+.feedback-error { color: var(--red); }
+.feedback-gate { position: fixed; right: 20px; bottom: 16px; color: var(--fg-mid); background: var(--surface-panel); border: 1px solid var(--border); border-radius: var(--radius-frame); padding: 6px 10px; cursor: pointer; }
+@media (max-width: 820px) {
+  .app-status > .status-spacer + .status-segment { display: none; }
+}

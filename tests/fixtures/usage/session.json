@@ -1,0 +1,166 @@
+{
+  "ok": true,
+  "session_id": "cccccccc-4444-4444-8444-444444444444",
+  "harness": "claude-code",
+  "project": "kinds",
+  "window": null,
+  "last_scan_at": "2026-09-07T12:00:00.000Z",
+  "transcript_present": true,
+  "summary": {
+    "tokens_total": 1001,
+    "cache_hit_ratio": 0.6622516556291391,
+    "steering_count": 1,
+    "duration_minutes": 2,
+    "activity": {
+      "delegate": 1,
+      "edit": 0,
+      "external": 0,
+      "operate": 1,
+      "read": 0,
+      "skill": 1,
+      "verify": 0
+    },
+    "thinking_text_share": 0.0,
+    "subagent_token_share": 0.0,
+    "loadout_assumed": true
+  },
+  "intent_excerpt": "Please help me ship this.",
+  "events": [
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-05T09:00:00.000Z",
+      "edited_without_verify": false,
+      "excerpt": "Please help me ship this.",
+      "invoker": "you",
+      "kind": "human_turn",
+      "model": null,
+      "name": null,
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 1,
+        "verify": 0
+      },
+      "at": "2026-09-05T09:00:05.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "skill",
+      "model": null,
+      "name": "brainstorm",
+      "output_text_len": 6,
+      "thinking_len": 0,
+      "token_delta": 380,
+      "tokens": {
+        "cache_creation": 300,
+        "cache_read": 600,
+        "input": 2,
+        "output": 80
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-05T09:01:00.000Z",
+      "edited_without_verify": false,
+      "excerpt": "<command-name>brainstorm</command-name><command-message>Brainstorm</command-message><command-args></command-args>",
+      "invoker": "you",
+      "kind": "slash_command",
+      "model": null,
+      "name": "brainstorm",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 1,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-05T09:01:30.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "script",
+      "kind": "script",
+      "model": null,
+      "name": "unslop",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 10,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 2,
+        "output": 10
+      }
+    },
+    {
+      "activity": {
+        "delegate": 1,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-05T09:02:05.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "subagent",
+      "model": "claude-opus-5",
+      "name": "orch-planner",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 5,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 2,
+        "output": 5
+      }
+    }
+  ],
+  "subagents": []
+}

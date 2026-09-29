@@ -1,0 +1,722 @@
+{
+  "evidence": {
+    "notices": [],
+    "status": "complete"
+  },
+  "ok": true,
+  "schema_version": 1,
+  "sessions": [
+    {
+      "additional_pr_count": 0,
+      "agents": [
+        {
+          "additional_pr_count": 0,
+          "latest_pr": null,
+          "native": {
+            "children": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "unavailable",
+                "tool_calls": "unavailable"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "unavailable",
+              "tool_breakdown": [],
+              "tool_calls": null
+            },
+            "own": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 1,
+                  "name": "Read"
+                }
+              ],
+              "tool_calls": 1
+            },
+            "subtree": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 1,
+                  "name": "Read"
+                }
+              ],
+              "tool_calls": 1
+            }
+          },
+          "prs": [],
+          "run_id": "identity:ae16e125fc236c0edde1e019a1a7bc24",
+          "scopes": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": null,
+                "first_at": null,
+                "last_at": null,
+                "status": "unavailable"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 0,
+                "first_at": "2026-09-17T08:00:30.000Z",
+                "last_at": "2026-09-17T08:00:30.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 700,
+                "output": 10,
+                "status": "available",
+                "total": 710
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 0,
+                "first_at": "2026-09-17T08:00:30.000Z",
+                "last_at": "2026-09-17T08:00:30.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 700,
+                "output": 10,
+                "status": "available",
+                "total": 710
+              }
+            }
+          },
+          "session_id": "bbbbbbbb-2222-4222-8222-222222222222",
+          "status": "available"
+        }
+      ],
+      "harness": "claude-code",
+      "latest_pr": null,
+      "native": {
+        "children": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [
+            {
+              "count": 1,
+              "name": "Read"
+            }
+          ],
+          "tool_calls": 1
+        },
+        "own": {
+          "branch": "feature/usage-wave3",
+          "duration_ms": null,
+          "field_status": {
+            "branch": "observed",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [
+            {
+              "count": 2,
+              "name": "Bash"
+            },
+            {
+              "count": 1,
+              "name": "Agent"
+            },
+            {
+              "count": 1,
+              "name": "Skill"
+            },
+            {
+              "count": 1,
+              "name": "mcp__touchpoint__list_goals"
+            }
+          ],
+          "tool_calls": 5
+        },
+        "subtree": {
+          "branch": "feature/usage-wave3",
+          "duration_ms": null,
+          "field_status": {
+            "branch": "partial",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "partial",
+          "tool_breakdown": [
+            {
+              "count": 2,
+              "name": "Bash"
+            },
+            {
+              "count": 1,
+              "name": "Agent"
+            },
+            {
+              "count": 1,
+              "name": "Read"
+            },
+            {
+              "count": 1,
+              "name": "Skill"
+            },
+            {
+              "count": 1,
+              "name": "mcp__touchpoint__list_goals"
+            }
+          ],
+          "tool_calls": 6
+        }
+      },
+      "pinned": false,
+      "prs": [],
+      "root_session_id": "aaaaaaaa-1111-4111-8111-111111111111",
+      "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:00:30.000Z",
+            "last_at": "2026-09-17T08:00:30.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 700,
+            "output": 10,
+            "status": "available",
+            "total": 710
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 60000,
+            "first_at": "2026-09-17T08:00:00.000Z",
+            "last_at": "2026-09-17T08:05:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 100,
+            "output": 10,
+            "status": "available",
+            "total": 110
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 60000,
+            "first_at": "2026-09-17T08:00:00.000Z",
+            "last_at": "2026-09-17T08:05:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 800,
+            "output": 20,
+            "status": "available",
+            "total": 820
+          }
+        }
+      },
+      "session_id": "aaaaaaaa-1111-4111-8111-111111111111",
+      "status": "available"
+    },
+    {
+      "additional_pr_count": 0,
+      "agents": [
+        {
+          "additional_pr_count": 0,
+          "latest_pr": null,
+          "native": {
+            "children": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "unavailable",
+                "tool_calls": "unavailable"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "unavailable",
+              "tool_breakdown": [],
+              "tool_calls": null
+            },
+            "own": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [],
+              "tool_calls": 0
+            },
+            "subtree": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [],
+              "tool_calls": 0
+            }
+          },
+          "prs": [],
+          "run_id": "68371516ce5ad43670e47fbaf0caf1c65b85aefdd0f8d4587a81f477689d1669",
+          "scopes": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": null,
+                "first_at": null,
+                "last_at": null,
+                "status": "unavailable"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 0,
+                "first_at": "2026-09-17T08:11:03.000Z",
+                "last_at": "2026-09-17T08:11:03.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 70,
+                "output": 7,
+                "status": "available",
+                "total": 77
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "unpriced",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 0,
+                "first_at": "2026-09-17T08:11:03.000Z",
+                "last_at": "2026-09-17T08:11:03.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 70,
+                "output": 7,
+                "status": "available",
+                "total": 77
+              }
+            }
+          },
+          "session_id": "dddddddd-4444-4444-8444-444444444444",
+          "status": "available"
+        }
+      ],
+      "harness": "codex",
+      "latest_pr": null,
+      "native": {
+        "children": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [],
+          "tool_calls": 0
+        },
+        "own": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [],
+          "tool_calls": 0
+        },
+        "subtree": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [],
+          "tool_calls": 0
+        }
+      },
+      "pinned": false,
+      "prs": [],
+      "root_session_id": "cccccccc-3333-4333-8333-333333333333",
+      "run_id": "8f3f5ca421fc465e20227fb3cecf074fd3897b684800714a06dd7adf87371b0f",
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:11:03.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 70,
+            "output": 7,
+            "status": "available",
+            "total": 77
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:10:04.000Z",
+            "last_at": "2026-09-17T08:10:04.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 40,
+            "output": 5,
+            "status": "available",
+            "total": 45
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:10:04.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 110,
+            "output": 12,
+            "status": "available",
+            "total": 122
+          }
+        }
+      },
+      "session_id": "cccccccc-3333-4333-8333-333333333333",
+      "status": "available"
+    },
+    {
+      "additional_pr_count": 0,
+      "agents": [],
+      "harness": "codex",
+      "latest_pr": null,
+      "native": {
+        "children": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "unavailable",
+            "tool_calls": "unavailable"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "unavailable",
+          "tool_breakdown": [],
+          "tool_calls": null
+        },
+        "own": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [],
+          "tool_calls": 0
+        },
+        "subtree": {
+          "branch": null,
+          "duration_ms": null,
+          "field_status": {
+            "branch": "unavailable",
+            "duration_ms": "unavailable",
+            "lines_added": "unavailable",
+            "lines_removed": "unavailable",
+            "tool_breakdown": "observed",
+            "tool_calls": "observed"
+          },
+          "lines_added": null,
+          "lines_removed": null,
+          "status": "observed",
+          "tool_breakdown": [],
+          "tool_calls": 0
+        }
+      },
+      "pinned": false,
+      "prs": [],
+      "root_session_id": "eeeeeeee-5555-4555-8555-555555555555",
+      "run_id": "096732b6eea9cfb46b501e363ecbb18f3d9a636c0dac74a8a6f3bc6a824dfe9c",
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": null,
+            "first_at": null,
+            "last_at": null,
+            "status": "unavailable"
+          },
+          "tokens": {
+            "cache_creation": null,
+            "cache_read": null,
+            "input": null,
+            "output": null,
+            "status": "unavailable",
+            "total": null
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:12:02.000Z",
+            "last_at": "2026-09-17T08:12:02.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 33,
+            "output": 0,
+            "status": "available",
+            "total": 33
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:12:02.000Z",
+            "last_at": "2026-09-17T08:12:02.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 33,
+            "output": 0,
+            "status": "available",
+            "total": 33
+          }
+        }
+      },
+      "session_id": "eeeeeeee-5555-4555-8555-555555555555",
+      "status": "available"
+    }
+  ]
+}

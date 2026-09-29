@@ -1,0 +1,494 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!docs/**'
+      - '!openspec/**'
+      - '!LICENSE'
+      - '!DESIGN-*/**'
+      - '!testing/audits/**/report.md'
+      - 'skills/**'
+      - 'testing/skills/**'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, edited]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to refresh
+        type: number
+        required: true
+
+concurrency:
+  group: >-
+    ci-${{ github.workflow }}-${{
+      github.event_name == 'pull_request' && github.event.action == 'edited' && !github.event.changes.base
+      && format('metadata-{0}', github.run_id)
+      || (github.event.pull_request.number || inputs.pr_number || github.ref) }}
+  cancel-in-progress: >-
+    ${{ github.event_name != 'push'
+        && !(github.event_name == 'pull_request' && github.event.action == 'edited'
+             && !github.event.changes.base) }}
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  plan:
+    name: Plan
+    if: >-
+      ${{ !(github.event_name == 'pull_request' && github.event.action == 'edited'
+           && !github.event.changes.base) }}
+    runs-on: ubicloud-standard-2
+    outputs:
+      sha: ${{ steps.outputs.outputs.sha }}
+      mode: ${{ steps.outputs.outputs.mode }}
+      reuse: ${{ steps.outputs.outputs.reuse }}
+      python: ${{ steps.outputs.outputs.python }}
+      vitest: ${{ steps.outputs.outputs.vitest }}
+      e2e: ${{ steps.outputs.outputs.e2e }}
+      cargo: ${{ steps.outputs.outputs.cargo }}
+      integration: ${{ steps.outputs.outputs.integration }}
+      frontend_static: ${{ steps.outputs.outputs.frontend_static }}
+      e2e_shards: ${{ steps.outputs.outputs.e2e_shards }}
+      e2e_total: ${{ steps.outputs.outputs.e2e_total }}
+      fingerprint_valid: ${{ steps.outputs.outputs.fingerprint_valid }}
+      artifact: ${{ steps.outputs.outputs.artifact }}
+      pr: ${{ steps.resolve.outputs.pr }}
+    steps:
+      - name: Resolve live PR snapshot
+        id: resolve
+        uses: actions/github-script@v9
+        env:
+          WORKFLOW_SOURCE_SHA: ${{ github.workflow_sha }}
+        with:
+          script: |
+            if (context.eventName === 'push') {
+              core.setOutput('pr', '0')
+              core.setOutput('head', context.sha)
+              core.setOutput('base', context.payload.before)
+              core.setOutput('merge', context.sha)
+              core.setOutput('draft', 'false')
+              return
+            }
+            const number = context.eventName === 'workflow_dispatch'
+              ? Number(context.payload.inputs.pr_number)
+              : context.payload.pull_request.number
+            let snapshot
+            let diagnostics = 'no snapshot response'
+            const retryBudgetMs = 30_000
+            const retryDelayMs = 2_000
+            const maxAttempts = 15
+            const deadline = Date.now() + retryBudgetMs
+            let attempts = 0
+            let completedAttempts = 0
+            for (; attempts < maxAttempts && Date.now() <= deadline; attempts += 1) {
+              completedAttempts = attempts + 1
+              let pull
+              try {
+                pull = (await github.rest.pulls.get({...context.repo, pull_number: number})).data
+              } catch (error) {
+                diagnostics = `API error: ${error.message}`
+                core.info(`Live PR snapshot attempt ${attempts + 1} was unavailable: ${diagnostics}`)
+                if (attempts + 1 >= maxAttempts || Date.now() >= deadline) break
+                await new Promise((resolve) => setTimeout(resolve, Math.min(retryDelayMs, deadline - Date.now())))
+                continue
+              }
+              if (pull.state !== 'open' || pull.mergeable === false) {
+                core.setFailed('PR is not open and mergeable with a resolved merge snapshot')
+                return
+              }
+              const baseRepository = pull.base?.repo?.full_name
+              const headRepository = pull.head?.repo?.full_name
+              const baseRef = pull.base?.ref
+              const headRef = pull.head?.ref
+              const cachedBase = pull.base?.sha
+              const cachedHead = pull.head?.sha
+              const merge = pull.merge_commit_sha
+              if (![baseRepository, headRepository, baseRef, headRef, cachedBase, cachedHead]
+                  .every((value) => typeof value === 'string' && value.length > 0)) {
+                core.setFailed('PR repository/ref metadata is incomplete')
+                return
+              }
+              if (baseRepository.toLowerCase() !== `${context.repo.owner}/${context.repo.repo}`.toLowerCase()) {
+                core.setFailed('PR base repository does not match configured repository')
+                return
+              }
+              const headParts = headRepository.split('/')
+              if (headParts.length !== 2 || headParts.some((part) => !/^[A-Za-z0-9_.-]+$/.test(part))) {
+                core.setFailed('PR repository/ref metadata is incomplete')
+                return
+              }
+              try {
+                if (pull.mergeable !== true || typeof merge !== 'string' || merge.length === 0) {
+                  diagnostics = `cached base=${cachedBase}, head=${cachedHead}, merge=${merge || 'unavailable'}; live base/head/merge unavailable`
+                } else {
+                  const baseResult = await github.rest.git.getRef({
+                    ...context.repo, ref: `heads/${baseRef}`,
+                  })
+                  const headResult = await github.rest.git.getRef({
+                    owner: headParts[0], repo: headParts[1], ref: `heads/${headRef}`,
+                  })
+                  const liveBase = baseResult.data.object?.sha
+                  const liveHead = headResult.data.object?.sha
+                  const mergeCommit = await github.rest.git.getCommit({...context.repo, commit_sha: merge})
+                  const parents = mergeCommit.data.parents || []
+                  if (baseResult.data.ref === `refs/heads/${baseRef}`
+                      && headResult.data.ref === `refs/heads/${headRef}`
+                      && baseResult.data.object?.type === 'commit'
+                      && headResult.data.object?.type === 'commit'
+                      && liveBase === cachedBase
+                      && liveHead === cachedHead
+                      && parents.length === 2
+                      && parents[0].sha === liveBase
+                      && parents[1].sha === liveHead
+                      && pull.mergeable === true) {
+                    snapshot = {head: liveHead, base: liveBase, merge, draft: Boolean(pull.draft)}
+                    break
+                  }
+                  diagnostics = `cached base=${cachedBase}, head=${cachedHead}, merge=${merge}; live base=${liveBase || 'unavailable'}, head=${liveHead || 'unavailable'}, merge parents=${JSON.stringify(parents.map((parent) => parent.sha || null))}`
+                }
+              } catch (error) {
+                diagnostics = `cached base=${cachedBase}, head=${cachedHead}, merge=${merge}; snapshot error=${error.message}`
+                core.info(`Live PR snapshot attempt ${attempts + 1} was unavailable: ${diagnostics}`)
+              }
+              if (attempts + 1 >= maxAttempts || Date.now() >= deadline) break
+              await new Promise((resolve) => setTimeout(resolve, Math.min(retryDelayMs, deadline - Date.now())))
+            }
+            if (!snapshot) {
+              core.setFailed(`GitHub merge snapshot has not caught up after ${completedAttempts} attempts; ${diagnostics}`)
+              return
+            }
+            const workflowAtRun = await github.rest.repos.getContent({
+              ...context.repo, path: '.github/workflows/ci.yml', ref: process.env.WORKFLOW_SOURCE_SHA,
+            })
+            const workflowAtMerge = await github.rest.repos.getContent({
+              ...context.repo, path: '.github/workflows/ci.yml', ref: snapshot.merge,
+            })
+            if (workflowAtRun.data.sha !== workflowAtMerge.data.sha) {
+              core.setFailed('Dispatch workflow configuration does not match the PR merge snapshot')
+              return
+            }
+            core.setOutput('pr', String(number))
+            core.setOutput('head', snapshot.head)
+            core.setOutput('base', snapshot.base)
+            core.setOutput('merge', snapshot.merge)
+            core.setOutput('draft', String(snapshot.draft))
+            core.setOutput('workflow_sha', workflowAtMerge.data.sha)
+            core.setOutput('workflow_source_sha', process.env.WORKFLOW_SOURCE_SHA)
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.resolve.outputs.merge }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install planner dependency
+        run: python3 -m pip install PyYAML
+      - name: Create immutable CI plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name == 'push' && 'push' || 'pull_request' }}
+          BASE_SHA: ${{ steps.resolve.outputs.base }}
+          PLANNED_SHA: ${{ steps.resolve.outputs.merge }}
+          PR_HEAD: ${{ steps.resolve.outputs.head }}
+          PR_BASE: ${{ steps.resolve.outputs.base }}
+          PR_MERGE: ${{ steps.resolve.outputs.merge }}
+          WORKFLOW_CONFIG_SHA: ${{ steps.resolve.outputs.workflow_sha }}
+          WORKFLOW_SOURCE_SHA: ${{ steps.resolve.outputs.workflow_source_sha }}
+          IS_DRAFT: ${{ github.event_name == 'workflow_dispatch' && 'false' || steps.resolve.outputs.draft }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.resolve.outputs.pr }}
+        run: |
+          set -euo pipefail
+          args=(plan --repo . --event "$EVENT_NAME" --base "$BASE_SHA" --sha "$PLANNED_SHA" --repository "$REPOSITORY" --pr "$PR_NUMBER" --output ci-plan.json)
+          if [[ "$PR_NUMBER" != "0" ]]; then args+=(--pr-head "$PR_HEAD" --pr-base "$PR_BASE" --pr-merge "$PR_MERGE" --workflow-config-sha "$WORKFLOW_CONFIG_SHA" --workflow-source-sha "$WORKFLOW_SOURCE_SHA"); fi
+          if [[ "$IS_DRAFT" == "true" ]]; then args+=(--draft); fi
+          if [[ "$PR_NUMBER" != "0" && "$IS_DRAFT" != "true" ]]; then args+=(--reuse); fi
+          python3 testing/scripts/ci_scope.py "${args[@]}"
+      - name: Export plan outputs
+        id: outputs
+        shell: python
+        run: |
+          import json, os
+          plan = json.load(open("ci-plan.json", encoding="utf-8"))
+          values = {
+              "sha": plan["sha"], "mode": plan["mode"],
+              "reuse": str(bool(plan["reuse"])).lower(),
+              "e2e_shards": json.dumps(plan["e2e_shards"], separators=(",", ":")),
+              "e2e_total": str(len(plan["e2e_shards"])),
+              "fingerprint_valid": str(plan["fingerprint_valid"]).lower(),
+              "artifact": f"ci-plan-${{ github.run_id }}-${{ github.run_attempt }}",
+              **{key: str(value).lower() for key, value in plan["applicability"].items()},
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              for key, value in values.items(): output.write(f"{key}={value}\n")
+      - name: Upload immutable plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.outputs.outputs.artifact }}
+          path: ci-plan.json
+          retention-days: 1
+          if-no-files-found: error
+
+  python:
+    name: Python
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.python == 'true' }}
+    runs-on: ubicloud-standard-2
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}'}
+      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11', cache: pip}
+      - name: Fetch the break-manifest diff base
+        run: |
+          base=$(python -c 'import json; print(json.load(open("ci-plan.json")).get("base") or "")')
+          if [[ -n "$base" && "$base" != 0000000000000000000000000000000000000000 ]] && git fetch --no-tags --depth=1 origin "$base"; then
+            echo "SKILL_TREE_BREAKS_BASE=$base" >> "$GITHUB_ENV"
+          else
+            echo "::warning::break-manifest base $base unavailable; the diff rule will skip"
+          fi
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install ruff==0.16.4 mypy==1.19.1 pytest PyYAML -r requirements.txt
+      - name: Run ruff
+        run: ruff check .
+      - name: Run mypy
+        run: mypy
+      - name: Stage vendor
+        run: bash scripts/vendor-deps.sh
+      - name: Run pytest
+        run: python testing/scripts/ci_scope.py run --plan ci-plan.json --runner python
+
+  vitest:
+    name: Frontend tests
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.vitest == 'true' }}
+    runs-on: ubicloud-standard-2
+    defaults: {run: {working-directory: app}}
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}', path: .}
+      - uses: actions/setup-node@v5
+        with: {node-version: '20', cache: npm, cache-dependency-path: app/package-lock.json}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11', cache: pip}
+      - name: Install Python dependencies
+        run: pip install PyYAML -r ../requirements.txt
+      - name: Install dependencies
+        run: npm ci
+      - name: Run vitest
+        run: python ../testing/scripts/ci_scope.py run --repo .. --plan ../ci-plan.json --runner vitest
+      - name: Report flaky tests
+        if: always()
+        continue-on-error: true
+        run: >-
+          python ../testing/scripts/flaky_report.py report --runner vitest
+          --input 'vitest-report/flaky.json'
+      - name: Upload flaky vitest report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-vitest-${{ github.run_attempt }}
+          path: app/vitest-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  browser-journeys:
+    name: Browser journeys (${{ matrix.shard }}/${{ needs.plan.outputs.e2e_total }})
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.e2e == 'true' }}
+    runs-on: ubicloud-standard-2
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.e2e_shards) }}
+    timeout-minutes: 30
+    defaults: {run: {working-directory: app}}
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}', path: .}
+      - uses: actions/setup-node@v5
+        with: {node-version: '20', cache: npm, cache-dependency-path: app/package-lock.json}
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Playwright journeys
+        run: >-
+          python ../testing/scripts/ci_scope.py run --repo .. --plan ../ci-plan.json --runner e2e
+          ${{ needs.plan.outputs.mode == 'full' && format('--shard {0}', matrix.shard) || '' }}
+      - name: Record e2e durations
+        if: always()
+        continue-on-error: true
+        run: python ../testing/scripts/ci_scope.py e2e-durations --report 'e2e-report/*.json'
+      - name: Report flaky tests
+        if: always()
+        continue-on-error: true
+        run: >-
+          python ../testing/scripts/flaky_report.py report --runner e2e
+          --input 'e2e-report/results.json' --output 'e2e-report/flaky/report.json'
+      - name: Retain traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces-${{ matrix.shard }}
+          path: app/test-results/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Upload durations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-durations-${{ matrix.shard }}
+          path: app/e2e-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  frontend-static:
+    name: Frontend static
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.frontend_static == 'true' }}
+    runs-on: ubicloud-standard-2
+    defaults: {run: {working-directory: app}}
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}', path: .}
+      - uses: actions/setup-node@v5
+        with: {node-version: '20', cache: npm, cache-dependency-path: app/package-lock.json}
+      - name: Install dependencies
+        run: npm ci
+      - name: Run eslint
+        run: npm run lint
+      - name: Run tsc --noEmit
+        run: npx tsc --noEmit
+
+  cargo-test:
+    name: Rust tests
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.cargo == 'true' }}
+    runs-on: ubicloud-standard-2
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}'}
+      - name: Install Tauri Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11', cache: pip}
+      - name: Install Python dependencies
+        run: pip install PyYAML -r requirements.txt
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: {workspaces: app/src-tauri}
+      - name: Stub generated resources
+        run: |
+          mkdir -p app/dist vendor python-runtime/python app/src-tauri/ccusage-runtime/bin
+          printf '<!doctype html><title>stub</title>' > app/dist/index.html
+          touch app/src-tauri/ccusage-runtime/bin/ccusage app/src-tauri/ccusage-runtime/LICENSE
+          chmod +x app/src-tauri/ccusage-runtime/bin/ccusage
+      - name: Run cargo test
+        run: python testing/scripts/ci_scope.py run --plan ci-plan.json --runner cargo
+
+  integration:
+    name: Offline contracts (Linux)
+    needs: plan
+    if: ${{ needs.plan.outputs.reuse != 'true' && needs.plan.outputs.integration == 'true' }}
+    runs-on: ubicloud-standard-2
+    steps:
+      - uses: actions/checkout@v5
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ needs.plan.outputs.artifact }}'}
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.11', cache: pip}
+      - name: Install dependencies
+        run: pip install pytest PyYAML -r requirements.txt
+      - name: Run integration contracts
+        env: {CI_REPORT_DIR: '${{ runner.temp }}/integration-reports'}
+        run: python testing/scripts/ci_scope.py run --plan ci-plan.json --runner integration
+      - name: Retain integration reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selected-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/integration-reports/
+          retention-days: 14
+          if-no-files-found: error
+
+  ci-gate:
+    name: >-
+      ${{ github.event_name == 'pull_request' && github.event.action == 'edited'
+          && !github.event.changes.base && 'Metadata edit ignored' || 'CI gate' }}
+    if: >-
+      ${{ always() && !(github.event_name == 'pull_request' && github.event.action == 'edited'
+                       && !github.event.changes.base) }}
+    needs: [plan, python, vitest, browser-journeys, frontend-static, cargo-test, integration]
+    runs-on: ubicloud-standard-2
+    steps:
+      - name: Fail clearly when planning fails
+        if: ${{ needs.plan.result != 'success' }}
+        run: |
+          echo "CI planner failed; dependent validation jobs were skipped and no plan artifact exists."
+          exit 1
+      - uses: actions/checkout@v5
+        if: ${{ needs.plan.result == 'success' }}
+        with: {ref: '${{ needs.plan.outputs.sha }}'}
+      - uses: actions/download-artifact@v4
+        if: ${{ needs.plan.result == 'success' }}
+        with: {name: '${{ needs.plan.outputs.artifact }}'}
+      - name: Verify expected outcomes
+        id: verify
+        if: ${{ needs.plan.result == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VERIFY_LIVE: ${{ needs.plan.outputs.pr != '0' }}
+          OUTCOMES: >-
+            {"Python":"${{ needs.python.result }}","Frontend tests":"${{ needs.vitest.result }}",
+            "Browser journeys (1/1)":"${{ needs.browser-journeys.result }}",
+            "Browser journeys (1/3)":"${{ needs.browser-journeys.result }}",
+            "Browser journeys (2/3)":"${{ needs.browser-journeys.result }}",
+            "Browser journeys (3/3)":"${{ needs.browser-journeys.result }}",
+            "Frontend static":"${{ needs.frontend-static.result }}","Rust tests":"${{ needs.cargo-test.result }}",
+            "Offline contracts (Linux)":"${{ needs.integration.result }}"}
+        run: |
+          args=(gate --plan ci-plan.json --outcomes "$OUTCOMES" --repository "${{ github.repository }}" --pr "${{ needs.plan.outputs.pr }}" --run-id "${{ github.run_id }}" --run-attempt "${{ github.run_attempt }}" --verify-api --evidence evidence.json)
+          if [[ "$VERIFY_LIVE" == "true" ]]; then args+=(--verify-live-pr --receipt receipt.json); fi
+          python testing/scripts/ci_scope.py "${args[@]}"
+          [[ -f evidence.json ]] && echo "publish=true" >> "$GITHUB_OUTPUT" || echo "publish=false" >> "$GITHUB_OUTPUT"
+          [[ -f receipt.json ]] && echo "receipt=true" >> "$GITHUB_OUTPUT" || echo "receipt=false" >> "$GITHUB_OUTPUT"
+      - name: Publish reusable full evidence
+        if: >-
+          ${{ needs.plan.result == 'success' && steps.verify.outputs.publish == 'true' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-full-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: evidence.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Publish current validation receipt
+        if: ${{ needs.plan.result == 'success' && steps.verify.outputs.receipt == 'true' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-validation-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: receipt.json
+          retention-days: 1
+          if-no-files-found: error

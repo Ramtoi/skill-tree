@@ -1,0 +1,54 @@
+import { expect, test } from "./fixtures";
+
+test("skill header fits classes on resize and exposes every class on hover and keyboard", async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await page.goto("/?classification=1&classOverflow=1#/skill/rt-android-expert");
+  const strip = page.locator(".skill-header-classes");
+  const chips = strip.locator(":scope > .classification-value");
+  const more = page.getByRole("button", { name: "Show all classes" });
+  await expect(more).toBeVisible();
+  const narrowCount = await chips.count();
+  const editor = page.locator(".cm-content").first();
+  await editor.focus();
+  await more.hover();
+  const panel = page.getByRole("dialog", { name: "All classes" });
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole("button")).toHaveCount(9);
+  await expect(editor).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(editor).toBeFocused();
+  await page.mouse.move(10, 750);
+  await more.hover();
+  await expect(panel).toBeVisible();
+  await panel.hover();
+  await page.waitForTimeout(250);
+  await expect(panel).toBeVisible();
+  await page.mouse.move(10, 750);
+  await expect(panel).toBeHidden();
+  await more.focus();
+  await expect(panel).toBeVisible();
+  await more.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(more).toBeFocused();
+  await more.press("Enter");
+  await expect(panel.getByRole("button").first()).toBeFocused();
+  await panel.getByRole("button", { name: "implementation, direct", exact: true }).click();
+  await expect(panel).toBeHidden();
+  await expect(page.locator(".classification-path-inspector")).toBeVisible();
+  await page.setViewportSize({ width: 1800, height: 800 });
+  await expect.poll(() => chips.count()).toBeGreaterThan(narrowCount);
+  await page.setViewportSize({ width: 760, height: 800 });
+  await expect(more).toBeVisible();
+  await expect.poll(() => chips.count()).toBeLessThanOrEqual(narrowCount);
+  const bounds = await strip.boundingBox();
+  const trigger = await more.boundingBox();
+  expect(trigger!.x + trigger!.width).toBeLessThanOrEqual(bounds!.x + bounds!.width + 1);
+});
+
+test("fitting classes have no overflow control", async ({ page }) => {
+  await page.setViewportSize({ width: 1800, height: 800 });
+  await page.goto("/?classification=1#/skill/deep-research");
+  await expect(page.locator(".skill-header-classes > .classification-value")).toHaveCount(4);
+  await expect(page.getByRole("button", { name: "Show all classes" })).toHaveCount(0);
+});

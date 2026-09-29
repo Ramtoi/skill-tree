@@ -1,0 +1,64 @@
+/* ─── MultiSelectList — a lit-slot multiselect listbox ────────────────────
+   Selection is a GUILD LIT SLOT (side panel language rule 5): the row keeps
+   its place and lights up inside a hairline ring in its own shape — the same
+   register the FILES navigator's current row and the library rows already
+   use (`--slot-*`, `shell-nav.css`). Never a checkbox, never a stripe. */
+
+.multiselect-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.multiselect-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  min-width: 0;
+  cursor: pointer;
+  outline: none;
+}
+.multiselect-row:hover { background: var(--bg-2); }
+.multiselect-row:focus-visible {
+  outline: 2px solid var(--anchor);
+  outline-offset: -2px;
+}
+
+.multiselect-glyph { display: inline-flex; align-items: center; }
+.multiselect-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-mid);
+}
+.multiselect-meta { display: inline-flex; align-items: center; flex-shrink: 0; }
+
+/* The lit slot itself — a pseudo-element ring, so nothing shifts by a pixel
+   when a row is selected. */
+.multiselect-row[data-active="true"] {
+  background: var(--slot-fill);
+  box-shadow: var(--slot-glow);
+  z-index: 1;
+}
+.multiselect-row[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--slot-ring);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.multiselect-row[data-active="true"] .multiselect-label { color: var(--fg-strong); }
+
+/* A row that cannot be toggled explains itself via `title`, on hover — it
+   never disappears, and it stays focusable so the explanation is reachable
+   from the keyboard too. */
+.multiselect-row[data-disabled="true"] {
+  cursor: default;
+  opacity: 0.55;
+}

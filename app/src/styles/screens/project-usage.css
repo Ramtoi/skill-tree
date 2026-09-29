@@ -1,0 +1,93 @@
+.loadout-tools {
+  align-items: center;
+}
+
+.loadout-usage-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+  white-space: nowrap;
+}
+
+.loadout-usage-header > span {
+  font-family: var(--font-mono);
+}
+
+.loadout-usage-header .btn {
+  flex-shrink: 0;
+}
+
+.loadout-usage-trail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 8px;
+  min-width: 0;
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+}
+
+.loadout-trail-summary {
+  grid-column: 1 / -1;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.loadout-trail-tokens {
+  white-space: nowrap;
+}
+
+.loadout-trail-count,
+.loadout-trail-tokens {
+  font-family: var(--font-mono);
+}
+
+.loadout-trail-status {
+  color: var(--fg-mute);
+}
+
+.idle-explanation-trigger {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.idle-explanation {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  color: var(--fg-mid);
+  font-size: var(--fs-5);
+  line-height: 1.45;
+}
+
+.idle-explanation p {
+  margin: 0;
+}
+
+.idle-explanation-moves {
+  display: grid;
+  gap: 6px;
+}
+
+.idle-explanation-moves button {
+  width: fit-content;
+  color: var(--anchor);
+  cursor: pointer;
+}
+
+.idle-explanation-blind-spot {
+  color: var(--fg-mute);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadout-usage-trail,
+  .idle-explanation {
+    transition: none;
+  }
+}

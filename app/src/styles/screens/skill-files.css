@@ -1,0 +1,205 @@
+/* ─── FILES navigator (skill editor side panel) ─────────────────────────────
+   Deliberately a sibling of `.ad-file` (screens/agent-docs.css): same row
+   height, same hover, same `aria-current` bar, same `data-state` dot grammar —
+   the app has two file lists and they must read as one component family.
+
+   Colour register: violet = active (its only job), amber = unsaved (the same
+   token `StatePill state="unsaved"` and `.ad-file[data-state="dirty"]` already
+   carry), `--fg-dim` hollow = missing, red = error. Nothing here references
+   `--section` / `--sec-*`: section chrome is chrome-only. */
+
+.sf-filter { margin: 0 0 6px; }
+
+.sf-list { display: flex; flex-direction: column; }
+.sf-group-block { display: contents; }
+
+.sf-group, .equip-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 6px 2px 2px;
+  color: var(--fg-dim);
+}
+.sf-group-name, .equip-group-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The row and its overflow trigger share one hover surface. Hover wakes the
+   hairline; the CURRENT file is a Guild lit slot — fill, glow and a ring in
+   the row's own shape (`--slot-*`, the navigator's register) — never a left
+   stripe. The ring is a pseudo-element, so nothing shifts by a pixel. */
+.sf-file-wrap { position: relative; display: flex; align-items: center; border-radius: var(--radius-frame); }
+.sf-file-wrap:hover { background: color-mix(in oklab, var(--ctx) 4%, var(--bg-1)); box-shadow: inset 0 0 0 1px var(--border); }
+.sf-file-wrap:has(> .sf-file[aria-current="true"]) {
+  background: var(--slot-fill);
+  box-shadow: var(--slot-glow);
+  z-index: 1;
+}
+.sf-file-wrap:has(> .sf-file[aria-current="true"])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--slot-ring);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.sf-file {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 6px;
+  padding: 0 4px 0 6px;
+  min-height: max(22px, calc(var(--row-h) - 10px));
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+  font: inherit;
+}
+.sf-file[aria-current="true"] { color: var(--fg-strong); }
+/* The lit-slot ring is a pseudo-element over the row, so the row draws its
+   own focus ring inside it rather than relying on the UA outline. */
+.sf-file:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: -2px; border-radius: var(--radius-frame); }
+
+.sf-file-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+}
+.sf-file-icon { color: var(--fg-mute); flex-shrink: 0; }
+.sf-file-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+/* A file deeper than one level keeps its remaining path, dimmed — the flat
+   model never hides a file, it just stops indenting past the level the data
+   actually uses. */
+.sf-file-dim { color: var(--fg-dim); }
+.sf-file-size {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sf-file-flag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: .08em;
+  color: var(--amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sf-file[data-state="dirty"] .sf-file-dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--amber) 18%, transparent);
+}
+.sf-file[data-state="missing"] .sf-file-dot {
+  background: transparent;
+  border: 1px dashed var(--fg-dim);
+}
+.sf-file[data-state="missing"] .sf-file-name { color: var(--fg-mute); font-style: italic; }
+.sf-file[data-state="missing"] .sf-file-size { color: var(--fg-dim); font-style: italic; }
+.sf-file[data-state="missing"] .sf-file-icon { opacity: .4; }
+.sf-file[data-state="error"] .sf-file-dot {
+  background: var(--red);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--red) 22%, transparent);
+}
+/* Binary rows are listed but never opened in the editor — the dimmed glyph is
+   the only signal, since kind is carried by shape, not hue. */
+.sf-file[data-kind="binary"] .sf-file-icon { opacity: .5; }
+
+/* The overflow trigger is present for every row (Reveal in Finder is the
+   escape hatch that makes deferring rename/delete honest) but stays quiet
+   until the row is hovered or something inside it has focus. */
+.sf-file-more { flex: none; opacity: 0; }
+.sf-file-wrap:hover .sf-file-more,
+.sf-file-wrap:focus-within .sf-file-more { opacity: 1; }
+.sf-file-more .btn { padding: 0 4px; }
+
+/* Collapse ladder at the 280px panel minimum: size sheds before the name —
+   identity drops last. */
+@container appmain (max-width: 900px) {
+  .sf-file-flag { display: none; }
+}
+
+.sf-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 26px;
+  padding: 0 6px;
+  margin-top: 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--fg-dim);
+  font-family: var(--font-sans);
+  font-size: var(--fs-3);
+  text-align: left;
+}
+.sf-add:hover { color: var(--fg-mid); background: var(--bg-2); }
+
+.sf-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+  line-height: 1.4;
+}
+.sf-note > svg { flex: none; margin-top: 2px; color: var(--amber); }
+
+.sf-unsaved { color: var(--amber); font-family: var(--font-mono); font-size: var(--fs-2); }
+
+/* Footer: the active file's rel path (`.editor-active-path`) is shared shell
+   vocabulary now — its rules live in editor.css next to `.doc-editor-foot`. */
+
+/* ── Add-file sheet: kind row + prefixed path field ─────────────────────────
+   The kind chips are `ChipRadios`; the chosen folder becomes a fixed prefix
+   INSIDE the path well so the author types only the name, and the two can
+   never be out of step (a pasted full path re-homes the chip instead). */
+.sf-add-kind { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.sf-add-kind-label {
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--fg-dim);
+}
+.sf-add-kind-consequence { margin: 2px 0 0; font-size: var(--fs-3); color: var(--fg-mute); line-height: 1.35; }
+.sf-path-input {
+  display: flex; align-items: center; min-width: 0;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-mono); font-size: var(--fs-5);
+  transition: border-color var(--dur-4), background var(--dur-4);
+}
+.sf-path-input:focus-within { border-color: var(--border-active); background: var(--bg-3); }
+.field-invalid .sf-path-input { border-color: color-mix(in oklab, var(--red) 55%, var(--border)); }
+.sf-path-prefix { padding: 7px 0 7px 10px; color: var(--fg-dim); white-space: nowrap; }
+.sf-path-input input.sf-path-name,
+.field .sf-path-input input {
+  flex: 1 1 auto; min-width: 0;
+  background: none; border: 0; box-shadow: none; border-radius: 0;
+  padding: 7px 10px; font-family: var(--font-mono); font-size: var(--fs-5);
+}
+.sf-path-input[data-kind]:not([data-kind="other"]) input { padding-left: 0; }
+.field .sf-path-input input:focus { background: none; }
+.sf-path-input input::placeholder { color: var(--fg-dim); }

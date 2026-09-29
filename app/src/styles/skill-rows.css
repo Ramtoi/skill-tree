@@ -1,0 +1,52 @@
+/* SkillRow's aligned scan facts, layered after the generic row grid. */
+.skill-row .skill-interaction-style,
+.skill-row .skill-body-tokens { font-size: var(--fs-4); color: var(--fg-mute); white-space: nowrap; }
+.skill-row .skill-body-tokens { font-family: var(--font-mono); }
+/* Pane-relative identity and fixed scan tracks cannot shift with each row’s badges. */
+.skill-row .resource-line { display: grid; grid-template-columns: clamp(9rem, 20cqw, 22rem) 14px 9rem 9.5rem minmax(0, 1fr); align-items: center; column-gap: 10px; }
+.skill-row .resource-line > .resource-name { grid-column: 1; }
+.skill-row .resource-line > .skill-meta { display: contents; }
+.skill-row .resource-line > .skill-meta > .kind-mark { grid-column: 2; }
+.skill-row .resource-line > .skill-meta > .skill-interaction-style { grid-column: 3; }
+.skill-row .resource-line > .skill-meta > .skill-body-tokens { grid-column: 4; }
+.skill-row .resource-line > .resource-desc { grid-column: 5; }
+/* Expanded rows need an explicit inset once details exceed the row height. */
+.skill-row:has(> .resource-detail) { padding-block: var(--pad-y); }
+/* Expanded facts remain a compact reading surface, with labelled context. */
+.skill-row .skill-row-detail { display: grid; gap: 8px; color: var(--fg-mute); font-size: var(--fs-4); cursor: auto; }
+.skill-row > .resource-detail:has(.skill-row-detail) { grid-column: 2 / -1; margin: 0; padding: 10px 0 0; background: transparent; border: 0; border-radius: 0; }
+.skill-detail-stats { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 0; }
+.skill-detail-stats > div { display: flex; align-items: baseline; gap: 8px; }
+.skill-detail-stats dd { font-family: var(--font-mono); color: var(--fg); }
+.skill-detail-stats dd > span { font-family: var(--font-sans); color: var(--fg-dim); font-size: var(--fs-3); }
+.skill-detail-facts, .skill-detail-context { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; }
+.skill-detail-facts > div, .skill-detail-context > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; min-width: 0; }
+.skill-row-detail dt { color: var(--fg-dim); }
+.skill-row-detail dd { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.skill-detail-context { font-size: var(--fs-3); }
+@container appmain (max-width: 900px) {
+  .skill-row .resource-line { grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; }
+  .skill-row .resource-line > .skill-meta { display: inline-flex; grid-column: 2; gap: 8px; min-width: 0; }
+  .skill-row .resource-line > .skill-meta > * { grid-column: auto; }
+  .skill-row .resource-line > .resource-desc { grid-column: 1 / -1; }
+  .skill-row .resource-desc { display: block; flex: 1 1 100%; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; }
+}
+
+/* Reserve control space so names, modes and descriptions never jump. */
+.skill-row > .resource-actions { display: inline-flex; opacity: 0; visibility: hidden; transform: translateX(3px); transition: opacity var(--dur-2), transform var(--dur-2), visibility var(--dur-2); }
+.skill-row:hover > .resource-actions, .skill-row:focus-within > .resource-actions, .lib-nav-row:focus-within > .skill-row > .resource-actions { opacity: 1; visibility: visible; transform: none; }
+@media (hover: none) { .skill-row > .resource-actions { opacity: 1; visibility: visible; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .skill-row > .resource-actions { transform: none; transition: none; } }
+
+@container appmain (max-width: 600px) {
+  .skill-row > .resource-line { grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr); row-gap: 4px; }
+  .skill-row .resource-line > .skill-meta { grid-column: 1; flex-wrap: wrap; }
+  .skill-row > .resource-glyph { align-self: start; }
+  .skill-row > .resource-actions { grid-row: 2; grid-column: 2 / 4; justify-self: start; margin-left: 0; }
+  .skill-row > .resource-badges, .skill-row > .resource-disclosure { grid-row: 2; }
+  .skill-row > .resource-excerpt { grid-row: 3; }
+  .skill-row > .resource-detail { grid-row: 4; }
+}
+
+/* Keep scrolled action targets clear of sticky library group headings. */
+.skill-row .resource-actions > button { scroll-margin-block: 48px; }

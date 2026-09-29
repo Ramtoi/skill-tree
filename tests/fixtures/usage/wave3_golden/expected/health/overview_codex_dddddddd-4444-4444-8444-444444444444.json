@@ -1,0 +1,345 @@
+{
+  "changes": [
+    {
+      "attribution": "captured",
+      "base_id": null,
+      "captured_at": null,
+      "files": [
+        "/private/var/folders/4x/5_xrq3qj2nj0vwmldzcbk_6c0000gn/T/pytest-of-ramtoi/pytest-925/test_wave3_golden_baseline0/fixture-project-alpha/docs/baseline.md"
+      ],
+      "id": "change:4826c1aefb23e710df3603d1abcf7fcc90f44575fbe646f6184f53d14996d496",
+      "kind": "runtime_patch",
+      "merge_base_id": null,
+      "patch": {
+        "body_id": "body:f383e36ac2acbb1747421f60f7b00f16b20cb62bde44a77bd17bbac6b27a55ce",
+        "bytes": 176,
+        "content_type": "application/json",
+        "kind": "runtime_event",
+        "pruned_at": null,
+        "retained_version": false,
+        "retention_tier": "B",
+        "source_epoch": "epoch:b7e1e838aef34e628d8384afd3c4d23d5d476c9ae569404587317d19ff8d99a9",
+        "status": "available"
+      },
+      "repository_id": null,
+      "revision_id": null,
+      "source": "epoch:b7e1e838aef34e628d8384afd3c4d23d5d476c9ae569404587317d19ff8d99a9"
+    }
+  ],
+  "evidence": {
+    "notices": [],
+    "status": "complete"
+  },
+  "ok": true,
+  "pins": [],
+  "prs": [],
+  "runs": [
+    {
+      "activity_intervals": [],
+      "depth": 0,
+      "edits": 0,
+      "evidence": [],
+      "id": "8f3f5ca421fc465e20227fb3cecf074fd3897b684800714a06dd7adf87371b0f",
+      "label": "Main session",
+      "lifespan": {
+        "end": "2026-09-17T08:10:04.000Z",
+        "start": "2026-09-17T08:10:04.000Z",
+        "status": "observed"
+      },
+      "models": [
+        "gpt-5.6"
+      ],
+      "parent_id": null,
+      "role": {
+        "status": "unavailable",
+        "value": null
+      },
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:11:03.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 70,
+            "output": 7,
+            "status": "available",
+            "total": 77
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:10:04.000Z",
+            "last_at": "2026-09-17T08:10:04.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 40,
+            "output": 5,
+            "status": "available",
+            "total": 45
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:10:04.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 110,
+            "output": 12,
+            "status": "available",
+            "total": 122
+          }
+        }
+      },
+      "start": {
+        "at": "2026-09-17T08:10:04.000Z",
+        "status": "observed"
+      },
+      "tool_calls": 0,
+      "worktree": {
+        "label": null,
+        "locations": [],
+        "status": "unknown"
+      }
+    },
+    {
+      "activity_intervals": [],
+      "depth": 1,
+      "edits": 1,
+      "evidence": [],
+      "id": "68371516ce5ad43670e47fbaf0caf1c65b85aefdd0f8d4587a81f477689d1669",
+      "label": "researcher",
+      "lifespan": {
+        "end": "2026-09-17T08:11:03.000Z",
+        "start": "2026-09-17T08:11:03.000Z",
+        "status": "observed"
+      },
+      "models": [
+        "gpt-5.6"
+      ],
+      "parent_id": "8f3f5ca421fc465e20227fb3cecf074fd3897b684800714a06dd7adf87371b0f",
+      "role": {
+        "status": "observed",
+        "value": "researcher"
+      },
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": null,
+            "first_at": null,
+            "last_at": null,
+            "status": "unavailable"
+          },
+          "tokens": {
+            "cache_creation": null,
+            "cache_read": null,
+            "input": null,
+            "output": null,
+            "status": "unavailable",
+            "total": null
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:11:03.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 70,
+            "output": 7,
+            "status": "available",
+            "total": 77
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:11:03.000Z",
+            "last_at": "2026-09-17T08:11:03.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 70,
+            "output": 7,
+            "status": "available",
+            "total": 77
+          }
+        }
+      },
+      "start": {
+        "at": "2026-09-17T08:11:03.000Z",
+        "status": "observed"
+      },
+      "tool_calls": 0,
+      "worktree": {
+        "label": null,
+        "locations": [],
+        "status": "unknown"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "session": {
+    "key": {
+      "harness": "codex",
+      "session_id": "cccccccc-3333-4333-8333-333333333333"
+    },
+    "source_epochs": [
+      {
+        "captured_at": "2026-09-17T08:10:04.000Z",
+        "id": "epoch:b7ad29b531a9f0f3c810bb5d3d68f725e108379a60814d58064576e069fa2048",
+        "status": "active"
+      },
+      {
+        "captured_at": "2026-09-17T08:11:03.000Z",
+        "id": "epoch:b7e1e838aef34e628d8384afd3c4d23d5d476c9ae569404587317d19ff8d99a9",
+        "status": "active"
+      }
+    ],
+    "status": "available",
+    "summary": {
+      "children": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:11:03.000Z",
+          "last_at": "2026-09-17T08:11:03.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 70,
+          "output": 7,
+          "status": "available",
+          "total": 77
+        }
+      },
+      "own": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:10:04.000Z",
+          "last_at": "2026-09-17T08:10:04.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 40,
+          "output": 5,
+          "status": "available",
+          "total": 45
+        }
+      },
+      "subtree": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:10:04.000Z",
+          "last_at": "2026-09-17T08:11:03.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 110,
+          "output": 12,
+          "status": "available",
+          "total": 122
+        }
+      }
+    }
+  },
+  "timeline": {
+    "events": [
+      {
+        "at": "2026-09-17T08:10:02.000Z",
+        "id": "event:85b146dea03e24c75aded02e2836592aedd71fc1f38ec2b82cc8a9d47fc11a2a",
+        "kind": "message",
+        "run_id": "8f3f5ca421fc465e20227fb3cecf074fd3897b684800714a06dd7adf87371b0f",
+        "status": "observed"
+      }
+    ],
+    "gaps": [],
+    "origin": null,
+    "relationship_edges": [],
+    "wait_intervals": []
+  },
+  "tool_calls": {
+    "items": [],
+    "next_after": null,
+    "status": "complete",
+    "total": 0
+  }
+}

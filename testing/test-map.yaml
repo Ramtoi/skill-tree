@@ -1,0 +1,305 @@
+# Test map for testing/scripts/test_scope.py and the skt-testing skill.
+#
+# One source of truth for "which tests own which behavior". Python module
+# groups come from mutation/targets.yaml (loaded at runtime, never copied).
+# Test ownership is inferred from naming (tests/test_<module>*.py,
+# app/src/test/<Name>.test.tsx) and from the import graph; the entries here
+# are the exceptions the graph cannot see. Validated by
+# tests/test_testing_skills.py; selection behavior by tests/test_test_scope.py.
+map_version: 1
+strategy_version: 1
+# Manifests written against these map versions stay eligible baselines.
+compatible_map_versions: [1]
+
+runners:
+  python:
+    command: "python3 -m pytest {selectors} -q"
+    static: ["ruff check .", "mypy"]
+    ci_job: Python
+    test_glob: "tests/test_*.py"
+  vitest:
+    command: "cd app && npx vitest run {files}"
+    static: ["cd app && npx tsc --noEmit", "cd app && npm run lint"]
+    ci_job: Frontend tests
+    test_glob: "app/src/**/*.test.{ts,tsx}"
+  e2e:
+    command: "cd app && npx playwright test {files}"
+    ci_job: Browser journeys
+    test_glob: "app/e2e/*.spec.ts"
+  cargo:
+    command: "cd app/src-tauri && cargo test --locked"
+    ci_job: Rust tests
+    sources: ["app/src-tauri/**"]
+  integration:
+    command: "HOME={tmp} SKILL_HUB_HOME={tmp} PYTHONUSERBASE={tmp} python3 hub.py integration validate --case {cases} --report-dir {evidence}"
+    ci_job: Offline contracts
+    catalog: tests/integration_contracts/catalog.json
+
+python:
+  areas_from: mutation/targets.yaml
+  # A test that reaches code through the hub facade or a hub.py subprocess
+  # has no import edge to the module it exercises. The tool detects these
+  # by scanning for `import hub`, `hub.main(`, `hub.py` and `sys.argv`;
+  # list here only the ones the scan misses.
+  composition_tests: []
+  # Explicit owner overrides: module -> tests, for modules whose tests do
+  # not follow the naming convention and do not import the module.
+  overrides:
+    skill_hub/hub_core.py: ["tests/test_path_resolvers.py", "tests/test_lock.py", "tests/test_home_isolation.py"]
+    skill_hub/application/sync/sync_engine.py: ["tests/test_auto_sync.py", "tests/test_sync_report.py", "tests/test_sync_operation_binding.py", "tests/test_cleanup_ownership.py"]
+    skill_hub/infrastructure/filesystem/sync_links.py: ["tests/test_cleanup_ownership.py", "tests/test_project_lifecycle.py"]
+    skill_hub/entrypoints/cli/update.py: ["tests/test_self_update.py"]
+  # Closure bound: when the transitive dependents of a change cover more
+  # than this share of a runner's test files, run the whole runner instead
+  # of a long explicit list.
+  closure_ceiling: 0.6
+
+app:
+  # Areas exist for journeys and for humans. Vitest ownership comes from
+  # the TypeScript import graph (app/src/**), transitively, bounded by
+  # closure_ceiling. Journeys have no import edge to the screens they
+  # drive, so each area names its journeys.
+  closure_ceiling: 0.6
+  # TA-1-4e14: per-area attribution for a mock under app/src/mocks/**, in
+  # place of broadening every runner on every mock change. A mock listed
+  # here is owned by the areas whose journeys reach its exported commands
+  # or data (verified by reading each mock's callers, not just its name);
+  # a change to it selects those areas' journeys instead of broadening.
+  # `tauriCore.ts` (and the other files still under shared_infrastructure.e2e
+  # below) stays unattributed on purpose: it imports every other mock and
+  # bundles them into one dispatcher, so a wrong per-arm attribution here
+  # would under-select silently. A mock NOT listed here, and not in
+  # shared_infrastructure, is unowned and still broadens (test_scope.py's
+  # `mock_hit` fallback).
+  mock_owners:
+    app/src/mocks/tauriSubagents.ts: [mcp-agents, editors, library, shell]  # SLUG_RE reaches tauriCore's bundle-rename dispatch (~tauriCore.ts:7094); sceneFlag("agentsAttention") is driven from the shell-area navigator-context journey
+    app/src/mocks/tauriUsageAnalytics.ts: [usage, project]  # sceneFlag("projectOverview")/("noScan") are driven from the project-area project-loadout-overview journey
+    app/src/mocks/usageInspection.ts: [usage]
+    app/src/mocks/usageInspectionPruned.ts: [usage]
+    app/src/mocks/recovery.ts: [remotes-sources-backup]
+    app/src/mocks/headlessMachines.ts: [remotes-sources-backup]
+    # `useRemoteDelivery`/`useRemoteDefaults` are called only from
+    # RemoteDeliverySettings.tsx / RemotesSettings.tsx (settings). The
+    # remotes area stays listed because its journeys open those settings
+    # from the remotes screens; over-selecting a few journeys is cheap,
+    # under-selecting is silent.
+    app/src/mocks/remoteDelivery.ts: [remotes-sources-backup, settings]  # RemoteDeliverySettings is opened from the remotes screens
+    app/src/mocks/remoteDefaults.ts: [remotes-sources-backup, settings]  # RemotesSettings is opened from the remotes screens
+    app/src/mocks/projectRepository.ts: [project]
+    app/src/mocks/worktreeDefaults.ts: [project, settings]  # AddProjectSheet's worktree preview and WorktreeSettings both call useWorktreeDefaults
+    app/src/mocks/invocation.ts: [project, editors]  # SkillInvocationOverride (ProjectLoadoutRow/EquippedSkillsGrid) and skillEditor/RuntimeSection (SkillEditorSidePanel) both read it
+    app/src/mocks/feedbackTransport.ts: [feedback]
+  areas:
+    feedback:
+      sources: ["app/src/components/FeedbackDialog.tsx", "app/src/store/feedback.ts", "app/src/lib/feedbackClient.ts", "app/src/lib/feedbackContext.ts", "app/src/lib/feedbackTransport.ts", "app/src/styles/feedback.css"]
+      journeys: ["feedback"]
+    shell:
+      sources: ["app/src/App.tsx", "app/src/components/IconRail.tsx", "app/src/components/NavPanel.tsx", "app/src/components/nav/**", "app/src/components/StatusBar*", "app/src/components/CommandPalette.tsx", "app/src/lib/keymap.ts", "app/src/lib/sections.ts", "app/src/lib/backTarget.ts", "app/src/lib/navInsights.ts", "app/src/lib/syncFreshness.ts", "app/src/store/**"]
+      journeys: ["back-button", "command-layer", "fixtures.self", "nav-drawer", "navigator-context", "navigator-dashboard", "navigator-pins", "rail-expand", "responsiveness", "tips-tour", "sync-failure", "ux-palette-search"]
+    library:
+      sources: ["app/src/screens/SkillLibrary.tsx", "app/src/screens/library/**", "app/src/components/FloatingSearch.tsx", "app/src/components/EquipPicker.tsx", "app/src/components/NewSkillSheet.tsx", "app/src/components/NewBundleSheet.tsx", "app/src/components/newSkillCompletion.ts", "app/src/components/BundleChip.tsx", "app/src/hooks/useBundleMembership.ts", "app/src/lib/skillPack.ts", "app/src/lib/shipWith.ts", "app/src/hooks/useShipWith.ts"]
+      journeys: ["library-search", "library-bundle-mode", "bundle-playbook", "equip-connections", "skill-classification", "skill-share", "dropped-skills", "skill-row-alignment"]
+    project:
+      sources: ["app/src/screens/ProjectWorkspace.tsx", "app/src/screens/project/**", "app/src/components/AddProjectSheet.tsx", "app/src/components/ProjectLocalSkills.tsx", "app/src/components/ProjectRepositoryDialog.tsx", "app/src/lib/resolveActiveSkills.ts"]
+      journeys: ["project-loadout-overview", "project-repository", "project-worktree-access", "loadout-missing-skills", "workspace-keyboard-equip", "provisioning", "invocation-axis", "ux-add-project", "loadout-trails"]
+    editors:
+      sources: ["app/src/screens/SkillEditor.tsx", "app/src/screens/SnippetEditor.tsx", "app/src/screens/Snippets.tsx", "app/src/screens/HarnessDocEditor.tsx", "app/src/screens/SubagentEditor.tsx", "app/src/components/DocumentEditorShell.tsx", "app/src/components/CodeArea.tsx", "app/src/components/skillRefs/**", "app/src/lib/skillRefs.ts"]
+      journeys: ["editor-platform", "skill-files", "skill-refs", "skill-ref-completion", "ref-navigation", "snippets-editor-height", "rename-cascade", "skill-header-classes"]
+    permissions-hooks:
+      sources: ["app/src/screens/GlobalPermissions.tsx", "app/src/screens/HookEditor.tsx", "app/src/screens/HooksScreen.tsx", "app/src/components/permissions/**", "app/src/components/hooks/**", "app/src/components/Permission*", "app/src/components/ProjectPermissionsTab.tsx", "app/src/components/ProjectHooksCard.tsx", "app/src/components/HookActionEditor.tsx", "app/src/lib/permissionTiers.ts", "app/src/lib/hookForm.ts", "app/src/lib/permissionsRisks.ts", "app/src/lib/hookCatalog.ts", "app/src/lib/hookReach.ts", "app/src/lib/hookRisks.ts", "app/src/lib/permissionDecision.ts", "app/src/lib/permissionImportTriage.ts", "app/src/lib/mcpPermissionRules.ts", "app/src/hooks/useHooks.ts", "app/src/hooks/useHookDraft.ts", "app/src/hooks/usePermissionsDraft.ts"]
+      journeys: ["permissions-divergence", "mcp-permissions", "hooks", "trust-confirm"]
+    mcp-agents:
+      sources: ["app/src/components/mcp/**", "app/src/components/agentDocs/**", "app/src/components/AgentDocsView.tsx", "app/src/components/companions/**", "app/src/components/subagents/**", "app/src/screens/Harnesses.tsx", "app/src/screens/HarnessConfig.tsx", "app/src/components/harness/**", "app/src/lib/mcpContract.ts", "app/src/lib/companions.ts"]
+      journeys: ["mcp-panel", "agent-docs-map", "agent-docs-snippet-source", "global-doc-sharing", "subagents", "linked-twins", "companions"]
+    remotes-sources-backup:
+      sources: ["app/src/screens/RemotesScreen.tsx", "app/src/screens/Sources.tsx", "app/src/screens/sources/**", "app/src/screens/BackupScreen.tsx", "app/src/screens/RecoveryWizard.tsx", "app/src/components/recovery/**", "app/src/hooks/useRecovery.ts", "app/src/lib/recoveryContract.ts", "app/src/screens/CloudTarget.tsx", "app/src/screens/BootstrapWizard.tsx", "app/src/components/remotes/**", "app/src/components/backup/**", "app/src/components/cloud/**", "app/src/lib/backupContract.ts", "app/src/lib/cloud.ts", "app/src/lib/skillSource.ts", "app/src/lib/remoteHealth.ts", "app/src/lib/sshErrorHint.ts", "app/src/hooks/useRunSync.ts"]
+      journeys: ["remotes-doctor", "remote-onboarding", "headless-machine", "sources", "backup", "restore-recovery-browser", "cloud-targets"]
+    usage:
+      sources: ["app/src/screens/LocalAgentUsage.tsx", "app/src/screens/usage/**", "app/src/features/usage/**", "app/src/components/charts/**", "app/src/lib/usageGuidance.ts"]
+      journeys: ["usage-*"]
+    settings:
+      sources: ["app/src/components/settings/**", "app/src/lib/tweaks.ts"]
+      journeys: ["global-settings", "global-settings-preferences"]
+    primitives:
+      sources: ["app/src/components/*.tsx", "app/src/styles/**", "app/src/components/loading/**", "app/src/components/emoji/**"]
+      journeys: ["primitive-system", "screen-geometry", "adoption-overlays"]
+
+rust:
+  sources: ["app/src-tauri/**"]
+  # Text-scanner tests under app/src-tauri/tests read every commands/*.rs;
+  # command tests spawn the real hub.py, and build.rs lists Python modules
+  # as rerun inputs. The tool parses that list at run time.
+  runs_on: ["app/src-tauri/**"]
+  rerun_inputs_from: app/src-tauri/build.rs
+  runs_on_python_source: true
+
+# Any change here broadens to the whole runner named by the key.
+shared_infrastructure:
+  # The selection tool and its map are exercised only by pytest; changing
+  # them cannot break a vitest, Playwright or cargo run, so they broaden
+  # python rather than every runner.
+  python: ["tests/conftest.py", "tests/fixtures/**", "pyproject.toml", "requirements.txt", "vendor/**", "testing/test-map.yaml", "testing/scripts/**", "mutation/targets.yaml"]
+  # TA-1-4e14: the `app/src/mocks/**` wildcard is gone. `setup.ts` imports
+  # these five mocks directly to build its default `invoke` implementation
+  # (a change reaches every vitest test through that one shared switch, an
+  # edge the import graph cannot see because most tests never import the
+  # mock by path); `feedbackTransport.ts` is a `vitest.config.ts` module
+  # alias for `@/lib/feedbackTransport`, invisible to the import graph the
+  # same way — and it imports `scenes.ts` (`sceneValue`), an edge the graph
+  # cannot see either since the alias hides the whole chain, so `scenes.ts`
+  # needs the same explicit listing. Every other mock is per-area owned
+  # (`app.mock_owners`) or, for vitest, reached only through the ordinary
+  # import graph.
+  vitest: ["app/src/test/setup.ts", "app/src/test/helpers.tsx", "app/src/test/flakyReporter.ts", "app/src/mocks/headlessMachines.ts", "app/src/mocks/worktreeDefaults.ts", "app/src/mocks/remoteDelivery.ts", "app/src/mocks/remoteDefaults.ts", "app/src/mocks/projectRepository.ts", "app/src/mocks/feedbackTransport.ts", "app/src/mocks/scenes.ts", "app/vitest.config.ts", "app/package.json", "app/package-lock.json", "app/tsconfig*.json"]
+  # `tauriCore.ts` imports every other mock and is the one file
+  # `@tauri-apps/api/core` aliases to for e2e/visual (vite.config.ts), so a
+  # wrong per-arm attribution under-selects silently — it stays e2e-shared.
+  # `tauriOpener.ts` and `tauriWindow.ts` are the other Tauri-API-module
+  # aliases vite.config.ts swaps in for the same visual/e2e build.
+  # `scenes.ts` is not an alias target itself, but every mock (including
+  # tauriCore.ts) reads its flags via `sceneFlag`/`sceneValue`, so a change
+  # to it has the same effectively-universal e2e reach as tauriCore.ts.
+  # Every other mock is per-area owned (`app.mock_owners`) or unowned
+  # (still broadens on its own).
+  e2e: ["app/playwright.config.ts", "app/src/mocks/tauriCore.ts", "app/src/mocks/scenes.ts", "app/src/mocks/tauriOpener.ts", "app/src/mocks/tauriWindow.ts", "app/visual/capture.mjs", "app/vite.config.ts"]
+  cargo: ["app/src-tauri/Cargo.toml", "app/src-tauri/Cargo.lock", "app/src-tauri/build.rs", "app/src-tauri/tauri.conf.json"]
+  all: [".github/workflows/**", "scripts/ci-changed-areas.sh"]
+
+# Dependencies the import graph cannot see: a runner's file reads another
+# file by path. A `reads` match wins over `report_only`: a Markdown file a
+# test reads (SKILL.md under skills/ or testing/skills/, the root AGENTS.md)
+# selects that test instead of being inert. `runner` names which suite to select; `path` is the actual
+# reader (a test, a lib the tests import, or a mock).
+cross_readers:
+  - runner: vitest
+    path: app/src/test/cliContract.test.ts
+    reads: ["hub.py", "skill_hub/**/*.py", "app/src-tauri/src/commands/**"]
+  - runner: vitest
+    path: app/src/test/DescriptionMeter.test.tsx
+    reads: ["skill_hub/infrastructure/filesystem/cloud_targets.py"]
+  - runner: vitest
+    path: app/src/test/ipcParity.test.ts
+    reads: ["app/src-tauri/src/commands/**"]
+  - runner: vitest
+    path: app/src/lib/mcpContract.ts
+    reads: ["tests/fixtures/mcp_secret_corpus.json", "tests/fixtures/mcp_vocabulary.json", "skill_hub/domain/mcp/mcp_spec.py"]
+  - runner: vitest
+    path: app/src/test/mcpImportCorpus.test.ts
+    reads: ["tests/fixtures/mcp_import_corpus.json"]
+  - runner: vitest
+    path: app/src/test/hookHelpers.test.ts
+    reads: ["tests/fixtures/hook_catalog_corpus.json", "risks.py"]
+  - runner: vitest
+    path: app/src/test/shipWith.test.ts
+    reads: ["tests/fixtures/ships_with/**"]
+  - runner: vitest
+    path: app/src/test/companions.test.ts
+    reads: ["skill_hub/domain/skills/ships_with.py"]
+  - runner: vitest
+    path: app/src/test/companionsFixtureParity.test.ts
+    reads: ["tests/fixtures/ships_with/**"]
+  - runner: vitest
+    path: app/src/lib/skillRefs.ts
+    reads: ["tests/fixtures/skill_refs_corpus.json", "skill_hub/domain/skills/skill_refs.py"]
+  - runner: vitest
+    path: app/src/test/shipWith.test.ts
+    reads: ["tests/fixtures/remote_quarantine_corpus.json"]
+  - runner: vitest
+    path: app/src/test/permissionsRisks.test.ts
+    reads: ["skill_hub/domain/diagnostics/risks.py", "skill_hub/domain/permissions/permissions.py"]
+  - runner: vitest
+    path: app/src/test/setup.ts
+    reads: ["tests/fixtures/usage/**"]
+  - runner: vitest
+    path: app/src/test/componentSizeGuard.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/cssScales.test.ts
+    reads: ["app/src/styles/**", "app/src/**/*.css"]
+  - runner: vitest
+    path: app/src/test/layoutContract.test.tsx
+    reads: ["app/src/styles/**", "app/src/**/*.css", "app/src/App.tsx"]
+  - runner: vitest
+    path: app/src/test/queryKeyGuard.data.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/queryKeyGuard.ui.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/ipcImportGuard.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/hubCmdGuard.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/usageNavPanelBan.test.ts
+    reads: ["app/src/**"]
+  - runner: vitest
+    path: app/src/test/companionGateGuard.test.ts
+    reads: ["app/src/**"]
+  - runner: python
+    path: tests/test_agent_docs_canonical.py
+    reads: ["tests/fixtures/agent_docs_corpus.json"]
+  - runner: python
+    path: tests/test_harness_rust_projection.py
+    reads: ["app/src-tauri/src/**"]
+  - runner: python
+    path: tests/test_hub_split_guard.py
+    reads: ["hub.py", "skill_hub/**/*.py", "app/src-tauri/tauri.conf.json"]
+  - runner: python
+    path: tests/test_plugin_boundary.py
+    reads: ["app/src-tauri/tauri.conf.json", ".gitattributes"]
+  - runner: python
+    path: tests/test_mcp_import_corpus.py
+    reads: ["tests/fixtures/mcp_import_corpus.json", "tests/fixtures/mcp_vocabulary.json"]
+  - runner: python
+    path: tests/test_skill_refs.py
+    reads: ["tests/fixtures/skill_refs_corpus.json"]
+  - runner: python
+    path: tests/test_tool_catalog.py
+    reads: ["tests/fixtures/hook_catalog_corpus.json"]
+  - runner: python
+    path: tests/test_starter_pack_contents.py
+    reads: ["skills/**", "scripts/smoke-test-bundle.sh"]
+  - runner: python
+    path: tests/test_ci_changed_areas.py
+    reads: ["scripts/ci-changed-areas.sh"]
+  - runner: python
+    path: tests/test_testing_skills.py
+    reads: ["testing/skills/**", "testing/test-map.yaml", "testing/scripts/**", "AGENTS.md", "app/e2e/*.spec.ts"]
+  - runner: python
+    path: tests/test_flaky_ledger.py
+    reads: ["testing/flaky.yaml", "app/e2e/*.spec.ts", "app/src/**/*.test.{ts,tsx}"]
+  - runner: vitest
+    path: app/src/test/visualProof.test.ts
+    reads: ["app/visual/capture.mjs"]
+  - runner: vitest
+    path: app/src/test/e2eFixtureImports.test.ts
+    reads: ["app/e2e/**/*.spec.ts"]
+  - runner: e2e
+    path: app/e2e/screen-geometry.journey.spec.ts
+    reads: ["app/visual/capture.mjs"]
+  - runner: cargo
+    path: app/src-tauri/src/commands/agent_docs/tests.rs
+    reads: ["tests/fixtures/agent_docs_corpus.json"]
+
+# Paths that select no runner. Still listed in the record.
+report_only: ["testing/audits/**/report.md", "DESIGN-*/**", "docs/**", "openspec/**", "**/*.md", "LICENSE", "website/**"]
+
+# Conservative selector obligations (docs/agents/testing.md, skt-testing
+# SKILL.md): a NEW screen/component needs a direct vitest importer; a NEW
+# CLI subparser needs argv evidence in a Python test. Missing this key turns
+# the check off entirely (`compute_obligations` returns `[]`); an existing
+# repository with no obligations configured stays exactly as it behaved
+# before TA-1-obligations. An unmet item blocks the local runner
+# (`testing/scripts/local_test_runner.py`) only — it never widens CI's full-
+# suite gate or `uncertainty`.
+obligations:
+  component_sources: ["app/src/screens/**/*.tsx", "app/src/components/**/*.tsx"]
+  subparser_sources: ["hub.py", "skill_hub/entrypoints/cli/*.py"]
+# Waive one obligation the automatic rule cannot see is actually met (a
+# subcomponent tested only through its parent screen, a subcommand tested
+# only through a fixture the argv scan cannot parse). Every waiver needs a
+# `reason`; `tests/test_testing_skills.py` checks the list for shape and for
+# staleness (an entry whose obligation no longer exists or is now met).
+obligations_waived: []

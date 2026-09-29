@@ -1,0 +1,29 @@
+{
+  "_comment": "Real-world shape from the 2026-09-01 divergence incident: 14x Bash(npm:*) accumulation, one clean pre-hub copy of each rule, 16x Bash(*) blanket accumulation, then an orphaned duplicate of hub's 8-rule generation at the tail (claimed by the sidecar as allow[40..47]) plus hub-written ask[0..2] that the registry had since flipped to allow.",
+  "model": "claude-fable-5[1m]",
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)",
+      "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)",
+      "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)", "Bash(npm:*)",
+      "Bash(npm:*)", "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(git:*)", "Bash(python3:*)", "Bash(python:*)", "Bash(pip:*)",
+      "Bash(pytest:*)", "Bash(cargo:*)", "Bash(grep:*)", "Bash(find:*)",
+      "Bash(*)", "Bash(*)", "Bash(*)", "Bash(*)",
+      "Bash(*)", "Bash(*)", "Bash(*)", "Bash(*)",
+      "Bash(*)", "Bash(*)", "Bash(*)", "Bash(*)",
+      "Bash(*)", "Bash(*)", "Bash(*)", "Bash(*)",
+      "Bash(git:*)", "Bash(python3:*)", "Bash(python:*)", "Bash(pip:*)",
+      "Bash(pytest:*)", "Bash(cargo:*)", "Bash(grep:*)", "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(npm:*)"
+    ]
+  },
+  "unrelated": {"kept": true}
+}

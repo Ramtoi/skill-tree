@@ -1,0 +1,115 @@
+{
+  "analysed_sessions": [
+    "claude-code:aaaaaaaa-1111-4111-8111-111111111111",
+    "claude-code:ffffffff-6666-4666-8666-666666666666",
+    "codex:cccccccc-3333-4333-8333-333333333333",
+    "codex:dddddddd-4444-4444-8444-444444444444",
+    "codex:eeeeeeee-5555-4555-8555-555555555555"
+  ],
+  "findings": [
+    {
+      "id": "footprint-skills:claude-code:alpha",
+      "kind": "footprint",
+      "moves": [
+        {
+          "kind": "review",
+          "label": "Review",
+          "targets": []
+        }
+      ],
+      "numbers": {
+        "bytes": 158,
+        "bytes_total": 158,
+        "harness": "claude-code",
+        "part": "skills",
+        "share": 1.0
+      },
+      "observation": "Skill descriptions (2) is 100% of the claude-code prompt (158 bytes).",
+      "project": "alpha",
+      "review": {
+        "area": "loadout",
+        "highlight": [],
+        "project": "alpha"
+      }
+    },
+    {
+      "id": "footprint-skill-brainstorm:alpha",
+      "kind": "footprint",
+      "moves": [
+        {
+          "kind": "unequip",
+          "label": "Unequip",
+          "targets": [
+            "brainstorm"
+          ]
+        },
+        {
+          "kind": "invocation",
+          "label": "Set user-only",
+          "targets": [
+            "brainstorm"
+          ]
+        }
+      ],
+      "numbers": {
+        "bytes": 73,
+        "bytes_total": 158,
+        "harnesses": [
+          "claude-code"
+        ],
+        "share": 0.4620253164556962,
+        "skill": "brainstorm"
+      },
+      "observation": "brainstorm is 46% of the claude-code prompt (73 bytes).",
+      "project": "alpha",
+      "review": {
+        "area": "loadout",
+        "highlight": [
+          "brainstorm"
+        ],
+        "project": "alpha"
+      }
+    },
+    {
+      "id": "footprint-skill-verify-it:alpha",
+      "kind": "footprint",
+      "moves": [
+        {
+          "kind": "unequip",
+          "label": "Unequip",
+          "targets": [
+            "verify-it"
+          ]
+        },
+        {
+          "kind": "invocation",
+          "label": "Set user-only",
+          "targets": [
+            "verify-it"
+          ]
+        }
+      ],
+      "numbers": {
+        "bytes": 84,
+        "bytes_total": 158,
+        "harnesses": [
+          "claude-code"
+        ],
+        "share": 0.5316455696202531,
+        "skill": "verify-it"
+      },
+      "observation": "verify-it is 53% of the claude-code prompt (84 bytes).",
+      "project": "alpha",
+      "review": {
+        "area": "loadout",
+        "highlight": [
+          "verify-it"
+        ],
+        "project": "alpha"
+      }
+    }
+  ],
+  "findings_window": 30,
+  "ok": true,
+  "window": 30
+}

@@ -1,0 +1,639 @@
+/* ─── Library list ─────────────────────────────────────────────────────── */
+/* ─── ResourceRow (the shared list-row anatomy; SkillRow is its preset) ───── */
+.resource-row {
+  display: grid;
+  /* glyph · line · actions · badges · disclosure — explicit per-cell
+     placement + `:not(:empty)` margin spacing live in unit-rows.css. */
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  column-gap: 0;
+  row-gap: 0;
+  align-items: center;
+  padding: 0 var(--pad-screen-x);
+  min-height: var(--row-h);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--dur-2), box-shadow var(--dur-4);
+  background: transparent;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.resource-row:focus-visible,
+.resource-card:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: -2px; }
+/* Selection is a LIT SLOT — the full engraved ring brightens in brand + a
+   faint inner glow — never a left stripe (an edge bar reads as one more
+   hairline in a hairline-built UI; the lit frame reads as "this slot is
+   chosen"). */
+.resource-row:hover {
+  background: color-mix(in oklab, var(--ctx) 4%, var(--bg-1));
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.resource-row[data-selected="true"] {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--ctx) 12%, var(--bg-1)), color-mix(in oklab, var(--ctx) 5%, var(--bg-1)));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ctx) 45%, transparent), inset 0 0 18px color-mix(in oklab, var(--ctx) 8%, transparent);
+}
+.resource-glyph { display: inline-flex; align-items: center; flex-shrink: 0; }
+.resource-line { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* chips/tags in the line must never be squeezed below content width — the name ellipsizes first */
+.resource-line > * { flex: 0 0 auto; }
+.resource-name { font-family: var(--font-mono); font-weight: 500; color: var(--fg-strong); font-size: var(--fs-7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+/* Description yields space first (identity truncates last, D8): it fills the
+   leftover and ellipsizes to nothing before the name ellipsizes. */
+.resource-desc { color: var(--fg-mute); font-size: var(--fs-5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 0; }
+.resource-badges { display: inline-flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.resource-actions { display: none; gap: 2px; }
+.resource-row:hover .resource-actions,
+.resource-row:focus-within .resource-actions { display: inline-flex; }
+
+/* SkillRow preset: skill-specific badges (equipped pip + version). */
+.resource-row .ver { font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-dim); }
+.resource-row .equipped-pip {
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-mute);
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 6px; border-radius: 3px; background: var(--bg-2); border: 1px solid var(--border);
+}
+/* Equipped-count pip signals "active/ok" → the green status channel (D8). */
+.resource-row .equipped-pip[data-active="true"] { color: var(--green); border-color: color-mix(in oklab, var(--green) 35%, transparent); background: color-mix(in oklab, var(--green) 10%, transparent); }
+/* --bp-nav-ish (600): give the name its own line; chips wrap beneath it and the
+   secondary description drops out, so the name never collapses to a stub.
+   (The matching narrow-width cell margins live in unit-rows.css.) */
+@container appmain (max-width: 600px) {
+  .resource-line { flex-wrap: wrap; row-gap: 4px; }
+  .resource-name { flex: 1 1 100%; }
+  .resource-desc { display: none; }
+}
+
+/* ─── Detail drawer ────────────────────────────────────────────────────── */
+
+/* ─── Project workspace ────────────────────────────────────────────────── */
+/* .workspace-grid is a ResizableSplit (display:grid + grid-template-columns set
+   inline by the primitive). Keep it filling the flex column; the primitive owns
+   the column sizing + responsive auto-collapse. */
+.workspace-grid { flex: 1; min-height: 0; height: 100%; }
+.workspace-main { padding: var(--pad-screen-y) var(--pad-screen-x) var(--fab-safe); overflow: auto; }
+/* The side panel is a recessed well (Guild space handling): the library you
+   draw FROM sits below the page surface; the loadout you build sits on it. */
+.workspace-side { border-left: 1px solid var(--border); padding: var(--pad-screen-y) var(--pad-screen-x); overflow: auto; background: var(--surface-well); box-shadow: var(--shadow-well); }
+.resizable-split-pane > .workspace-main,
+.resizable-split-pane > .workspace-side { flex: 1; min-height: 0; }
+
+/* Project workspace bands (§ rhythm) */
+.ws-band { display: block; }
+.ws-band + .ws-band { margin-top: calc(var(--pad-screen-y) * 2); }
+
+/* B4a-03 — Equipped-card truncation priority: the skill NAME always wins. When
+   the won't-sync badge + scope + kind + Inherit control + × all crowd the card
+   header, let the header wrap and give the name a readable minimum + ellipsis
+   so the meta/controls give way instead of the name vanishing. Loadout-scoped
+   so the shared Library grid card is untouched. */
+.ws-band-loadout .skill-card .resource-cardhead { flex-wrap: wrap; row-gap: 6px; }
+.ws-band-loadout .skill-card .resource-cardhead .resource-name {
+  flex: 1 1 auto;
+  min-width: 7ch;
+}
+
+/* B1-09 — unequip pending/optimistic feedback, mirroring the equip pulse: the
+   card dims and its × control pulses amber + goes non-interactive while the
+   disable mutation is in flight. */
+.ws-band-loadout .skill-card-unequipping { opacity: .6; }
+.ws-band-loadout .skill-card-unequipping .equip-toggle {
+  opacity: 1;
+  pointer-events: none;
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 40%, transparent);
+  animation: equip-pulse 1s ease-in-out infinite;
+}
+
+/* Guild container: flat panel, uniform hairline, engraved frame, crisp radius.
+   Weight (drop shadows) is the Obsidian ambience channel. */
+.stat-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  padding: 16px 18px;
+  background: var(--surface-panel);
+  box-shadow: var(--engrave), var(--shadow-ambient), var(--shadow-depth);
+  position: relative; overflow: hidden;
+  /* A narrow card (a 5-up KPI row, a narrow viewport) must shrink its own
+     hero type before a long value ($6,921.07, 29.5B) can run past the
+     padding — sized off the card's own box, never the viewport. */
+  container-type: inline-size; container-name: statcard;
+}
+/* Corner ticks — the Guild register, built from thin hairlines. The frame
+   carries the state: EQUIPPED panels wear their ticks always (tick hue =
+   provenance: amber direct, neutral via-bundle; the accent stat's are violet),
+   every other card's frame WAKES under the cursor — ticks fade in and slide
+   1px toward the corners. Never a left edge bar. */
+.stat-card::after,
+.resource-card::after {
+  content: ""; position: absolute; inset: 6px; pointer-events: none;
+  --tick-c: var(--tick);
+  opacity: 0;
+  transition: opacity var(--dur-7), inset var(--dur-7), --tick-c var(--dur-7);
+  background:
+    linear-gradient(var(--tick-c), var(--tick-c)) left top / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left top / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right top / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right top / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left bottom / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) left bottom / 1px 7px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right bottom / 7px 1px no-repeat,
+    linear-gradient(var(--tick-c), var(--tick-c)) right bottom / 1px 7px no-repeat;
+}
+.stat-card::after,
+.skill-card[data-equipped="true"]::after,
+/* Via-bundle here inherits the neutral --tick default (line 128) — same
+   provenance ornament family as the rest of the via-bundle uses (ANCHOR), it
+   just never overrides --tick-c to a brand hue. */
+.skill-card[data-via="bundle"]::after { opacity: 1; inset: 5px; }
+.resource-card:hover::after { opacity: 1; inset: 5px; --tick-c: var(--tick-hover); }
+.stat-card.accent::after { --tick-c: color-mix(in oklab, var(--ctx-2) 60%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  /* geometric motion off: no card lift, no tick slide (fades stay) */
+  .skill-card:hover { transform: none; }
+  .stat-card::after,
+  .resource-card::after { transition: opacity var(--dur-7); }
+}
+.skill-card[data-equipped="true"]::after,
+.skill-card[data-equipped="true"]:hover::after { --tick-c: color-mix(in oklab, var(--amber) 60%, transparent); }
+.stat-card .label { font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: .12em; color: var(--fg-dim); text-transform: uppercase; margin-bottom: 8px; }
+.stat-card .value {
+  font-family: var(--font-display); font-size: var(--fs-hero); font-weight: 700;
+  letter-spacing: -0.025em; color: var(--fg-strong); white-space: nowrap;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis;
+}
+/* The step-down is keyed on the VALUE's length (`data-value-len`, stamped by
+   StatCard), so "$3,885,000.00" shrinks while "$693.75" beside it keeps the
+   full hero size; a card narrower than any real tile takes one more step off
+   its width. A container query measures the CONTENT box, so 150px here is a
+   ~186px card — under the 180px KPI grid minimum, never a default-width tile.
+   The ellipsis stays as the last resort, never the first. */
+.stat-card[data-value-len="long"] .value { font-size: var(--fs-d-12); }
+.stat-card[data-value-len="xlong"] .value { font-size: var(--fs-d-9); }
+@container statcard (max-width: 150px) { .stat-card .value { font-size: var(--fs-d-9); } }
+@container statcard (max-width: 150px) { .stat-card[data-value-len="xlong"] .value { font-size: var(--fs-d-8); } }
+.stat-card .sub { font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mute); margin-top: 6px; }
+/* `clauses` — a sub line is a list of independent facts ("18% output",
+   "6% cache read"); a clause never breaks inside itself, only at the ` · `
+   separator between clauses. */
+/* A clause moves to the next line as one unit (inline-block) — it never
+   breaks inside itself while the line can hold it whole. Only a clause wider
+   than the tile itself wraps internally, instead of running out of the tile
+   (an `overflow: hidden` card used to clip it silently; a hint-bearing card
+   shows its overflow, so the run was visible). */
+.stat-card .stat-clause { display: inline-block; white-space: normal; }
+/* The charged panel: surface stays a Guild flat tint; the CHARGE is Obsidian —
+   a violet glow in the shadow stack, not a beveled skin. */
+.stat-card.accent {
+  background: linear-gradient(150deg, color-mix(in oklab, var(--ctx) 22%, var(--bg-2)), color-mix(in oklab, var(--ctx) 7%, var(--bg-1)) 70%);
+  border-color: color-mix(in oklab, var(--ctx) 55%, transparent);
+  box-shadow: var(--engrave), var(--shadow-ambient), 0 14px 36px color-mix(in oklab, var(--ctx) 26%, var(--shade-35)), 0 0 26px color-mix(in oklab, var(--ctx) 14%, transparent);
+}
+.stat-card.accent .label { color: var(--ctx-2); }
+
+/* ── Stat hint overlay ─────────────────────────────────────────────────────
+   A discoverable "why does this number matter" panel (e.g. the Cache hit
+   rate KPI). The mark sits at the end of the label row; the panel matches
+   the chart tooltip's glass look (see charts.css `.chart-tooltip`). */
+.stat-hint-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-left: 6px; color: var(--fg-dim);
+}
+.stat-card:hover .stat-hint-mark,
+.stat-card:focus-visible .stat-hint-mark,
+.stat-card:focus-within .stat-hint-mark { color: var(--fg-mute); }
+.stat-hint {
+  position: fixed; z-index: var(--z-tooltip);
+  width: max-content;
+  min-width: min(260px, calc(100vw - 24px)); max-width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px); overflow-y: auto; padding: 10px 12px;
+  background: var(--bg-glass); backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  box-shadow: var(--shadow-tip);
+  opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity var(--dur-4);
+}
+.stat-card:hover .stat-hint,
+.stat-card:focus-visible .stat-hint,
+.stat-card:focus-within .stat-hint {
+  opacity: 1; visibility: visible;
+}
+/* Same specificity as the rule above; declared after it, so a dismissal
+   (Escape) wins over a pointer that is still sitting on the tile. */
+.stat-card[data-hint-dismissed="true"] .stat-hint {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.stat-hint-title { color: var(--fg-strong); font-size: var(--fs-5); margin-bottom: 4px; }
+.stat-hint-body { color: var(--fg-mute); font-size: var(--fs-3); line-height: 1.5; }
+.stat-hint-body p { margin: 0 0 6px; }
+.stat-hint-body p:last-child { margin-bottom: 0; }
+.stat-hint-sources { margin-top: 6px; color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-2); }
+/* `.stat-card`'s `container-type: inline-size` (above) makes it its own
+   stacking context and it clips via `overflow: hidden` — both fine for the
+   corner ticks, both wrong for a panel that must escape the tile. Scoped to
+   hint-bearing cards only (`:has`), so every other stat card is untouched.
+   Lifting just the card is not enough: `.tile-row` sits beside a chart card
+   below it with no z-index of its own, so an unlifted row still paints
+   *under* that later sibling — the row needs the same lift. */
+.stat-card:has(.stat-hint):hover,
+.stat-card:has(.stat-hint):focus-within {
+  overflow: visible;
+  z-index: var(--z-popover-local);
+}
+.tile-row:has(.stat-card:hover > .stat-hint),
+.tile-row:has(.stat-card:focus-within > .stat-hint) {
+  position: relative;
+  z-index: var(--z-popover-local);
+}
+
+/* M8 affinity-skip banner — a genuine warning (warn/amber severity register,
+   like RiskBadge): equipped skills that won't reach any agent. */
+.affinity-skip-banner {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 10px 14px;
+  border: 1px solid color-mix(in oklab, var(--amber) 40%, transparent);
+  background: color-mix(in oklab, var(--amber) 8%, var(--bg-1));
+  border-radius: var(--radius);
+  font-size: var(--fs-6); color: var(--fg-mid);
+}
+.affinity-skip-banner > svg { color: var(--amber); flex-shrink: 0; }
+.affinity-skip-banner strong { color: var(--fg-strong); }
+.affinity-skip-link {
+  margin-left: auto; flex-shrink: 0;
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--anchor-2);
+}
+.affinity-skip-link:hover { color: var(--anchor); text-decoration: underline; }
+/* Per-card "won't sync here" badge — StatusBadge warn preset, compact. */
+.status-badge.skill-affinity-badge {
+  font-family: var(--font-mono); font-size: var(--fs-micro-3);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+/* Per-card "references a skill this project lacks" badge (skill-refs). Same
+   warn preset as .skill-affinity-badge, but a less severe fact — it is
+   demoted into `badges` whenever the affinity badge already holds the
+   leading slot (see EquippedSkillsGrid.tsx). */
+.status-badge.skill-missing-refs-badge {
+  font-family: var(--font-mono); font-size: var(--fs-micro-3);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* ── Invocation (Triggering) axis ─────────────────────────────────────────── */
+/* Deviation-only badge (auto renders nothing). Compact mono, status-hued. */
+.status-badge.invocation-badge {
+  font-family: var(--font-mono); font-size: var(--fs-micro-3);
+  letter-spacing: .05em;
+}
+
+/* SkillEditor "Triggering" side-panel picker — sibling of Reach/scope. */
+.triggering-block .triggering-conflict {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin: 0 0 10px; padding: 8px 10px;
+  border: 1px solid color-mix(in oklab, var(--amber) 40%, transparent);
+  background: color-mix(in oklab, var(--amber) 8%, var(--bg-1));
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-4); color: var(--fg-mid);
+}
+.triggering-block .triggering-conflict > svg { color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+/* ChipRadios — one chip row (the shared `.chips` well) of real radio inputs.
+   The lit slot keys off `data-active` because the input, not the label, is
+   the checked element; `.chip-radio-input` keeps the radio for the keyboard
+   and the tests, laid invisibly over its whole chip. Chips share the row. */
+.chip-radios { display: flex; width: 100%; }
+.kv + .triggering-block { margin-top: 8px; }
+.chip-radio { flex: 1 1 0; min-width: 0; justify-content: center; position: relative; border-radius: var(--radius-frame); }
+.chip-radio .chip-label { min-width: 0; }
+.chip-radio .chip-label-text { overflow: hidden; text-overflow: ellipsis; }
+.chip-radio.is-loading { cursor: progress; color: var(--fg-strong); }
+.chip-radio.is-loading .chip-radio-input { cursor: progress; }
+/* The radio lies invisibly over its whole chip, so a click (and a test's
+   `check()`) lands on the input itself, not on a label in front of it. */
+.chip-radio-input {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; opacity: 0; cursor: pointer;
+}
+.chip-radio-input:disabled { cursor: not-allowed; }
+.chip-radio[data-active] {
+  background: color-mix(in oklab, var(--ctx) 9%, var(--bg-3)); color: var(--fg-strong);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ctx) 40%, transparent);
+}
+.chip-radio:has(input:focus-visible) { outline: 2px solid var(--anchor); outline-offset: 1px; }
+.chip-radios[aria-disabled="true"] .chip-radio:not([data-active]):not(.is-loading) { opacity: .55; }
+/* High contrast strips fills and shadows; the chosen chip still needs an edge. */
+@media (forced-colors: active) {
+  .chip-radio[data-active] { outline: 2px solid; outline-offset: -2px; }
+}
+.triggering-consequence { margin: 8px 0 0; font-size: var(--fs-3); color: var(--fg-mute); line-height: 1.35; }
+.triggering-harness-hint { margin: 6px 0 0; font-size: var(--fs-2); color: var(--fg-dim); line-height: 1.4; }
+.triggering-locked {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin: 6px 0 0; font-size: var(--fs-3); color: var(--fg-mute); line-height: 1.4;
+}
+.triggering-locked > svg { color: var(--fg-dim); flex-shrink: 0; margin-top: 1px; }
+
+/* Native invocation evidence — compact rows beside the triggering choice. */
+.invocation-outcomes { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); }
+.invocation-outcomes-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-2); text-transform: uppercase; letter-spacing: .06em; }
+.invocation-outcomes-preview { color: var(--fg-mute); text-transform: none; letter-spacing: 0; }
+.invocation-outcomes-note { margin: 0 0 6px; color: var(--fg-dim); font-size: var(--fs-3); line-height: 1.4; }
+.invocation-outcomes-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.invocation-outcome-row { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-panel); }
+.invocation-outcome-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.invocation-outcome-harness { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-strong); font-family: var(--font-mono); font-size: var(--fs-3); }
+.invocation-outcomes-empty, .invocation-outcomes-conflict { margin: 4px 0 0; color: var(--fg-mute); font-size: var(--fs-3); line-height: 1.4; }
+/* Reserve two text lines at every width so previews never move the next row. */
+.invocation-outcome-card { display: block; width: 100%; padding: 6px 8px; border: 0; border-radius: inherit; background: transparent; text-align: left; color: inherit; cursor: help; }
+.invocation-outcome-card:focus-visible { outline: 1px solid var(--anchor); outline-offset: 2px; }
+.invocation-outcome-title { height: 22px; }
+.invocation-outcome-title .status-badge { flex-shrink: 0; white-space: nowrap; }
+.invocation-outcome-body { display: flex; align-items: flex-start; gap: 6px; margin-top: 4px; color: var(--fg-mute); }
+.invocation-outcome-body > svg { flex-shrink: 0; margin-top: 3px; color: var(--fg-dim); }
+.invocation-outcome-copy { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; height: 2.8em; font: var(--fs-3)/1.4 var(--font-sans); }
+.invocation-outcome-tooltip { position: fixed; z-index: var(--z-tooltip); width: max-content; max-width: min(340px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow-y: auto; padding: 10px 12px; overflow-wrap: anywhere; font: var(--fs-3)/1.5 var(--font-sans); color: var(--fg-mid); background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-tip); }
+.invocation-outcome-tooltip p { margin: 6px 0 0; }
+.invocation-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.invocation-heading h4 { flex: 1; min-width: 0; margin: 0; color: var(--fg-mid); font: var(--fs-3)/1.4 var(--font-sans); }
+.invocation-heading-skill { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); color: var(--fg-strong); }
+.invocation-heading .harness-affinity-chips { flex-shrink: 0; }
+.invocation-outcomes-empty, .invocation-outcomes-conflict { padding: 6px 0; }
+
+/* ProjectWorkspace per-card override control. Every .resource-card already
+   carries `position: relative` (for its corner-tick decoration + absolute
+   footer), so all grid siblings sit at the same z-index:auto stacking level
+   and paint in DOM order — a card in the row below would otherwise paint
+   OVER this menu's overflow, covering/eating clicks on its lower items. Lift
+   the hosting card above its siblings while the menu is open. */
+.skill-card:has(.invocation-override-menu) { z-index: var(--z-popover-local); }
+.invocation-override { position: relative; display: inline-flex; }
+.invocation-override-trigger {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 20px; padding: 0 6px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-1); cursor: pointer;
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-mute);
+}
+.invocation-override-trigger:hover { border-color: var(--border-strong); color: var(--fg-mid); }
+.invocation-override-trigger[data-override] {
+  border-color: color-mix(in oklab, var(--blue) 45%, transparent);
+  color: var(--blue);
+  background: color-mix(in oklab, var(--blue) 9%, var(--bg-1));
+}
+.invocation-override-menu {
+  position: absolute; top: calc(100% + 4px); right: 0; z-index: var(--z-tooltip);
+  width: 260px; padding: 6px;
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  background: var(--bg-2); box-shadow: var(--shadow-menu-sm);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.invocation-override-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 8px; border: 0; border-radius: var(--radius-sm);
+  background: none; cursor: pointer; text-align: left;
+}
+.invocation-override-menu[data-placement="above"] { top: auto; bottom: calc(100% + 4px); }
+.invocation-override-item:hover { background: var(--bg-3); }
+.invocation-override-item[data-active] { background: color-mix(in oklab, var(--ctx) 10%, transparent); }
+.invocation-override-check { width: 14px; flex-shrink: 0; color: var(--ctx); margin-top: 1px; }
+.invocation-override-item-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.invocation-override-item-body > span:first-child {
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg-strong);
+}
+.invocation-override-item-sub { font-size: var(--fs-2); color: var(--fg-mute); line-height: 1.35; }
+.invocation-override-gated {
+  display: flex; align-items: flex-start; gap: 6px; margin: 0; padding: 8px;
+  font-size: var(--fs-3); color: var(--fg-mid); line-height: 1.4;
+}
+.invocation-override-gated > svg { color: var(--amber); flex-shrink: 0; margin-top: 1px; }
+
+/* Compartmentalized sections (Guild space handling): each loadout section is a
+   framed recess — raised cards sit inside an engraved well. */
+.loadout-section {
+  margin-bottom: 24px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+}
+.loadout-section h3 { margin: 0 0 12px; font-size: var(--fs-7); font-weight: 600; color: var(--fg-strong); display: flex; align-items: center; gap: 10px; white-space: nowrap; flex-wrap: wrap; }
+.loadout-section h3 .count { font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-dim); font-weight: 400; }
+.loadout-section h3 .stretch { flex: 1; }
+.loadout-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  font-weight: 400;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.loadout-sort select {
+  height: 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  color: var(--fg-mid);
+  padding: 0 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.loadout-sort select:focus-visible {
+  outline: 1px solid var(--anchor-2);
+  outline-offset: 2px;
+}
+
+/* Guild panel treatment: the chip is a small engraved plate. */
+.bundle-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 12px 0 10px;
+  height: 36px;
+  border-radius: var(--radius-frame);
+  background: var(--surface-panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--engrave);
+  font-family: var(--font-mono); font-size: var(--fs-5);
+  margin: 0 8px 8px 0;
+  cursor: pointer; position: relative;
+  white-space: nowrap;
+  color: var(--fg);
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.bundle-chip .icon { width: 18px; height: 18px; border-radius: 4px; display: grid; place-items: center; font-size: var(--fs-3); color: var(--bg-0); font-weight: 600; }
+.bundle-chip .skills-count { color: var(--fg-mute); font-size: var(--fs-3); }
+.bundle-chip .remove {
+  width: 16px; height: 16px; padding: 0; display: grid; place-items: center;
+  color: var(--fg-dim); cursor: pointer; opacity: 0; transition: opacity var(--dur-4);
+  background: transparent; border: 0;
+}
+.bundle-chip:hover .remove, .bundle-chip:focus-within .remove { opacity: 1; }
+.bundle-chip .remove.is-loading {
+  width: auto; height: auto; display: inline-flex;
+  padding: 2px 6px; opacity: 1; color: var(--fg-mute);
+}
+.bundle-chip:hover { border-color: var(--border-strong); box-shadow: var(--engrave), var(--shadow-raise-sm); }
+
+.bundle-chip-add {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 12px;
+  height: 36px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-frame);
+  color: var(--fg-mute);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-mono); font-size: var(--fs-5);
+  white-space: nowrap;
+  box-sizing: border-box;
+  vertical-align: top;
+  margin: 0 0 8px 0;
+}
+.bundle-chip-add:hover { color: var(--fg); border-color: var(--anchor); }
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+/* ─── Tile row ──────────────────────────────────────────────────────────────
+   A FIXED, small set of equal tiles (a KPI row, stat cards, file cards) wraps
+   as a flex row whose tiles grow to fill their line, so a width that fits four
+   of five tiles gives 4 + 1 full-width, and three-per-line gives 3 + 2 halves —
+   never one tile beside a run of empty space. A collection grid of arbitrary
+   length (skills, remotes, sub-agents) keeps `auto-fill` equal cards instead:
+   there a lone card stretched three-wide would be the odder outcome. */
+.tile-row {
+  display: flex; flex-wrap: wrap; gap: var(--tile-gap, 12px); align-items: stretch;
+  /* An inline-size container so a consumer can step its own tiles' flex-basis
+     as the row itself narrows (e.g. a 5-tile row rebalancing 3+2, then
+     halves) — see COMPONENTS.md §Layout > Tile rows fill. A `.stat-card`
+     child is itself a nested `statcard` container; nesting is fine. */
+  container-type: inline-size; container-name: tilerow;
+}
+.tile-row > * { flex: 1 1 var(--tile-min, 180px); min-width: 0; }
+
+/* ─── ResourceCard (the shared card anatomy; SkillCard is its preset) ─────── */
+.resource-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  padding: 12px 14px;
+  background: var(--surface-panel);
+  box-shadow: var(--engrave), var(--shadow-ambient);
+  transition: border-color var(--dur-4), background var(--dur-4), transform var(--dur-4), box-shadow var(--dur-4);
+  color: inherit; text-align: left; font: inherit;
+  display: block; width: 100%;
+}
+.resource-card .resource-cardhead { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding-right: 28px; }
+.resource-card .resource-glyph { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.resource-card .resource-cardhead .resource-name { font-family: var(--font-mono); font-size: var(--fs-6); font-weight: 500; color: var(--fg-strong); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resource-card .resource-desc {
+  font-size: var(--fs-4); color: var(--fg-mute);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* The footer is a LEGEND CARVED INTO A BASE RULE (Guild): an interior hairline
+   near the card's bottom edge, with each label cutting the line by painting the
+   panel's edge color behind itself — inside the frame, on every card state. */
+.resource-card:has(.resource-footer) { padding-bottom: 30px; }
+.resource-card .resource-footer {
+  position: absolute; left: 12px; right: 12px; bottom: 13px;
+  height: 0; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim);
+  line-height: 14px;
+  /* the rule itself must not eat clicks meant for the card… */
+  pointer-events: none;
+}
+.resource-card .resource-footer > * {
+  background: var(--panel-edge);
+  padding: 0 5px;
+  border-radius: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* …but a legend that IS interactive (SourceChip's tooltip button) stays so. */
+  pointer-events: auto;
+}
+.resource-card .resource-footer > :first-child { margin-left: -5px; }
+.resource-card .resource-footer > :last-child:not(:first-child) { margin-right: -5px; }
+/* An equipped card's legend takes the ornament's hue — label and frame are one. */
+.skill-card[data-equipped="true"] .resource-footer { border-top-color: color-mix(in oklab, var(--amber) 28%, transparent); }
+.skill-card[data-equipped="true"] .resource-footer > :first-child {
+  color: color-mix(in oklab, var(--amber) 70%, var(--fg-dim));
+}
+.resource-card .resource-badges { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+/* card actions wrapper vanishes from the box tree so absolutely-positioned
+   corner controls (e.g. the equip toggle) anchor to the card itself. */
+.resource-card .resource-actions { display: contents; }
+
+/* SkillCard preset. Hover lifts the card toward the light instead of swapping
+   its surface — depth is the hover grammar now. */
+.skill-card { cursor: grab; }
+.skill-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--engrave), var(--shadow-lift);
+}
+.skill-card-newly-equipped {
+  animation: equipped-arrive .42s cubic-bezier(.2,.7,.2,1);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--green) 24%, transparent), 0 12px 34px color-mix(in oklab, var(--green) 8%, transparent);
+}
+/* Provenance on the material itself (Forged Obsidian): a directly-equipped
+   card is forged in amber — the provenance hue tints its bevel + border, echoing
+   the ◆ DIRECT chip. Via-bundle stays neutral (a faint left edge marks
+   "equipped" without spending a hue). */
+.skill-card[data-equipped="true"] {
+  border-color: color-mix(in oklab, var(--amber) 42%, transparent);
+  box-shadow: var(--engrave), var(--shadow-ambient), var(--shadow-depth), 0 0 24px color-mix(in oklab, var(--amber) 9%, transparent);
+}
+.skill-card[data-via="bundle"] { box-shadow: var(--engrave), var(--shadow-raise-md); }
+.skill-card[data-dim="true"] { opacity: 0.55; }
+.skill-card .equip-toggle {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--fg-mute);
+  cursor: pointer;
+  display: grid; place-items: center;
+  opacity: 0; transition: opacity var(--dur-4);
+}
+.skill-card:hover .equip-toggle { opacity: 1; }
+.skill-card[data-equipped="true"] .equip-toggle { opacity: 1; }
+.skill-card .equip-toggle:hover { color: var(--red); border-color: color-mix(in oklab, var(--red) 40%, transparent); background: color-mix(in oklab, var(--red) 15%, transparent); }
+
+.dropzone-active { outline: 2px dashed var(--ctx); outline-offset: -6px; background: color-mix(in oklab, var(--ctx) 8%, transparent) !important; }
+
+/* `.avail-skill*` (the pre-redesign Available-panel row) is RETIRED. The
+   replacement `.avail-row*` grammar (a `ResourceRow` preset) lives in
+   unit-rows.css, imported immediately after this file — including its own
+   reduced-motion gate for these two keyframes' new hosts. */
+@keyframes equip-pulse { 50% { opacity: .45; transform: scale(.86); } }
+@keyframes details-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes equipped-arrive { from { opacity: .4; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .skill-card-newly-equipped {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.triggering-picker-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.triggering-picker-row .chip-radios { flex: 1; }
+
+.triggering-settled {
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+}

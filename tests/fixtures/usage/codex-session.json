@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "session_id": "dddddddd-5555-4555-8555-555555555555",
+  "harness": "codex",
+  "project": "alpha",
+  "window": null,
+  "last_scan_at": "2026-09-07T12:00:00.000Z",
+  "transcript_present": true,
+  "summary": {
+    "tokens_total": 15,
+    "cache_hit_ratio": 0.0,
+    "steering_count": 0,
+    "duration_minutes": 0,
+    "activity": {
+      "delegate": 0,
+      "edit": 0,
+      "external": 0,
+      "operate": 0,
+      "read": 1,
+      "skill": 1,
+      "verify": 0
+    },
+    "thinking_text_share": null,
+    "subagent_token_share": 0.0,
+    "loadout_assumed": true
+  },
+  "intent_excerpt": "",
+  "events": [
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 1,
+        "skill": 1,
+        "verify": 0
+      },
+      "at": "2026-09-07T11:00:02.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "tool",
+      "model": "gpt-test",
+      "name": "CommandExecution",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 15,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 3,
+        "output": 12
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "additive": true,
+      "at": "2026-09-07T11:00:02.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "skill",
+      "model": "gpt-test",
+      "name": "brainstorm",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    }
+  ],
+  "subagents": []
+}

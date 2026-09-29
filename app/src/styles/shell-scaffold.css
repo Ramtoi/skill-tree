@@ -1,0 +1,633 @@
+/* ─── App scaffold ─────────────────────────────────────────────────────── */
+.app {
+  display: grid;
+  /* The chrome ground: shows wherever a column is transparent (the navigator
+     column around its plate). */
+  background: var(--bg-0);
+  grid-template-columns: var(--rail-w) var(--sidebar-w) 1fr;
+  /* minmax(0, 1fr): the middle row must be allowed to shrink below its
+     min-content height, else a rail taller than the window pushes the
+     StatusBar row below the fold (body overflow is hidden — it just vanishes). */
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr) 28px;
+  height: 100vh;
+  /* Left padding for the navigator's band cell. The panel head now owns the top
+     `--header-row-1` of its own column, so wherever the macOS traffic lights
+     (which reach --titlebar-inset from the window edge) overlap that column, the
+     head has to clear them. With the rail on they only reach
+     `--titlebar-inset - --rail-w` into the panel — negative once the rail is
+     expanded, hence the max() clamp back to the normal gutter. */
+  --side-head-inset: max(10px, calc(var(--titlebar-inset) - var(--rail-w)));
+}
+/* THE sanctioned chrome accent lift, declared once: the section hue raised to
+   a visible accent register (72% L, 0.14 C). Everything section-tinted in the
+   chrome — the contour line (--chrome-edge), the band wash, the rail wash —
+   derives from this one variable, so the border literally follows the
+   selection's accent color. Engines without relative color keep the plain
+   low-chroma section hue via the var() fallbacks. */
+@supports (color: oklch(from red l c h)) {
+  .app { --section-lifted: oklch(from var(--section) 72% 0.14 h); }
+}
+/* ─── The chrome accent contour ────────────────────────────────────────────
+   Declared HERE, not in the token block: a custom property's var() references
+   resolve on the element that declares it, so at :root this read the DEFAULT
+   --section and every group got the same violet line (measured (101,98,125) on
+   projects, context, guardrails and agents alike — "reads grey"). On `.app`,
+   --section is the route's own, so the L-line along the band's bottom, down the
+   rail's right edge and around the active tab finally carries the section
+   accent. 85%, not 60%: at 60% the lifted hue was diluted by the dark chrome
+   ground behind it back into a neutral. */
+.app {
+  --chrome-edge: color-mix(in oklab, var(--section-lifted, var(--section)) 85%, transparent);
+  /* What the glass sheet is translucent OVER (painted on `.app-side` below).
+     The chrome lamp alone is too slow and too weak to survive 74% of panel
+     surface — the plate read flat with a hint of tint. Declared here, not at
+     :root, for the reason above: at :root it came out a neutral white glow.
+     20% is the ceiling readability allows — the carved legends live in exactly
+     this corner, and they are `--fg-mute` (see PROOFS-iter4 §iter5). */
+  --panel-backlight: color-mix(in oklab, var(--section-lifted, var(--section)) 24%, transparent);
+}
+
+/* The screen's ACTUAL ground, restated on `.app` for the same reason. Both
+   tokens are declared at :root off --ctx, and :root's --ctx is the anchor
+   (the trap above), but their one consumer — the rail's fused active tab
+   (shell-rail.css, `[data-nav="false"]` / narrow) — lives in the RAIL, not
+   inside `.app-main`, and it exists to end in exactly the colour the screen
+   beside it paints. So the pair is re-derived here, from the CONTENT hue,
+   at the same 8% / 30% the token block uses. */
+.app {
+  --atmo-tint: color-mix(in oklab, var(--section-2-lifted, var(--section-2)) 8%, var(--bg-1));
+  --layer-screen-edge: color-mix(in oklab, #000000 30%, var(--atmo-tint));
+}
+
+/* Grid x-offsets of the panel + main columns, for the chrome lamp above. */
+.app { --panel-x: var(--rail-w); --main-x: calc(var(--rail-w) + var(--sidebar-w)); }
+.app[data-narrow="true"][data-rail="true"] { --main-x: var(--rail-w); }
+.app[data-rail="true"][data-nav="false"]:not([data-narrow="true"]) { --main-x: var(--rail-w); }
+.app[data-rail="false"] { --panel-x: 0px; --main-x: var(--sidebar-w); }
+.app[data-rail="false"][data-narrow="true"],
+.app[data-rail="false"][data-nav="false"] { --main-x: 0px; }
+.app[data-rail="false"] {
+  grid-template-columns: var(--sidebar-w) 1fr;
+  /* No rail between the window edge and the panel: the head takes the whole
+     traffic-light inset. */
+  --side-head-inset: var(--titlebar-inset);
+}
+/* Rail labels mode — one variable swap, so the grid, the topbar span and the
+   off-canvas drawer offsets all reflow from the same source.
+   `:not([data-narrow="true"])` is the narrow exception: a narrow window has no
+   width to spend on labels, so the rail stays compact there WITHOUT clearing
+   the preference (the tweak survives; only the presentation compacts). Every
+   expanded-mode rule below carries the same guard for the same reason. */
+.app[data-rail="true"][data-rail-expanded="true"]:not([data-narrow="true"]) {
+  --rail-w: var(--rail-w-expanded);
+}
+/* Rail expand/collapse motion. The ONE length that changes is `--rail-w`
+   (56px ↔ 168px), so that is the one thing that transitions: registered as a
+   typed <length> so the engine can interpolate it, and every consumer — the
+   grid's first track, `--main-x`/`--panel-x`, the traffic-light inset — simply
+   follows the interpolated value. Transitioning `grid-template-columns`
+   itself was wrong: that also eased the navigator's 240px ↔ 0 track when the
+   navigator was toggled or the window left the narrow breakpoint (both
+   instant mode switches, and the panel is display:none by then — main slid
+   across an empty gap). Scoped to rail-shown + not-narrow, the only state pair
+   the value actually swaps in. */
+@property --rail-w {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 56px;
+}
+.app[data-rail="true"]:not([data-narrow="true"]) {
+  transition: --rail-w var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+}
+/* Chrome hue, one per rail GROUP (not per destination — see tokens.css). Only
+   the rail active pill + screen-header accent read --section; body content
+   never does, so these hues cannot collide with the semantic palette. The
+   attribute keeps the name `data-section` and carries the group id, set on .app
+   in App.tsx. */
+.app[data-section="projects"]    { --section: var(--sec-projects); }
+.app[data-section="context"]     { --section: var(--sec-context); }
+.app[data-section="guardrails"]  { --section: var(--sec-guardrails); }
+.app[data-section="agents"]      { --section: var(--sec-agents); }
+.app[data-section="elsewhere"]   { --section: var(--sec-elsewhere); }
+/* In fullscreen macOS auto-hides the traffic lights, so collapse the strip.
+   Fullscreen ⇒ no lights to clear; narrow ⇒ the panel is an overlay drawer, not
+   a column under the title bar. Both put the head back on the normal gutter.
+   Must stay AFTER the [data-rail="false"] block — same specificity. */
+.app[data-fullscreen="true"] { --topbar-h: 0px; }
+.app[data-fullscreen="true"] .app-topbar { display: none; }
+.app[data-fullscreen="true"],
+.app[data-narrow="true"] { --side-head-inset: 10px; }
+/* …unless the RAIL is on screen. The strip is the rail column's CELL IN THE
+   BAND, not just a light reservation: collapse it and the band stops at the
+   panel's left edge while `.app-rail`'s full-height border-right runs straight
+   through it — the exact vertical seam the band exists to remove. Keeping it
+   leaves windowed and fullscreen differing in `--side-head-inset` and nothing
+   else. The rail gives up 56px of scroll height for it; it already scrolls.
+   NOT extended to the rail-hidden layouts: there the panel (or main) owns the
+   band's leftmost cell and a strip would sit on top of it. */
+.app[data-fullscreen="true"][data-rail="true"] {
+  --topbar-h: var(--header-row-1);
+}
+.app[data-fullscreen="true"][data-rail="true"] .app-topbar { display: block; }
+/* …except in the one layout that has no other chrome: narrow + rail hidden puts
+   the drawer handle in the title strip, so the strip has to survive fullscreen
+   or the handle would land on top of the screen header. */
+.app[data-fullscreen="true"][data-narrow="true"][data-rail="false"] {
+  --topbar-h: var(--header-row-1);
+}
+.app[data-fullscreen="true"][data-narrow="true"][data-rail="false"] .app-topbar {
+  display: flex;
+}
+
+/* Narrow window: collapse the NavPanel column to 0 so the rail + main reclaim
+   the full width. The NavPanel itself becomes an off-canvas drawer (below).
+   This is keyed on NARROW ALONE — hiding the rail is a preference about the
+   rail, not a reason to keep a 240px panel docked in a 520px window. */
+.app[data-narrow="true"][data-rail="true"] {
+  grid-template-columns: var(--rail-w) 0 1fr;
+}
+
+/* ─── No left chrome at all ────────────────────────────────────────────────
+   Rail hidden AND the panel out of flow (narrow drawer, or the navigator
+   switched off): there is no left column left to reserve room for the macOS
+   traffic lights. The strip spans the window instead, and main starts BELOW it
+   rather than sharing row 1 — otherwise the lights sit on top of the screen
+   header. */
+.app[data-rail="false"][data-narrow="true"],
+.app[data-rail="false"][data-nav="false"] {
+  grid-template-columns: 0 1fr;
+}
+.app[data-rail="false"][data-narrow="true"] .app-topbar,
+.app[data-rail="false"][data-nav="false"] .app-topbar {
+  grid-column: 1 / -1;
+  /* …and here it is a TITLE BAR, not a cell in the band: main starts in row 2,
+     so the band's wash + 2px section underline would stack two identical 56px
+     bands with the top one blank — a broken duplicate header. Plain surface;
+     the hairline stays so the strip still reads as chrome. */
+  background: var(--bg-0);
+  box-shadow: none;
+}
+.app[data-rail="false"][data-narrow="true"] .app-main,
+.app[data-rail="false"][data-nav="false"] .app-main {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+/* ─── Rail hidden, navigator docked ────────────────────────────────────────
+   `.app-side` now owns column 1 AND row 1, so a strip in the same cell would
+   paint straight over the panel head. Collapse the row and drop the strip; the
+   head's own `--side-head-inset` (the full --titlebar-inset here) is what keeps
+   the traffic lights off the section name. */
+.app[data-rail="false"][data-nav="true"]:not([data-narrow="true"]) {
+  --topbar-h: 0px;
+}
+.app[data-rail="false"][data-nav="true"]:not([data-narrow="true"]) .app-topbar {
+  display: none;
+}
+
+/* ─── Navigator hidden (Tweaks → "Show navigator") ─────────────────────────
+   Drops the panel column at every width. At narrow widths the panel is already
+   an off-canvas drawer, so it is NOT unmounted there — the handle still opens
+   it, which is what keeps "rail off + navigator off" a recoverable state. */
+.app[data-rail="true"][data-nav="false"]:not([data-narrow="true"]) {
+  grid-template-columns: var(--rail-w) 0 1fr;
+}
+.app[data-nav="false"]:not([data-narrow="true"]) .app-side { display: none; }
+
+/* Title-bar strip — RAIL-COLUMN CHROME ONLY. Its single job is keeping the
+   rail's glyphs clear of the macOS traffic lights; the navigator owns its own
+   band cell (`.side-head`), so the strip no longer spans into that column and
+   carries no content of its own (the brand moved to the StatusBar). */
+.app-topbar {
+  grid-row: 1;
+  /* It holds nothing now, so it needs no titlebar padding. `min-width: 0`
+     overrides a grid item's default `min-width: auto` (its automatic minimum
+     size): the old 84+14px padding made the item's min-content 98px, so it
+     OVERFLOWED its 56px grid area and bled 42px into the panel's cell — the
+     56px track itself never moved. */
+  min-width: 0;
+  -webkit-app-region: drag;
+}
+/* The brand mark, centered in the strip's rail-column cell. Decorative and
+   inert (pointer-events: none) so the strip stays one uninterrupted drag
+   region; rendered only while the rail is shown — in the no-left-chrome
+   layouts the strip is a plain title bar and the StatusBar carries the brand. */
+.topbar-logo {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* ─── The header band ──────────────────────────────────────────────────────
+   ONE band across all three columns: the rail's title strip, the navigator's
+   section head, and the screen header share height, surface, section wash and
+   bottom edge, so the top of the window reads as a single header row in every
+   mode (windowed / fullscreen, rail shown / hidden). Declared ONCE — a second
+   copy of the wash derivation is how the three drift out of alignment.
+   No column separator crosses it — the layer staircase has no hairline seams
+   at all (the lightness step + cast AO separate the columns). */
+.app-topbar,
+.side-head,
+.main-header {
+  height: var(--header-row-1);
+  flex-shrink: 0;
+  /* The band's bottom edge IS the chrome-edge line (section-hued): the old
+     neutral hairline + 2px underline pair collapsed into the one stroke that
+     also runs down the rail's right edge — one continuous contour around the
+     chrome region. */
+  border-bottom: 1px solid var(--chrome-edge);
+  /* C6 — section gradient: a wash of the route's section hue at the top edge,
+     fading to the page surface by the bottom. "Where am I" is then carried by
+     the chrome itself, so the title never has to move to say it.
+     Tint-over-surface is the house idiom for a hue band (cf. .perm-stat,
+     .perm-risk-banner).
+     The hue comes from `--header-wash`, NOT `--section` directly: at 12% of the
+     0.06-chroma section token the eight hues land ~3 RGB units apart — a
+     difference the eye cannot name, which is the whole job of the band. So this
+     takes the SECOND sanctioned chroma lift (the rail's live glint is the
+     first): same relative-colour derivation, guarded by the same @supports, with
+     the plain `--section` as the fallback. */
+  --header-wash: var(--section-lifted, var(--section));
+  /* THE CHROME LAMP: one ambient light source at the window's top-left (the
+     brand + section-name corner). Every chrome piece paints the SAME radial
+     field, offset by its own grid position via --lamp-x/--lamp-y, so the glow
+     is mathematically continuous across the strip, the panel head, the screen
+     header and down the rail — one intentional gradient, no per-element
+     restarts or cut-offs. The section hue makes it the "where am I" ambience. */
+  background:
+    radial-gradient(1000px 560px at var(--lamp-x, 0px) var(--lamp-y, 0px),
+      color-mix(in oklab, var(--header-wash) 14%, transparent), transparent 70%),
+    var(--bg-0);
+}
+/* Each band cell's offset from the lamp = its own grid position, negated —
+   declared inside each cell's own rule (.side-head in shell-nav.css,
+   .main-header in shell-main.css). */
+
+/* ─── Merged chrome: the strip and the rail are ONE region ─────────────────
+   With the rail on screen, the title strip is the rail's top, not a band cell:
+   no bottom edge between them, the rail's surface continues up, and the
+   section wash flows from the strip DOWN the rail (the "dynamic gradient" —
+   it retints per selected section). The chrome-edge line skips the strip/rail
+   junction entirely and runs down the rail's right edge instead — the L-shaped
+   contour around the chrome region. */
+/* The strip keeps the shared band background (identical recipe = identical
+   pixels = no internal seam against the head) and merely drops its bottom
+   edge: below it the rail continues the same --bg-0 chrome ground. */
+.app[data-rail="true"] .app-topbar {
+  border-bottom: 0;
+}
+/* The contour's corner is a plain 90° angle: the band's bottom line and the
+   rail's edge line simply meet. (A rounded fillet was tried and retired — the
+   rounded-vs-square corner language is deliberate later work.) */
+
+/* min-height + overflow: in a short window the rail scrolls instead of
+   forcing the grid taller than the viewport (which would clip the StatusBar
+   and put the bottom rail buttons out of reach). */
+/* `position: relative; z-index: var(--z-base)` is not decoration: it pins the
+   rail into an explicit painting order BELOW the narrow drawer
+   (z-index: var(--z-nav-drawer)), so the drawer can never be sliced by a rail
+   glyph. */
+/* Layer staircase: the rail is the TOP plate. No border-right — the lightness
+   step down to the navigator plus the navigator's cast shadow separate the
+   columns, and the absence of a seam is what lets the active glyph fuse into
+   the panel (see .rail-btn[aria-current]). */
+/* `margin-top: -1px`: the band's contour is the LAST row of the 56px band
+   (border-box, 1px border-bottom), and the rail's `overflow-y: auto` clips at
+   the rail's own top edge — so for the active tab's ring (`top: -1px` off the
+   first button) to share the contour's row, the rail itself must start on
+   that row. It paints the same chrome ground there; the strip above has no
+   bottom edge of its own, so nothing is covered. */
+.app-rail   { grid-row: 2; grid-column: 1; position: relative; z-index: var(--z-base); display: flex; flex-direction: column; align-items: center; margin-top: -1px; padding: calc(var(--content-line) - var(--rail-glyph-rise)) 0 14px; gap: 4px; min-height: 0; overflow-y: auto;
+  /* Background layers, top to bottom: (1) the chrome-edge line pinned to the
+     right edge — a BACKGROUND, not a border, so it never scrolls and the fused
+     tile (a child) paints over it, opening the line at the tab's mouth;
+     (2) the section wash continuing down from the merged strip (picks up where
+     the strip's 8% left off, fading out — the dynamic per-section tint);
+     (3) the rail plate. */
+  background:
+    linear-gradient(var(--chrome-edge), var(--chrome-edge)) top right / 1px 100% no-repeat,
+    /* NO backlight here. TWO GROUNDS: the chrome (band ∪ rail) wears ONLY the
+       chrome lamp, exactly as it shipped — the backlight belongs to the GLASS,
+       and putting it on the rail made the top of the rail a saturated pool with
+       a hard edge against the band. The active tab still matches the plate: it
+       paints its own sheet + backlight + lamp in its ::after (shell-rail.css),
+       over a ground it fully covers, so the rail itself needs none.
+       The chrome lamp's field, continued below the strip (offset by the
+       strip's height so the glow hands off with no cut-off). */
+    radial-gradient(1000px 560px at 0 calc(-1 * var(--topbar-h)),
+      color-mix(in oklab, var(--section-lifted, var(--section)) 14%, transparent), transparent 70%),
+    var(--layer-rail);
+}
+/* Spans rows 1–2 exactly like `.app-main`, so the panel owns the top
+   --header-row-1 of its own column and its head lands in the header band. */
+/* The navigator column is TRANSPARENT chrome ground: its head sits in the
+   band, and the content below is a raised plate (`.side-plate`, shell-nav.css
+   — panel surface, rounded top-left into the frame's corner, cast AO). The
+   app's own --bg-0 shows through around the plate. No hairline seam on either
+   side, and the plate's seamless right edge is what lets the active row sink
+   onto the screen's material (see .side-item[data-active]). The narrow drawer
+   overrides this with an opaque floating surface. */
+.app-side   { grid-row: 1 / 3; position: relative; border-right: 0; overflow: hidden; display: flex; flex-direction: column;
+  /* The navigator column is the chrome GROUND, and the ground is where the
+     chrome lamp is painted for this column — the same 1000×560 field the band
+     cells paint, at the same offset (`--panel-x`, y = 0), so the glow runs
+     straight down out of the head with no restart. It has to live HERE and
+     nowhere else: the plate above it is a translucent sheet, and a sheet can
+     only show a tint that something behind it is painting. */
+  --lamp-x: calc(-1 * var(--panel-x));
+  background:
+    /* (1) The BACKLIGHT: a tighter, stronger section glow, existing solely so
+       the glass sheet above it has something to be translucent over — the
+       chrome lamp alone is too slow and too weak to survive 74% of panel
+       surface. It is CLIPPED to the plate's own area (from the band's bottom
+       edge down): the band is chrome, and chrome wears the lamp and nothing
+       else. Its origin is therefore (0,0) of that clipped box, which is
+       (--panel-x, --header-row-1) in window coordinates — the same point the
+       tab's viewport-fixed copy uses, so the two stay one field. */
+    radial-gradient(320px 480px at 0 0, var(--panel-backlight), transparent 70%)
+      0 var(--header-row-1) / 100% calc(100% - var(--header-row-1)) no-repeat,
+    /* (2) The chrome lamp — the same 1000×560 field the band cells paint, at
+       the same offset, so the glow runs straight down out of the head. */
+    radial-gradient(1000px 560px at var(--lamp-x, 0px) var(--lamp-y, 0px),
+      color-mix(in oklab, var(--section-lifted, var(--section)) 14%, transparent), transparent 70%),
+    var(--bg-0);
+}
+/* The navigator's SELECTION follows the section: inside the panel the lit slot
+   (ring, fill, glow — the `--slot-*` register from tokens.css) and the chosen
+   row's accent text (`--nav-accent`: count, action glyph, recent chip) re-point
+   from brand violet to the same lifted section hue as the contour above, so a
+   chosen row on Guardrails is rose, on Agents gold, on Elsewhere green. Brand
+   violet stays on the FOCUS ring (`:focus-visible`, shell-nav.css): focus is a
+   brand affordance, selection is "where am I", and the two must stay tellable
+   apart. Declared on `.app-side` for the same reason `--chrome-edge` sits on
+   `.app`: here `--section` resolves to the route's own hue. */
+.app-side {
+  --slot-ring: color-mix(in oklab, var(--section-lifted, var(--section)) 45%, transparent);
+  --slot-fill: color-mix(in oklab, var(--section-lifted, var(--section)) 10%, transparent);
+  --slot-fill-soft: color-mix(in oklab, var(--section-lifted, var(--section)) 6%, transparent);
+  --slot-glow: inset 0 0 18px color-mix(in oklab, var(--section-lifted, var(--section)) 8%, transparent);
+  --nav-accent: var(--section-lifted, var(--section));
+}
+.app-main   { grid-row: 1 / 3; overflow: hidden; display: flex; flex-direction: column; position: relative; min-width: 0; container-type: inline-size; container-name: appmain;
+  /* Forged Obsidian atmosphere: a faint light source above the content column,
+     fading into the page ground — now in the CONTENT section's hue, so the
+     room itself says where you are. Chrome (header band) paints over it. */
+  /* The screen is the BASE plate: the chrome column beside it (panel, or rail
+     when the panel is off) casts AO onto its left edge — as the FIRST
+     background layer, offset to start at the band's bottom, because the column
+     spans rows 1–2 and an inset shadow on the box would start at y=0 and cut
+     through the header band (see --cast-md-layer). It is indirected through
+     --cast-layer so the "nothing is casting" modes can drop it with one
+     declaration instead of restating the whole stack. */
+  --cast-layer: var(--cast-md-layer);
+  background:
+    var(--cast-layer) 0 var(--header-row-1) / 24px calc(100% - var(--header-row-1)) no-repeat,
+    radial-gradient(1100px 460px at 50% -200px, color-mix(in oklab, var(--ctx) 8%, transparent), transparent 62%),
+    var(--layer-screen);
+}
+/* ─── The CONTENT accent — `--ctx*` IS the content section's hue ────────────
+   Placed AFTER the layout rule above, not before it: several contract tests
+   read `.app-main`'s FIRST declaration block as "the screen column's rule",
+   and a token-only block in front of it would answer instead. Order is free
+   here — the @supports pair below is consumed through var() fallbacks, never
+   by overriding a later declaration.
+   The chrome answers "where am I" with --section; the SCREEN answers it with
+   --ctx, and from here on the two are the same material. --section-2 is the
+   CONTENT hue (context-mix.css): equal to --section on an ordinary route, and
+   the route's own entity hue when a screen is shown in place inside another
+   section (guardrails ▸ project permissions). Reading --section-2 rather than
+   --section is what makes the mixed header's right half and the body below it
+   agree.
+
+   Declared on `.app-main`, NEVER :root — the tokens.css §NOTE trap: a custom
+   property's var() references resolve on the element that DECLARES it, so at
+   :root --ctx would freeze on the default section for every route (the same
+   way --chrome-edge came out violet on all five groups). `.app-side` re-points
+   --slot-* on --section for exactly this reason; this is its content twin.
+
+   `.app-main` is also the boundary ON PURPOSE. Every overlay — Modal /
+   ConfirmDialog / Sheet portal to document.body, the palette, the cheatsheet,
+   the tips tour, toasts and the Tweaks panel render as siblings of `.app-main`
+   inside `.app` — sits OUTSIDE this element, so all of them keep the :root
+   --ctx, which is the anchor. A modal is not a place. The ONE exception is
+   named and derived below (§ The Usage session sheet).
+
+   REGISTER (COMPONENTS.md §Accents): context appears as fills ≤10%, 1px rings,
+   ornament and washes. Never a dot, never a word, never a solid chip — those
+   belong to status and to the anchor. What keeps context off status is HUE
+   DISTANCE, not chroma: every section hue holds ≥30° from red 25 / amber 75 /
+   green 155 / blue 245 (tokens.css § Section-chrome hues, guarded by
+   sectionHueSpacing.test.ts). Chroma still has a ceiling — 0.16, amber's and
+   green's, never violet's 0.18 or red's 0.20 — so the brighter context step
+   can be no louder than the quietest status colour.
+
+   Engines without relative colour fall back to the plain --section-2 (0.06 C):
+   a quieter ring, never a wrong one. */
+@supports (color: oklch(from red l c h)) {
+  .app-main {
+    --ctx-2-lifted: oklch(from var(--section-2) 78% 0.16 h);
+    --ctx-glow-lifted: oklch(from var(--section-2) 70% 0.16 h / 0.35);
+  }
+}
+
+/* ─── The Usage session sheet: the ONE overlay that IS a place ─────────────
+   "A modal is not a place" holds for every overlay but this one. The Usage
+   session sheet is not a dialog about a thing — it is the whole session
+   inspector (timeline, tool calls, changes), the same panel the /usage/
+   session/:id ROUTE renders inside `.app-main`. With the anchor as context,
+   its lanes, wait ticks, selection rings and chips all land on one violet
+   and stop separating; on the route the same panel already reads in the
+   usage hue. Naming the exception here keeps every section hue in the chrome
+   file that owns them (screens/usage.css may not name one — charts.test.ts).
+
+   Usage sits in the `agents` rail group (lib/sections.ts), so the hue is
+   --sec-agents. The sheet portals to document.body, OUTSIDE `.app`, so it
+   can inherit neither --section-2 nor --section-2-lifted and has to restate
+   the ladder from the base token. The derivation is byte-identical to
+   `.app-main`'s above — same percentages, same @supports guard, same
+   var(--…-lifted, <unlifted fallback>) shape, so --ctx never restates a lift
+   inline (accentChannels.test.ts) and the two can never drift apart. */
+.usage-session-sheet {
+  --sheet-ctx: var(--sec-agents);
+  --ctx: var(--sheet-ctx-lifted, var(--sheet-ctx));
+  --ctx-2: var(--sheet-ctx-2-lifted, var(--sheet-ctx));
+  --ctx-glow: var(--sheet-ctx-glow-lifted, var(--sheet-ctx));
+  /* The :root --slot-* quartet substituted ITS var(--ctx) at :root (the
+     tokens.css §NOTE trap), so the lit-slot register is restated here at the
+     same four percentages `.app-main` and `.app-side` use. */
+  --slot-ring: color-mix(in oklab, var(--ctx) 45%, transparent);
+  --slot-fill: color-mix(in oklab, var(--ctx) 10%, transparent);
+  --slot-fill-soft: color-mix(in oklab, var(--ctx) 6%, transparent);
+  --slot-glow: inset 0 0 18px color-mix(in oklab, var(--ctx) 8%, transparent);
+}
+@supports (color: oklch(from red l c h)) {
+  .usage-session-sheet {
+    --sheet-ctx-lifted: oklch(from var(--sec-agents) 72% 0.14 h);
+    --sheet-ctx-2-lifted: oklch(from var(--sec-agents) 78% 0.16 h);
+    --sheet-ctx-glow-lifted: oklch(from var(--sec-agents) 70% 0.16 h / 0.35);
+  }
+}
+.app-main {
+  /* --ctx IS --section-2-lifted (72% L / 0.14 C) — the SAME lift the chrome
+     contour rides, REUSED rather than restated, so a ring on a card and the
+     line under the band can never land in two registers. */
+  --ctx: var(--section-2-lifted, var(--section-2));
+  --ctx-2: var(--ctx-2-lifted, var(--section-2));
+  --ctx-glow: var(--ctx-glow-lifted, var(--section-2));
+  /* The :root --slot-* quartet substitutes ITS var(--ctx) at :root (the trap
+     above), so the lit-slot register has to be restated here — exactly the way
+     `.app-side` restates it on --section, at the same four percentages. */
+  --slot-ring: color-mix(in oklab, var(--ctx) 45%, transparent);
+  --slot-fill: color-mix(in oklab, var(--ctx) 10%, transparent);
+  --slot-fill-soft: color-mix(in oklab, var(--ctx) 6%, transparent);
+  --slot-glow: inset 0 0 18px color-mix(in oklab, var(--ctx) 8%, transparent);
+}
+.app-status { grid-row: 3; grid-column: 1 / -1; border-top: 1px solid var(--border); background: var(--bg-0); display: flex; align-items: center; padding: 0 12px; gap: 16px; font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mute); white-space: nowrap; overflow: hidden; }
+
+/* The strip covers the RAIL column only — the sidebar column's row-1 cell now
+   belongs to `.side-head`. Main keeps its own column and stays flush to the top.
+   (Rail hidden: the strip is dropped entirely, see "Rail hidden, navigator
+   docked" above; it survives only in the two no-left-chrome layouts, where it
+   spans the window.) */
+.app[data-rail="true"]  .app-topbar { grid-column: 1 / 2; }
+.app[data-rail="true"]  .app-side { grid-column: 2; }
+.app[data-rail="true"]  .app-main { grid-column: 3; }
+.app[data-rail="false"] .app-topbar { grid-column: 1 / 2; }
+.app[data-rail="false"] .app-side { grid-column: 1; }
+.app[data-rail="false"] .app-main { grid-column: 2; }
+
+/* ─── Pre-router gates (full-window takeover) ──────────────────────────────
+   The runtime-error and bootstrap branches in App.tsx reuse `.app` for its
+   viewport-height grid but render NO rail and NO NavPanel — only `.app-main`.
+   Without this, the sidebar track still reserved 240px, so every gate sat in
+   column 2: off-centre at 1440 and clipped mid-word at 520 (F1). One column,
+   main in it. Must stay AFTER the [data-rail] block — same specificity, so
+   source order decides. */
+.app[data-gate="true"] { grid-template-columns: 1fr; }
+.app[data-gate="true"] .app-main { grid-column: 1; }
+/* Nothing to the left, nothing casting: gate takeovers and the no-left-chrome
+   layouts drop the screen's cast AO. */
+.app[data-gate="true"] .app-main,
+.app[data-rail="false"][data-narrow="true"] .app-main,
+.app[data-rail="false"][data-nav="false"] .app-main { --cast-layer: none; }
+/* Gutter at narrow widths: the error card centres itself via `margin: auto`,
+   which alone would leave its border flush against both window edges once the
+   window is narrower than its 540px cap. */
+.app[data-gate="true"] .error-card { max-width: min(540px, calc(100% - 32px)); }
+/* A gate screen is ONE card on an otherwise empty window; top-anchoring it left
+   a ~600px void below at desktop heights. Auto margins inside a flex column
+   centre it without the overflow clipping `align-items: center` would cause on
+   a card taller than the viewport. */
+.gate-scroll {
+  display: flex; flex-direction: column;
+  padding: 24px 0; box-sizing: border-box;
+}
+.gate-scroll > .error-card { margin: auto; }
+
+/* ─── NavPanel as off-canvas drawer (narrow) ───────────────────────────────
+   The grid column is collapsed to 0, so the NavPanel is lifted out of flow and
+   pinned to the left edge of the main area (just right of the rail, or the
+   window edge when the rail is hidden), spanning the full height between topbar
+   and status bar. It slides in when open and is covered by a scrim over main
+   that closes it on click.
+
+   `visibility` is what makes a CLOSED drawer truly gone: a translated-away
+   panel is still hit-testable at its edges and still findable. It flips back at
+   the END of the slide-out (transition-delay) so the animation stays visible,
+   and instantly on the way in. The matching `inert` attribute is set from React
+   (App.tsx) — CSS alone cannot take an element out of the tab order.
+
+   z-index sits ABOVE the rail (which is `position: relative;
+   z-index: var(--z-base)`), so the drawer covers rail glyphs instead of
+   being sliced by them. */
+.app[data-narrow="true"] .app-side {
+  position: absolute;
+  top: var(--topbar-h);
+  bottom: 28px;
+  left: var(--rail-w);
+  width: var(--sidebar-w);
+  z-index: var(--z-nav-drawer);
+  background: var(--layer-panel);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow-nav-drawer);
+  transform: translateX(calc(-100% - var(--rail-w)));
+  visibility: hidden;
+  transition: transform var(--dur-8) ease, visibility 0s linear var(--dur-8);
+}
+/* No rail to clear: the drawer starts at the window edge. */
+.app[data-narrow="true"][data-rail="false"] .app-side {
+  left: 0;
+  transform: translateX(-100%);
+}
+.app[data-narrow="true"][data-nav-open="true"] .app-side {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform var(--dur-8) ease, visibility 0s;
+}
+/* A floating drawer has no lit ground under it — `.app-side` is a flat opaque
+   surface here — so the sticky legend must not rebuild one either, or it would
+   be the only tinted thing on an untinted sheet. Flat panel surface: exactly
+   what the plate composites to over this background. */
+.app[data-narrow="true"] .side-group-head {
+  background-image: none;
+  background-color: var(--layer-panel);
+}
+/* The drawer floats at `top: var(--topbar-h)` over page content, nowhere near
+   the title bar, so the head must not drag or zoom the window from there. The
+   `data-tauri-drag-region` attribute is dropped in NavPanel for the same
+   reason — Tauri's own handler reads the attribute, not this property. */
+.app[data-narrow="true"] .side-head { -webkit-app-region: no-drag; }
+/* Scrim over main; only present + interactive when the drawer is open. */
+.app-nav-scrim {
+  position: absolute;
+  top: var(--topbar-h);
+  bottom: 28px;
+  left: var(--rail-w);
+  right: 0;
+  z-index: var(--z-nav-scrim);
+  background: color-mix(in oklab, var(--bg-0) 60%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-8) ease;
+}
+.app[data-rail="false"] .app-nav-scrim { left: 0; }
+.app[data-nav-open="true"] .app-nav-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Fixed drawer handle — the only navigator affordance when the rail is hidden
+   at a narrow width. Parked in the title strip's left region, clear of the
+   macOS traffic lights (the strip already reserves --titlebar-inset for them);
+   in fullscreen the lights auto-hide, so it moves to the window corner. */
+.nav-handle {
+  position: fixed;
+  top: 8px;
+  left: var(--titlebar-inset);
+  z-index: var(--z-nav-handle);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  color: var(--fg-mid);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+.nav-handle:hover { background: var(--bg-3); color: var(--fg-strong); }
+.nav-handle:focus-visible { outline: 2px solid var(--anchor); outline-offset: 1px; }
+.app[data-fullscreen="true"] .nav-handle { left: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .app[data-narrow="true"] .app-side,
+  .app[data-narrow="true"][data-nav-open="true"] .app-side,
+  .app-nav-scrim,
+  .app[data-rail="true"]:not([data-narrow="true"]) {
+    transition: none;
+  }
+}
+

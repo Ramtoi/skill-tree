@@ -1,0 +1,138 @@
+/* ─── SHIPS WITH — companion rows, harness-glyph state, status line ──────────
+   Wave 2 rebuild (D7/D8): one dense row per companion — kind icon, a linked
+   mono name with a `CompanionRefCard` hover preview, and a right-aligned
+   harness-glyph cluster whose STATE (lit/dim/unsupported) replaces every
+   verdict pill/word the pre-wave-2 section used. Sub-group labels reuse the
+   shared `.equip-group`/`.equip-group-name`/`.equip-group-count` rule
+   (styles/side-panel.css, ONE rule with USED BY / REFERENCES) so AGENTS /
+   HOOKS / RULES cannot drift from them; this file adds only what is specific
+   to a companion row. */
+
+/* ── Status line (D7's "ONE status line") ─────────────────────────────────
+   Sits above the well, its own line — never inside a group. Neutral text
+   weight carries "pending"/"drifted" (S2: a capability gap/consequence is
+   never amber here); the `Provision` rung is the line's only control. */
+.companion-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+}
+.companion-status-line[data-tone="pending"],
+.companion-status-line[data-tone="drift"] {
+  color: var(--fg-strong);
+}
+
+/* ── The well ──────────────────────────────────────────────────────────────
+   Same recessed-well grammar as `.skill-refs-stack` (styles/skill-refs.css) —
+   REFERENCES and SHIPS WITH cannot visually drift from each other. */
+.companions-stack {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border-radius: var(--radius-frame);
+  padding: 0 6px 6px;
+}
+.companions-group:first-child .equip-group { padding-top: 8px; }
+
+/* ── One row ───────────────────────────────────────────────────────────────
+   icon · name (hover host) · right cluster (badge + glyphs). `min-height`
+   matches `.skill-ref-row`'s density so a companion row and a reference row
+   read as the same rhythm. */
+.companion-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: max(22px, calc(var(--row-h) - 10px));
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+}
+.companion-row-icon { flex-shrink: 0; }
+
+.companion-name-anchor { position: relative; display: inline-flex; min-width: 0; }
+.companion-name {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  color: var(--fg);
+  text-align: left;
+}
+/* D12/F7: the pointer affordance keys on `data-routable`, not the element
+   type — a routable row is a real `<button>`, an inert one a plain `<span>`
+   (both carry this attribute so the rule never has to know which). */
+.companion-name[data-routable="true"] { cursor: pointer; }
+.companion-name[data-routable="true"]:hover { color: var(--anchor); }
+.companion-name[data-routable="true"]:focus-visible {
+  outline: 2px solid var(--anchor-2);
+  outline-offset: -2px;
+}
+.companion-name[data-routable="false"] { cursor: default; }
+
+/* R29: portalled to `document.body` (CompanionRow.tsx) so it can escape
+   `.editor-side`'s own scroll container — `top`/`left` come from the inline
+   style the component measures off the anchor's rect; this rule only sets
+   the positioning MODE + stacking + the invisible-until-measured state. */
+.companion-popover {
+  position: fixed;
+  z-index: var(--z-tooltip);
+}
+
+.companion-row-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* A row's own state Tag/menu (`drifted`/`outdated`/`missing`) — neutral,
+   never amber (S2). */
+.companion-state-control { display: flex; align-items: center; gap: 2px; }
+.companion-state-control .overflow-menu { display: inline-flex; }
+
+/* ── Harness glyph cluster (CompanionHarnessGlyphs) ────────────────────────
+   S4: "identity glyph, presence-dimmed" — no new hex/rgba, no chroma. `lit`
+   is the glyph's own full-opacity brand mark (the default); `dim` drops
+   opacity only; `unsupported` dims AND draws a 1px neutral slash. */
+.companion-glyphs { display: flex; align-items: center; gap: 4px; }
+.companion-glyph { position: relative; display: inline-flex; line-height: 0; }
+.companion-glyph[data-state="dim"] { opacity: .38; }
+.companion-glyph[data-state="unsupported"] {
+  opacity: .38;
+}
+.companion-glyph[data-state="unsupported"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid var(--fg-dim);
+  transform: rotate(-45deg);
+}
+
+/* ── CompanionRefCard — the kind label + glyph row appended below SkillRefCard's
+   shared shape (`.skill-ref-card*`, styles/skill-refs.css) ──────────────────── */
+.companion-ref-card-kind {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: .08em;
+}
+.companion-ref-card-glyphs { display: flex; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .companion-glyph { transition: opacity .12s ease; }
+}

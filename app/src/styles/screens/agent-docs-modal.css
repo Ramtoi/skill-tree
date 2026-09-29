@@ -1,0 +1,271 @@
+/* ── Modal (discard + conflict) ── */
+.ad-modal-backdrop {
+  position: fixed; inset: 0; z-index: var(--z-dropdown);
+  background: var(--scrim);
+  backdrop-filter: blur(8px);
+  display: grid; place-items: center;
+}
+.ad-modal {
+  width: min(560px, calc(100vw - 64px));
+  background: var(--bg-glass);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
+.ad-modal[data-accent="red"]   { border-color: color-mix(in oklab, var(--red) 45%, transparent); }
+.ad-modal[data-accent="amber"] { border-color: color-mix(in oklab, var(--amber) 45%, transparent); }
+.ad-modal-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: .02em;
+}
+.ad-modal[data-accent="red"]   .ad-modal-head { color: var(--red); }
+.ad-modal[data-accent="amber"] .ad-modal-head { color: var(--amber); }
+.ad-modal-body {
+  padding: 18px 20px;
+  font-size: var(--fs-6);
+  color: var(--fg);
+  line-height: 1.55;
+}
+.ad-modal-body p { margin: 0 0 12px; }
+.ad-modal-body p:last-child { margin-bottom: 0; }
+.ad-modal-foot {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-0);
+}
+
+.agent-docs-conflict-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 8px;
+}
+.agent-docs-conflict-grid > div {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  background: var(--bg-2);
+}
+.ad-c-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: .14em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ad-c-meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+
+/* Harness + binding strip */
+.agent-docs-strip {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  /* C3: a body strip, not a header row — but it still owes the screen gutter
+     the same token every other surface uses. */
+  padding: 10px var(--pad-screen-x);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-0);
+}
+
+/* Fix banner — the single conditional deviation surface */
+.ad-fix-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: var(--fs-4);
+  color: var(--fg-strong);
+}
+.ad-fix-banner[data-tone="fix"] {
+  border-bottom-color: color-mix(in oklab, var(--amber) 35%, transparent);
+  background: color-mix(in oklab, var(--amber) 6%, var(--bg-0));
+}
+.ad-fix-banner[data-tone="fix"] > svg { color: var(--amber); }
+.ad-fix-banner[data-tone="conflict"] {
+  border-bottom-color: color-mix(in oklab, var(--red) 35%, transparent);
+  background: color-mix(in oklab, var(--red) 6%, var(--bg-0));
+}
+.ad-fix-banner[data-tone="conflict"] > svg { color: var(--red); }
+.ad-fix-banner-copy { min-width: 0; }
+
+/* Fix plan dialog */
+.ad-fix-plan { width: min(640px, 90vw); }
+.ad-fix-steps {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--fs-4);
+}
+.ad-fix-steps li[data-optional] { color: var(--fg-mute); }
+.ad-fix-step-optin { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.ad-fix-step-optin input { accent-color: var(--anchor); margin-top: 2px; }
+.ad-fix-optin-tag {
+  font-size: var(--fs-micro-3);
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-left: 4px;
+}
+.ad-fix-attention p,
+.ad-fix-flagged p { margin: 4px 0; font-size: var(--fs-4); }
+.ad-fix-attention svg { color: var(--red); }
+.ad-fix-flagged svg { color: var(--amber); }
+.ad-fix-footnote { font-size: var(--fs-2); color: var(--fg-dim); margin-top: 10px; }
+.ad-commit-optin {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+  cursor: pointer;
+}
+.ad-commit-optin input { accent-color: var(--green); margin-top: 1px; }
+.ad-fix-dirty-warning { font-size: var(--fs-3); color: var(--amber); margin-top: 8px; }
+
+/* Conflict compare + appendix absorption */
+.ad-compare-modal { width: min(860px, 94vw); }
+.ad-compare-diff {
+  margin-top: 10px;
+  max-height: 50vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.ad-absorb-preview {
+  margin-top: 10px;
+  max-height: 32vh;
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  white-space: pre-wrap;
+}
+
+/* Status-line root summary */
+.harness-strip-root { font-size: var(--fs-3); color: var(--fg-mid); white-space: nowrap; }
+.harness-strip-publish { font-size: var(--fs-3); color: var(--cyan); white-space: nowrap; }
+.harness-strip-ok { display: inline-flex; color: var(--green); }
+
+/* Tree deviation badges */
+.ad-pill-deviation[data-tone="warn"] {
+  color: var(--amber);
+  background: color-mix(in oklab, var(--amber) 12%, transparent);
+  border-color: color-mix(in oklab, var(--amber) 32%, transparent);
+}
+.ad-pill-deviation[data-tone="error"] {
+  color: var(--red);
+  background: color-mix(in oklab, var(--red) 12%, transparent);
+  border-color: color-mix(in oklab, var(--red) 32%, transparent);
+}
+.ad-pill-deviation[data-tone="info"] {
+  color: var(--blue);
+  background: color-mix(in oklab, var(--blue) 12%, transparent);
+  border-color: color-mix(in oklab, var(--blue) 32%, transparent);
+}
+
+/* Manage popover — strategy section */
+.harness-popover-strategy {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px 12px;
+}
+.harness-popover-strategy-title {
+  font-size: var(--fs-1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 7px;
+}
+.harness-popover-strategy-row { display: flex; align-items: center; gap: 10px; }
+.harness-popover-strategy-row select {
+  background: var(--bg-2);
+  color: var(--fg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  padding: 3px 6px;
+}
+.harness-popover-strategy-clear {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--fg-mute);
+  font-size: var(--fs-2);
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.harness-popover-strategy-clear:hover { color: var(--fg); border-color: var(--anchor); }
+.harness-popover-strategy-inherit { font-size: var(--fs-2); color: var(--fg-dim); }
+.harness-popover-publish {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 12px;
+}
+.harness-popover-publish-copy { display: flex; flex-direction: column; gap: 3px; }
+.harness-popover-publish-copy .harness-popover-strategy-title { margin: 0; }
+.harness-popover-publish-copy > span:last-child {
+  color: var(--fg-mute);
+  font-size: var(--fs-2);
+  line-height: 1.4;
+}
+.harness-popover-publish-now { grid-column: 1 / -1; justify-self: start; }
+
+.ad-banner-symlink {
+  border-color: color-mix(in oklab, var(--cyan) 35%, transparent);
+  background: color-mix(in oklab, var(--cyan) 8%, transparent);
+  color: var(--cyan);
+}
+.agent-docs-banner strong { color: inherit; font-weight: 600; margin-right: 2px; }
+.agent-docs-banner .btn { margin-left: auto; }
+
+.agent-docs-symlink-stub {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 24px;
+  color: var(--fg-mute);
+  text-align: center;
+  background:
+    repeating-linear-gradient(135deg,
+      transparent 0 8px,
+      color-mix(in oklab, var(--cyan) 4%, transparent) 8px 9px);
+}
+.agent-docs-symlink-stub h4 {
+  margin: 12px 0 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-d-2);
+  color: var(--cyan);
+}
+.agent-docs-symlink-stub p {
+  margin: 0;
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+  max-width: 380px;
+  line-height: 1.5;
+}

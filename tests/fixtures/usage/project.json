@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "project": "alpha",
+  "window": 30,
+  "findings_window": 30,
+  "last_scan_at": "2026-09-07T12:00:00.000Z",
+  "harnesses": [
+    "claude-code"
+  ],
+  "footprint": {
+    "claude-code": {
+      "observed": 9504,
+      "parts": [
+        {
+          "part": "skills",
+          "label": "Skill descriptions (1)",
+          "text": "brainstorm: brainstorm ideas (.claude/skills/brainstorm)",
+          "bytes": 56
+        },
+        {
+          "part": "agent_docs",
+          "label": "CLAUDE.md + 0 imports",
+          "text": "",
+          "bytes": 0
+        },
+        {
+          "part": "mcp_schemas",
+          "label": "MCP tool schemas (0 servers)",
+          "text": "",
+          "bytes": 0
+        }
+      ],
+      "unknown": [],
+      "bytes_total": 56,
+      "approx_tokens": 14
+    }
+  },
+  "utilization": [
+    {
+      "key": "brainstorm",
+      "count": 1,
+      "you": 0,
+      "model": 1,
+      "script": 0,
+      "last_used_at": "2026-09-06T10:00:00.000Z",
+      "trail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "sessions_with_skill": 1,
+      "footprint_bytes": 56,
+      "harnesses": [
+        "claude-code"
+      ],
+      "idle": false
+    }
+  ],
+  "subagents": [],
+  "outcomes": {
+    "sessions": 1,
+    "tokens_per_session": 9704,
+    "cache_hit_ratio": 0.9,
+    "steering_per_session": 2.0,
+    "subagent_token_share": 0.0,
+    "activity": {
+      "read": 0.5,
+      "edit": 0.16666666666666666,
+      "verify": 0.0,
+      "operate": 0.16666666666666666,
+      "delegate": 0.0,
+      "skill": 0.16666666666666666,
+      "external": 0.0
+    },
+    "thinking_text_share": 0.1,
+    "files_read_median": 4.0,
+    "files_edited_median": 1.0,
+    "verified_edit_session_ratio": 0.0,
+    "editing_sessions": 1,
+    "unverified_editing_sessions": 1,
+    "tracked_files": null,
+    "median_all_projects": {
+      "activity": {
+        "read": 0.5,
+        "edit": 0.16666666666666666,
+        "verify": 0.0,
+        "operate": 0.16666666666666666,
+        "delegate": 0.0,
+        "skill": 0.16666666666666666,
+        "external": 0.0
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "footprint-skills:claude-code:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "Skill descriptions (1) is 100% of the claude-code prompt (56 bytes).",
+      "numbers": {
+        "harness": "claude-code",
+        "part": "skills",
+        "share": 1.0,
+        "bytes": 56,
+        "bytes_total": 56
+      },
+      "moves": [
+        {
+          "label": "Review",
+          "kind": "review",
+          "targets": []
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": []
+      }
+    },
+    {
+      "id": "footprint-skill-brainstorm:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "brainstorm is 100% of the claude-code prompt (56 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "brainstorm",
+        "share": 1.0,
+        "bytes": 56,
+        "bytes_total": 56
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "brainstorm"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "brainstorm"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "brainstorm"
+        ]
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+      "harness": "claude-code",
+      "parent_session_id": null,
+      "started_at": "2026-09-06T10:00:00.000Z",
+      "last_activity_at": "2026-09-06T10:45:00.000Z",
+      "tokens_total": 9704,
+      "cache_hit_ratio": 0.9,
+      "steering_count": 2,
+      "loadout_assumed": true,
+      "analysed": true
+    }
+  ],
+  "not_analysed": []
+}

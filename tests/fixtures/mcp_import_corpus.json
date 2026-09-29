@@ -1,0 +1,1401 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_mcp_import_corpus.py"},
+    {"side": "typescript", "path": "app/src/test/mcpImportCorpus.test.ts"}
+  ],
+  "cases": [
+    {
+      "id": "N01",
+      "note": "Sanity native key must slugify to sanity; registers renamed",
+      "source": "claude_user",
+      "name": "Sanity",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "sanity",
+        "reason": null,
+        "warnings": [
+          "renamed_from:Sanity"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N02",
+      "note": "'My Server' slugifies to my-server",
+      "source": "claude_user",
+      "name": "My Server",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "my-server",
+        "reason": null,
+        "warnings": [
+          "renamed_from:My Server"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N03",
+      "note": "'my_server' slugifies to my-server",
+      "source": "codex_global",
+      "name": "my_server",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "my-server",
+        "reason": null,
+        "warnings": [
+          "renamed_from:my_server"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N04",
+      "note": "'server.v2' slugifies to server-v2",
+      "source": "claude_user",
+      "name": "server.v2",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "server-v2",
+        "reason": null,
+        "warnings": [
+          "renamed_from:server.v2"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N05",
+      "note": "leading/trailing hyphens stripped",
+      "source": "claude_user",
+      "name": "-lead-",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "lead",
+        "reason": null,
+        "warnings": [
+          "renamed_from:-lead-"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N06",
+      "note": "NFKD + combining-mark drop; ß has no NFKD decomposition so it collapses to a hyphen",
+      "source": "claude_user",
+      "name": "Grüße",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "gru-e",
+        "reason": null,
+        "warnings": [
+          "renamed_from:Grüße"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N07",
+      "note": "emoji slugifies to empty -> invalid_name",
+      "source": "claude_user",
+      "name": "🚀",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N08",
+      "note": "empty native key -> invalid_name, no exception",
+      "source": "claude_user",
+      "name": "",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N09",
+      "note": "whitespace-only key -> invalid_name",
+      "source": "claude_user",
+      "name": "   ",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N10",
+      "note": "bare '..' -> invalid_name; no path is ever built from it",
+      "source": "claude_user",
+      "name": "..",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N11",
+      "note": "path separator debris -> invalid_name (never silently yields 'etc')",
+      "source": "claude_user",
+      "name": "../../etc",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N12",
+      "note": "a NUL byte between 'a' and 'b' (E3.edge-cases.md line 87 renders it as a space; E3a and its review both misread it) refuses via the N11 separator-debris rule",
+      "source": "claude_user",
+      "name": "a\u0000b",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "invalid_name",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "N12b",
+      "note": "an ORDINARY space (not N12's NUL byte): 'a b' collapses to 'a-b', consistent with N02-N04's space-to-hyphen rule",
+      "source": "claude_user",
+      "name": "a b",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "a-b",
+        "reason": null,
+        "warnings": [
+          "renamed_from:a b"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N13",
+      "note": "67-char name is accepted, warns name_long (dir names have no length bound)",
+      "source": "claude_user",
+      "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reason": null,
+        "warnings": [
+          "name_long"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "N14",
+      "note": "name collides with an existing NON-mcp skill -> unsupported/name_taken, decided in classify",
+      "source": "claude_user",
+      "name": "unslop",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "unslop",
+        "reason": "name_taken:unslop",
+        "warnings": [],
+        "spec": null
+      },
+      "registry": {
+        "skills": {
+          "unslop": {
+            "type": "skill",
+            "scope": "portable"
+          }
+        },
+        "projects": {}
+      }
+    },
+    {
+      "id": "N15",
+      "note": "identical spec to an existing MCP skill, no sidecar yet -> already_managed (not new)",
+      "source": "claude_user",
+      "name": "foo",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "already_managed",
+        "import_name": "foo",
+        "reason": null,
+        "warnings": [],
+        "spec": null
+      },
+      "registry": {
+        "skills": {
+          "foo": {
+            "type": "mcp-server",
+            "scope": "global",
+            "mcp": {
+              "command": "npx"
+            }
+          }
+        },
+        "projects": {}
+      }
+    },
+    {
+      "id": "N16",
+      "note": "Sanity(claude, args=[a]) + sanity(codex, args=[b]) group into ONE conflict candidate by case-folded slug",
+      "source": "claude_user",
+      "name": "Sanity",
+      "native": {
+        "command": "npx",
+        "args": [
+          "a"
+        ]
+      },
+      "expect": {
+        "status": "conflict",
+        "import_name": "sanity",
+        "reason": null,
+        "warnings": [
+          "renamed_from:Sanity"
+        ],
+        "spec": null
+      },
+      "extra_entries": [
+        {
+          "source": "codex_global",
+          "name": "sanity",
+          "native": {
+            "command": "npx",
+            "args": [
+              "b"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "N17",
+      "note": "'My Server' + 'my_server' (identical spec) now group into ONE candidate by construction (classify groups by case-folded slug) — the old two-candidates-overwrite-each-other bug this row named is structurally closed; hub_cli.mcp._reconcile_apply_mcp separately refuses a residual 'as'-override collision with name_collision_in_batch (tests/test_mcp_reconcile_apply.py, not this corpus)",
+      "source": "claude_user",
+      "name": "My Server",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "my-server",
+        "reason": null,
+        "warnings": [
+          "renamed_from:My Server",
+          "renamed_from:my_server"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      },
+      "extra_entries": [
+        {
+          "source": "codex_global",
+          "name": "my_server",
+          "native": {
+            "command": "npx"
+          }
+        }
+      ]
+    },
+    {
+      "id": "T05",
+      "note": "streamable-http is an accepted alias of http, no warning",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "streamable-http",
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp"
+        }
+      }
+    },
+    {
+      "id": "T08",
+      "note": "case-fold HTTP -> http, warns transport_alias:HTTP",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "HTTP",
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "transport_alias:HTTP"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp"
+        }
+      }
+    },
+    {
+      "id": "T09",
+      "note": "unrecognised transport word -> unknown_transport:grpc, not unknown_shape",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "grpc",
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "unknown_transport:grpc",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "T10",
+      "note": "deviation from the catalogue's literal 'unknown_transport:123' (W4): a non-string type is now ALWAYS malformed_field:type, never the value's own repr/str — the review's own repro was a DICT-typed `type` leaking a credential string via {raw_type!r}; a categorical refusal is the only fix that cannot leak content for any non-string type, int included",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": 123,
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:type",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "T11",
+      "note": "command and url together -> transport_conflict (the sync-bricking mis-import closed)",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "transport_conflict",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "T12",
+      "note": "type:stdio + url -> transport_conflict",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "stdio",
+        "command": "npx",
+        "url": "https://h/mcp"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "transport_conflict",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "T13",
+      "note": "type:http with no url -> no_endpoint",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "no_endpoint",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "T14",
+      "note": "type:http + command -> transport_conflict",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/mcp",
+        "command": "npx"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "transport_conflict",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "U01",
+      "note": "userinfo credential flagged AND redacted in both spec.url and sources[].native.url",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://user:pw@h/mcp"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "literal_secret:url.userinfo"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp"
+        }
+      }
+    },
+    {
+      "id": "U04",
+      "note": "file:// scheme on an http transport -> unsupported_url_scheme:file",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "file:///etc/passwd"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "unsupported_url_scheme:file",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "U05",
+      "note": "no scheme -> malformed_url",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "h.com/mcp"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_url",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "U06",
+      "note": "non-ascii host kept verbatim (no punycode), warns non_ascii_host",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://exämple.com/mcp"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "non_ascii_host"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://exämple.com/mcp"
+        }
+      }
+    },
+    {
+      "id": "U08",
+      "note": "a ${VAR} inside the URL warns ref_in_url",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/${TENANT}/mcp"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "ref_in_url"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/${TENANT}/mcp"
+        }
+      }
+    },
+    {
+      "id": "C01",
+      "note": "command with embedded spaces kept verbatim, warns command_has_arguments",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx -y pkg"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "command_has_arguments"
+        ],
+        "spec": {
+          "command": "npx -y pkg"
+        }
+      }
+    },
+    {
+      "id": "C02",
+      "note": "list command split into command+args, warns command_list_split",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": [
+          "npx",
+          "-y"
+        ]
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "command_list_split"
+        ],
+        "spec": {
+          "command": "npx",
+          "args": [
+            "-y"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C03",
+      "note": "string args -> malformed_field:args (never a character split)",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "args": "-y pkg"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:args",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "C04",
+      "note": "dict args -> malformed_field:args",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "args": {
+          "a": "b"
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:args",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "C05",
+      "note": "int args -> malformed_field:args (today: TypeError escapes)",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "args": 5
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:args",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "C08",
+      "note": "a literal {source} placeholder warns source_placeholder",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "python3",
+        "args": [
+          "{source}/server.py"
+        ]
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "source_placeholder"
+        ],
+        "spec": {
+          "command": "python3",
+          "args": [
+            "{source}/server.py"
+          ]
+        }
+      }
+    },
+    {
+      "id": "C09",
+      "note": "a non-absolute cwd warns cwd_not_absolute, kept verbatim",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "cwd": "~/x"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "cwd_not_absolute"
+        ],
+        "spec": {
+          "command": "npx",
+          "cwd": "~/x"
+        }
+      }
+    },
+    {
+      "id": "E01",
+      "note": "string env -> malformed_field:env (today: ValueError escapes)",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": "A=1"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:env",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "E01b",
+      "note": "list-of-lists env -> malformed_field:env, same crash today",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": [
+          [
+            "A"
+          ]
+        ]
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:env",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "E02",
+      "note": "int env value coerced to its JSON text, warns env_value_coerced:A",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": {
+          "A": 1
+        }
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "env_value_coerced:A"
+        ],
+        "spec": {
+          "command": "npx",
+          "env": {
+            "A": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "E03",
+      "note": "empty env key -> malformed_field:env",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": {
+          "": "1"
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:env",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "E04",
+      "note": "unusual env key warns env_key_unusual",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": {
+          "api key": "1"
+        }
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "env_key_unusual:api key"
+        ],
+        "spec": {
+          "command": "npx",
+          "env": {
+            "api key": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "E06",
+      "note": "exact bare $HOME warns unexpanded_ref, never a literal_secret",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "env": {
+          "TOKEN": "$HOME"
+        }
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "unexpanded_ref:$HOME"
+        ],
+        "spec": {
+          "command": "npx",
+          "env": {
+            "TOKEN": "$HOME"
+          }
+        }
+      }
+    },
+    {
+      "id": "H02",
+      "note": "'Bearer ' with nothing after -> no literal_secret warning",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/mcp",
+        "headers": {
+          "Authorization": "Bearer "
+        }
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp",
+          "headers": {
+            "Authorization": "Bearer "
+          }
+        }
+      }
+    },
+    {
+      "id": "H05",
+      "note": "Cookie now joins the secret key set -> literal_secret:Cookie",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/mcp",
+        "headers": {
+          "Cookie": "session=abcdefgh12345678"
+        }
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "literal_secret:Cookie"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp",
+          "headers": {
+            "Cookie": "<redacted>"
+          }
+        }
+      }
+    },
+    {
+      "id": "H07",
+      "note": "case-insensitive duplicate header -> duplicate_header:authorization",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/mcp",
+        "headers": {
+          "Authorization": "a",
+          "authorization": "b"
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "duplicate_header:authorization",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "H08a",
+      "note": "headers on a stdio block -> transport_conflict",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "headers": {
+          "X": "1"
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "transport_conflict",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "H08b",
+      "note": "a header value with CR/LF -> malformed_field:headers",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "type": "http",
+        "url": "https://h/mcp",
+        "headers": {
+          "X": "a\r\nb"
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:headers",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "X04",
+      "note": "startup_timeout_sec + tool_timeout_sec merge to timeout_ms=30000, warns timeout_merged",
+      "source": "codex_global",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "startup_timeout_sec": 5,
+        "tool_timeout_sec": 30
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "timeout_merged"
+        ],
+        "spec": {
+          "command": "npx",
+          "timeout_ms": 30000
+        }
+      }
+    },
+    {
+      "id": "X05",
+      "note": "enabled=false -> disabled_upstream (today: silently re-enabled)",
+      "source": "codex_global",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "enabled": false
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "disabled_upstream",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "X06",
+      "note": "a codex table key with a space slugifies to with-space",
+      "source": "codex_global",
+      "name": "with space",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "with-space",
+        "reason": null,
+        "warnings": [
+          "renamed_from:with space"
+        ],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "X07",
+      "note": "an [x.oauth] sub-table -> oauth_block (today: silently unauthenticated)",
+      "source": "codex_global",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "oauth": {
+          "a": 1
+        }
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "oauth_block",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "P02",
+      "note": "a STRING command (one binary) is a legal opencode shape",
+      "source": "opencode_project",
+      "name": "srv",
+      "native": {
+        "type": "local",
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "P03",
+      "note": "type:remote with no url -> no_endpoint",
+      "source": "opencode_project",
+      "name": "srv",
+      "native": {
+        "type": "remote"
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "no_endpoint",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "P05",
+      "note": "enabled=false -> disabled_upstream",
+      "source": "opencode_project",
+      "name": "srv",
+      "native": {
+        "type": "local",
+        "command": [
+          "npx"
+        ],
+        "enabled": false
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "disabled_upstream",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S03",
+      "note": "an empty mcpServers wrapper refuses empty_wrapper, not the old 'pass a name:' nonsense message",
+      "source": "paste_wrapper",
+      "name": null,
+      "native": {
+        "mcpServers": {}
+      },
+      "raw_stdin": null,
+      "bom": false,
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "empty_wrapper",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S04",
+      "note": "a wrapper nested one level in refuses nested_wrapper",
+      "source": "paste_wrapper",
+      "name": null,
+      "native": {
+        "mcpServers": {
+          "mcpServers": {
+            "x": {
+              "command": "npx"
+            }
+          }
+        }
+      },
+      "raw_stdin": null,
+      "bom": false,
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": "nested_wrapper",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S07",
+      "note": "relaxed JSON (line comments + trailing commas) is a DEFERRED follow-up (E3.md §7 risk 1) — today's (unchanged) behaviour is still a plain JSON parse failure",
+      "source": "paste_wrapper",
+      "name": null,
+      "native": null,
+      "raw_stdin": "{\"command\": \"npx\", // a trailing comment\n}",
+      "bom": false,
+      "expect": {
+        "status": "unsupported",
+        "import_name": null,
+        "reason": null,
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S08",
+      "note": "a leading BOM is stripped before parsing",
+      "source": "paste",
+      "name": "srv",
+      "native": {
+        "command": "npx"
+      },
+      "raw_stdin": null,
+      "bom": true,
+      "expect": {
+        "status": "ok",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [],
+        "spec": {
+          "command": "npx"
+        }
+      }
+    },
+    {
+      "id": "S09",
+      "note": "a duplicate top-level key warns duplicate_key:command, last value wins",
+      "source": "paste_wrapper",
+      "name": "srv",
+      "native": null,
+      "raw_stdin": "{\"command\":\"npx\",\"command\":\"node\"}",
+      "bom": false,
+      "expect": {
+        "status": "ok",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "duplicate_key:command"
+        ],
+        "spec": {
+          "command": "node"
+        }
+      }
+    },
+    {
+      "id": "S12a",
+      "note": "a numeric-string timeout is coerced, warns timeout_coerced",
+      "source": "paste",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "timeout": "5000"
+      },
+      "raw_stdin": null,
+      "bom": false,
+      "expect": {
+        "status": "ok",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "timeout_coerced"
+        ],
+        "spec": {
+          "command": "npx",
+          "timeout_ms": 5000
+        }
+      }
+    },
+    {
+      "id": "S12b",
+      "note": "a boolean timeout -> malformed_field:timeout (today: coerced to 1ms)",
+      "source": "paste",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "timeout": true
+      },
+      "raw_stdin": null,
+      "bom": false,
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "malformed_field:timeout",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S13",
+      "note": "a pasted Codex-shaped object: normalize_native accepts the two *_sec timeout keys directly (not deferred) but bearer_token_env_var is an unrecognised generic key and is DROPPED — the auth-dropping half of this row (one paste reader unifying all three native shapes, catalogue S13) is the DEFERRED follow-up named in E3.md §7 risk 4; this pins today's improved-but-not-unified behaviour: registers as an unauthenticated http server with dropped_field:bearer_token_env_var, not a crash or a wrong shape",
+      "source": "paste",
+      "name": "srv",
+      "native": {
+        "url": "https://h/mcp",
+        "bearer_token_env_var": "T",
+        "startup_timeout_sec": 5,
+        "tool_timeout_sec": 30
+      },
+      "raw_stdin": null,
+      "bom": false,
+      "expect": {
+        "status": "ok",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "timeout_merged",
+          "dropped_field:bearer_token_env_var"
+        ],
+        "spec": {
+          "transport": "http",
+          "url": "https://h/mcp",
+          "timeout_ms": 30000
+        }
+      }
+    },
+    {
+      "id": "S11",
+      "note": "Claude's own disabled:true -> disabled_upstream",
+      "source": "claude_user",
+      "name": "srv",
+      "native": {
+        "command": "npx",
+        "disabled": true
+      },
+      "expect": {
+        "status": "unsupported",
+        "import_name": "srv",
+        "reason": "disabled_upstream",
+        "warnings": [],
+        "spec": null
+      }
+    },
+    {
+      "id": "S15",
+      "note": "one malformed entry (args:5) among two must not crash discovery — the good name still classifies",
+      "source": "claude_user",
+      "name": "good",
+      "native": {
+        "command": "npx"
+      },
+      "expect": {
+        "status": "new",
+        "import_name": "good",
+        "reason": null,
+        "warnings": [],
+        "spec": {
+          "command": "npx"
+        }
+      },
+      "extra_entries": [
+        {
+          "source": "claude_user",
+          "name": "bad",
+          "native": {
+            "command": "npx",
+            "args": 5
+          }
+        }
+      ],
+      "pick_name": "good"
+    },
+    {
+      "id": "F5W",
+      "note": "F5: a REGISTERED-but-unclaimed native entry that disagrees with the registry warns unclaimed_native_entry — vocabulary completeness case (C1): no catalogue id names this warning directly, but it must still be produced by at least one corpus case so it is not a dead word.",
+      "source": "codex_global",
+      "name": "srv",
+      "native": {
+        "command": "new"
+      },
+      "registry": {
+        "skills": {
+          "srv": {
+            "type": "mcp-server",
+            "scope": "global",
+            "mcp": {
+              "command": "old"
+            }
+          }
+        },
+        "projects": {}
+      },
+      "expect": {
+        "status": "conflict",
+        "import_name": "srv",
+        "reason": null,
+        "warnings": [
+          "unclaimed_native_entry"
+        ],
+        "spec": null
+      }
+    }
+  ]
+}

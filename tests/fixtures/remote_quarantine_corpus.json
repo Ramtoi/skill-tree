@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_ships_with_companions_cli.py"},
+    {"side": "typescript", "path": "app/src/test/shipWith.test.ts"}
+  ],
+  "cases": [
+    {"case": "remote string",      "origin": "remote:hermes-main", "remote_id": "hermes-main"},
+    {"case": "remote, empty id",   "origin": "remote:",            "remote_id": "?"},
+    {"case": "source dict",        "origin": {"source": "org-skills"}, "remote_id": null},
+    {"case": "absent",             "origin": null,                 "remote_id": null},
+    {"case": "unrelated string",   "origin": "local",              "remote_id": null},
+    {"case": "not a prefix match", "origin": "notremote:x",        "remote_id": null}
+  ]
+}

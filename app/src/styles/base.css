@@ -1,0 +1,66 @@
+* { box-sizing: border-box; }
+
+/* ─── LIGATURES ARE OFF. EVERYWHERE. ────────────────────────────────────────
+   Geist Mono's contextual alternates shape `<space>--` into one connected dash
+   and drop the space's cell with it. `gh auth switch --user me` painted as
+   `gh auth switch--user me`; a hook command painted as
+   `lsp_report.py--advisory` four lines under the promise "Commands are shown
+   exactly as they will be installed". The text was never wrong — the SHAPING
+   was, which is why no DOM assertion can catch it and why scoping the fix to
+   the two classes that happened to be on screen (round 2) missed the next one.
+
+   So this is declared once, at the root, and INHERITS into every mono context
+   that exists or will exist: permission patterns, hook commands, paths, remote
+   URLs, code areas, diffs, and whatever the next screen renders. An identifier
+   must render as typed; a decorative glyph substitution has no business
+   editing one, and no enumeration of selectors can be trusted to stay complete.
+
+   The cost is Geist Sans's standard `fi`/`fl` ligatures in prose, which at
+   11–22px are visually indistinguishable from the unligated pair. That is the
+   right trade against a font silently rewriting a command a user will run.
+   `--font-mono-features` exists so a deliberate future opt-in (a specimen, a
+   marketing surface) has a named handle rather than an ad-hoc override.
+   Pinned by app/src/test/BackupJourney.test.tsx. */
+:root {
+  font-variant-ligatures: none;
+  font-feature-settings: "calt" 0, "liga" 0, "dlig" 0;
+}
+
+html, body, #root { height: 100%; margin: 0; }
+body {
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, color-mix(in oklab, var(--ctx) 8%, transparent), transparent 60%),
+    radial-gradient(800px 500px at -10% 100%, color-mix(in oklab, var(--amber) 5%, transparent), transparent 60%),
+    var(--bg-0);
+  color: var(--fg);
+  font-size: var(--fs-7);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* Strip UA <button> chrome so an element converted from a clickable <div>/<span>
+   keeps its exact former box (S9). Declared here, near the top of the import
+   chain: every component/screen stylesheet is imported after base.css, so at
+   equal specificity (both are single class selectors) the component's own
+   background/border/padding/display always wins in the cascade. */
+.btn-unstyled {
+  appearance: none; -webkit-appearance: none;
+  background: none; border: 0; border-radius: 0;
+  margin: 0; padding: 0;
+  color: inherit; font: inherit;
+  text-align: inherit; letter-spacing: inherit; line-height: inherit;
+  text-transform: none;
+  display: inline;            /* neutralise inline-block; component classes override */
+  cursor: pointer;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bg-4); }
+

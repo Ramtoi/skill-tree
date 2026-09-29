@@ -1,0 +1,305 @@
+/* ─── Hooks screen + editor (hooks-surface D7) ────────────────────────────── */
+.hooks-screen {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 16px var(--pad-screen-x) var(--fab-safe);
+}
+.hooks-loading { padding: 24px; font-size: var(--fs-7); }
+
+.hooks-list { display: flex; flex-direction: column; gap: 8px; }
+.hook-row {
+  display: grid; align-items: center; gap: 16px;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(160px, 1.6fr) auto;
+  padding: 12px 14px; text-align: left;
+  background: var(--bg-1); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); cursor: pointer;
+  transition: border-color var(--dur-4) ease, background var(--dur-4) ease;
+}
+.hook-row:hover { border-color: var(--border-strong, var(--fg-dim)); }
+.hook-row[data-listnav-active="true"] { border-color: var(--anchor); background: var(--bg-2); }
+.hook-row:focus-visible { outline: 2px solid var(--anchor); outline-offset: 1px; }
+.hook-row-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.hook-row-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; row-gap: 4px; }
+.hook-name { font-weight: 600; font-size: var(--fs-7); white-space: nowrap; }
+.hook-provenance { flex-shrink: 0; }
+.hook-attach { flex-shrink: 0; }
+.hook-unattached { font-size: var(--fs-micro-3); }
+.hook-health-badge { flex-shrink: 0; }
+.hook-row-desc { font-size: var(--fs-4); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hook-row-runs {
+  font-size: var(--fs-4); color: var(--fg-mid);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hook-row-matchers { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.hook-tools { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.hook-tools-all { font-size: var(--fs-3); }
+.hook-row-reach { justify-self: end; }
+
+.hook-reach { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.hook-reach-badge { font-size: var(--fs-2); }
+.hook-reach-empty { font-size: var(--fs-3); }
+
+/* Narrow width: the reach column's badges wrap onto multiple lines fine, but
+   the fixed 3-column grid's `auto` third track still forces itself off the
+   right edge of the row before wrapping kicks in. Stack the row instead,
+   mirroring the .hook-editor-cols breakpoint below. */
+@media (max-width: 640px) {
+  .hook-row { grid-template-columns: 1fr; row-gap: 8px; }
+  .hook-row-reach { justify-self: start; }
+}
+
+.hook-editor { flex: 1; min-height: 0; overflow-y: auto; }
+.hook-editor-cols {
+  display: grid; gap: 0;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+}
+@media (max-width: 900px) { .hook-editor-cols { grid-template-columns: 1fr; } }
+.hook-editor-main { border-right: 1px solid var(--border); min-width: 0; }
+.hook-editor-main .side-panel-block:last-child { border-bottom: 1px solid var(--border); }
+/* `.hook-editor-side` is NOT `.editor-side` (GRILL B3) — `.hook-editor` stays
+   the screen's one scroller. `min-width: 0` is a grid-child sizing concern
+   (this sheet owns `.hook-editor-cols`); the panel's INNER grammar (the
+   `.side-panel-block` / `.kv` / `.side-panel-section` rules a `SidePanelSection`
+   stack needs) is a scoped block in `styles/side-panel.css`. */
+.hook-editor-side { min-width: 0; }
+.hook-editor-loading { padding: 24px; font-size: var(--fs-7); }
+
+.hook-builtin-note {
+  display: flex; align-items: center; gap: 8px;
+  margin: 12px var(--pad-screen-x) 0; padding: 8px 12px;
+  font-size: var(--fs-4); color: var(--fg-mid);
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.hook-command-input, .hook-settings-json {
+  width: 100%; resize: vertical; font-size: var(--fs-5); line-height: 1.5;
+}
+
+/* ── Redesigned editor (hook-editor-redesign D1–D5) ─────────────────────────
+   No new colors: every rule below reuses the existing surface/text/border
+   tokens plus the semantic channels already carried by StatusBadge. */
+
+/* The live "what did I just build" summary, directly under the screen header. */
+.hook-summary {
+  padding: 10px var(--pad-screen-x);
+  font-size: var(--fs-4); color: var(--fg-mid);
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+
+/* Doctor findings for THIS hook (hooks-screen-polish Wave C) — nothing renders
+   when the hook is clean. */
+.hook-health {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px var(--pad-screen-x);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-1);
+}
+.hook-health-row {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  font-size: var(--fs-4);
+}
+.hook-health-label { color: var(--fg-strong); }
+.hook-health-detail { overflow-wrap: anywhere; }
+
+/* Read-only summary VALUES for built-ins (D5) — plain text, never a dead input:
+   a disabled control invites a click that does nothing. */
+.hook-ro-value {
+  font-size: var(--fs-5); color: var(--fg-strong); line-height: 1.5;
+  padding: 2px 0; overflow-wrap: anywhere;
+}
+.hook-ro-applies { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+/* A built-in's SETTINGS section is its ONLY editable surface. Marked by a
+   small ornament dot beside the title (AUDIT M9) — never a stripe or a skin
+   (side panel language rule 5/6: state rides on ornament, a lit slot is
+   never a stripe). The scope's own read-only fact stays in the summary text
+   (AUDIT M1); this dot answers a different question ("which section matters
+   most here"), so the two can never contradict each other. */
+.side-panel-section.side-section-primary > .side-panel-section-head-row
+  .side-panel-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 5px; height: 5px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--anchor);
+  vertical-align: middle;
+}
+
+/* ── Harnesses panel (D1): affinity SELECTION + per-event reach on ONE row ──
+   The rows are a `MultiSelectList` (lit-slot selection, `styles/multiselect.css`)
+   — this sheet only adds what's specific to a harness row. */
+.hook-harness-panel .conn-hint { margin-bottom: 10px; }
+.harness-reach-note { font-size: var(--fs-2); }
+
+/* ── Action section (D3) ── */
+/* Wrappers around a `ChipRadios` (its own `.chips` row lives one level down —
+   these divs only carry the spacing + wrap that used to sit on the chip row
+   itself, back when it was a hand-rolled `.chips` tablist). */
+.hook-action-modes, .hook-applies-modes { margin-bottom: 12px; }
+.hook-action-modes .chips, .hook-applies-modes .chips { max-width: 100%; flex-wrap: wrap; }
+.hook-script-meta {
+  display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+.hook-script-meta > .field { grid-column: 1 / -1; }
+.hook-script-meta > .field:first-child { grid-column: auto; max-width: 220px; }
+@media (max-width: 560px) {
+  .hook-script-meta { grid-template-columns: 1fr; }
+  .hook-script-meta > .field:first-child { max-width: none; }
+}
+.hook-script-body {
+  height: 260px; min-height: 160px; margin-top: 8px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-0); overflow: hidden;
+}
+.hook-script-body .code-area, .hook-script-body .cm-editor { height: 100%; }
+.hook-script-loading { padding: 16px; font-size: var(--fs-5); }
+.hook-script-readonly {
+  margin: 0; padding: 12px; font-size: var(--fs-5); line-height: 1.55;
+  white-space: pre-wrap; overflow: auto; height: 100%;
+}
+.hook-script-warn { color: var(--amber); }
+.hook-script-projects {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 8px;
+}
+.hook-script-project {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; font-size: var(--fs-5); min-width: 0;
+}
+.hook-script-project > .text-mono {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hook-script-drop { margin-top: 4px; font-size: var(--fs-5); overflow-wrap: anywhere; }
+
+/* ── Wave D: the script behind a command hook (read + convert) ────────────── */
+.hook-command-script {
+  display: flex; flex-direction: column; gap: 6px; margin-top: 8px;
+}
+.hook-command-script-row {
+  display: flex; align-items: center; gap: 8px; font-size: var(--fs-5); min-width: 0;
+}
+.hook-command-script-path {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hook-repo-convert .actions { margin-top: 6px; }
+
+/* ── Tool picker (D2): chips + filter + collapsible groups ── */
+.tool-picker { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.tool-picker-selected {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0;
+}
+.tool-picker-none { font-size: var(--fs-4); }
+.tool-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 4px 2px 7px; font-size: var(--fs-3);
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--fg-strong);
+  max-width: 100%; min-width: 0;
+}
+.tool-chip > .text-mono { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tool-chip-x {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; padding: 0; flex-shrink: 0;
+  border: 0; border-radius: var(--radius-sm); background: transparent;
+  color: var(--fg-dim); cursor: pointer;
+}
+.tool-chip-x:hover { color: var(--fg-strong); background: var(--bg-2); }
+.tool-picker-search { min-width: 0; width: 100%; }
+.tool-picker-groups {
+  display: flex; flex-direction: column; gap: 2px;
+  max-height: 320px; overflow-y: auto; overflow-x: hidden; min-width: 0;
+}
+.tool-picker-empty { font-size: var(--fs-5); padding: 8px 2px; }
+.tool-group { min-width: 0; }
+.tool-group-head {
+  display: flex; align-items: center; gap: 6px; width: 100%;
+  padding: 5px 4px; border: 0; background: transparent; cursor: pointer;
+  color: var(--fg-mid); text-align: left; border-radius: var(--radius-sm);
+}
+.tool-group-head:hover { background: var(--bg-2); color: var(--fg-strong); }
+.tool-group-label {
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.tool-group-count { margin-left: auto; font-size: var(--fs-2); color: var(--fg-dim); }
+.tool-group-body {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 4px 12px; padding: 4px 4px 10px 18px; min-width: 0;
+}
+.tool-group-body .toggle-field { min-width: 0; }
+.tool-group-body .toggle-label {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+/* At the narrowest gallery width a multi-up grid clips the mono token — one
+   column always fits (the 520px overflow gate). */
+@media (max-width: 560px) {
+  .tool-group-body { grid-template-columns: 1fr; padding-left: 14px; }
+}
+
+.lsp-lang-table { width: 100%; border-collapse: collapse; font-size: var(--fs-5); }
+.lsp-lang-table th {
+  text-align: left; font-family: var(--font-mono); font-size: var(--fs-1);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--fg-dim);
+  padding: 4px 8px 4px 0; font-weight: 500;
+}
+.lsp-lang-table td { padding: 6px 8px 6px 0; border-top: 1px solid var(--border); }
+.lsp-lang-table select { width: 100%; }
+.hook-delete-scopes ul { margin: 6px 0 0; padding-left: 18px; font-size: var(--fs-5); }
+.hook-delete-scopes li { margin: 2px 0; }
+/* The managed script file `hub hook delete` also destroys (F7). */
+.hook-delete-script { margin-top: 8px; font-size: var(--fs-5); overflow-wrap: anywhere; }
+
+/* ── Project workspace Hooks card (hooks-surface D7) ───────────────────────── */
+.project-hooks-head { display: flex; align-items: center; gap: 16px; }
+.project-hooks-head h3 { margin: 0; flex-shrink: 0; }
+.project-hooks-summary { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; min-width: 0; }
+.project-hooks-summary .chip {
+  border: 1px solid var(--border); border-radius: var(--radius-frame);
+  color: var(--fg-mid); cursor: default; max-width: 100%; min-width: 0;
+  padding: 4px 8px; white-space: normal;
+}
+.project-hooks-summary .chip .chip-label { white-space: normal; overflow-wrap: anywhere; min-width: 0; }
+.project-hooks-summary .chip > svg { color: var(--anchor-2); flex-shrink: 0; }
+.project-hooks-empty { font-size: var(--fs-5); color: var(--fg-mute); }
+.project-hooks-disclosure { flex-shrink: 0; margin-left: auto; }
+.project-hooks-disclosure .btn-label { display: inline-flex; align-items: center; gap: 8px; }
+.project-hooks-editor { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+.project-hooks-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--fg-mute); font-size: var(--fs-4); margin-bottom: 4px; }
+.project-hooks-list { display: flex; flex-direction: column; gap: 4px; }
+.project-hook-row { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
+.project-hook-row > :first-child { margin-right: auto; min-width: 0; }
+.project-hook-row .toggle-label { min-width: 0; overflow-wrap: anywhere; }
+.project-hook-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+@media (max-width: 900px) {
+  .project-hooks-head { flex-wrap: wrap; gap: 12px; }
+  .project-hooks-summary { order: 3; flex-basis: 100%; }
+  .project-hook-row { flex-wrap: wrap; }
+  .project-hook-meta { flex-basis: 100%; padding-left: 26px; flex-shrink: 1; flex-wrap: wrap; }
+}
+
+/* Link used by the permissions side panel's Hooks pointer card. */
+.perm-hooks-link {
+  color: var(--anchor-2);
+  text-decoration: none;
+}
+.perm-hooks-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Wave B: built-in body readable + the baked command ─────────────────────
+   `.hook-ro-value` already carries `overflow-wrap: anywhere` (see above), so
+   the "runs" field's baked command wraps for free. This block covers only the
+   NEW built-in "source" surface: a file-tab strip over a taller, read-only
+   CodeArea (the managed-script editor's 260px is tuned for a small stub; a
+   real ~600-line built-in body needs more room to be legible without feeling
+   like a peephole). */
+.hook-builtin-files {
+  margin-bottom: 8px;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.hook-builtin-source {
+  height: 420px;
+}
+

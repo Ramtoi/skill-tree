@@ -1,0 +1,340 @@
+/* ─── Editor ───────────────────────────────────────────────────────────── */
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  flex: 1;
+  min-height: 0;
+}
+/* The editor pane is a flex column whose .code-area is the sole scroll owner.
+   overflow-y only kicks in as a fallback when the window is too short to fit
+   the meta grid + toolbar + the code-area's min-height. */
+.editor-main { display: flex; flex-direction: column; min-width: 0; overflow-y: auto; overflow-x: hidden; }
+.resizable-split-pane > .editor-main,
+.resizable-split-pane > .editor-side { flex: 1; min-height: 0; }
+.editor-side {
+  border-left: 1px solid var(--border);
+  background: var(--bg-1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.meta-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px;
+  padding: 18px var(--pad-screen-x); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+/* --bp-compact (560): collapse to a single column so no field (e.g. VERSION)
+   clips off-screen at narrow widths. */
+@container appmain (max-width: 560px) {
+  .meta-grid { grid-template-columns: 1fr; }
+  .meta-grid .field-full { grid-column: auto; }
+}
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-dim); }
+.field input, .field textarea, .field select {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  font-size: var(--fs-6); color: var(--fg);
+  outline: none; resize: vertical;
+  font-family: inherit;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--border-active); background: var(--bg-3); }
+.field-full { grid-column: 1 / -1; }
+.field textarea { font-family: var(--font-mono); font-size: var(--fs-5); }
+.field-hint { font-size: var(--fs-3); color: var(--fg-dim); }
+.field-error { font-size: var(--fs-3); color: var(--red); display: inline-flex; align-items: center; gap: 4px; }
+.field-invalid input,
+.field-invalid textarea,
+.field-invalid select,
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"],
+.field select[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--red) 55%, var(--border));
+}
+.field-invalid input:focus,
+.field-invalid textarea:focus,
+.field-invalid select:focus { border-color: var(--red); }
+
+/* Description length meter — passive feedback, NOT hard-invalid. Warn tiers
+   (over claude.ai's 200 / past Claude Code's 250 trigger truncation) sit in the
+   amber severity register; only the spec-breaking tier goes red. */
+.desc-meter { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: var(--fs-3); }
+.desc-meter-count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-mute);
+  flex-shrink: 0;
+}
+.desc-meter[data-tier="cloud"] .desc-meter-count,
+.desc-meter[data-tier="truncate"] .desc-meter-count,
+.desc-meter[data-tier="cloud"] .desc-meter-note,
+.desc-meter[data-tier="truncate"] .desc-meter-note { color: var(--amber); }
+.desc-meter[data-tier="spec"] .desc-meter-count,
+.desc-meter[data-tier="spec"] .desc-meter-note { color: var(--red); }
+
+/* `:not(.field-invalid)` so a passive length tier can never outrank a hard-invalid
+   field — red wins whenever both classes land on the same Field. */
+.field-desc-warn:not(.field-invalid) :is(textarea, input) { border-color: color-mix(in oklab, var(--amber) 55%, var(--border)); }
+.field-desc-warn:not(.field-invalid) :is(textarea, input):focus { border-color: var(--amber); }
+.field-desc-over:not(.field-invalid) :is(textarea, input) { border-color: color-mix(in oklab, var(--red) 55%, var(--border)); }
+.field-desc-over:not(.field-invalid) :is(textarea, input):focus { border-color: var(--red); }
+
+/* The markdown formatting group. It used to be its own sticky `--bg-1` strip
+   between the editor bar and the body (a second ~40px band that also vanished
+   in Preview, jumping the body). It now rides INSIDE `.doc-editor-bar-left`:
+   an inline group with no surface of its own, one unit (`flex-wrap: nowrap`)
+   so it never tears mid-way.
+   It leads the bar's left cluster, flush with the screen gutter; the mode
+   chips live in the right cluster. */
+.md-toolbar {
+  display: inline-flex; align-items: center; gap: 2px;
+  flex-wrap: nowrap; flex-shrink: 0;
+}
+/* Icon-only verbs: a square 28px hit target instead of a text button's side
+   padding, so nine of them cost ~270px and the band holds one row longer. */
+.md-toolbar .btn {
+  font-family: var(--font-mono);
+  min-width: 28px; padding: 4px 6px; justify-content: center;
+}
+
+.code-area {
+  flex: 1 1 0;
+  min-height: 220px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-family: var(--font-mono); font-size: var(--fs-6); line-height: 1.55;
+  background: var(--bg-0);
+  position: relative;
+}
+.code-area pre { margin: 0; padding: var(--pad-doc-top) var(--pad-screen-x) 24px; }
+/* Edit mode is owned by CodeMirror 6 (caret + gutter + highlighted text in
+   one layer — no overlay, so the caret can never drift from the glyphs).
+   The .code-area wrapper stays the single scroll owner; CodeMirror fills it. */
+.code-area--edit { padding: 0; }
+.code-area--edit .cm-editor { height: 100%; }
+.code-area--edit .cm-scroller { overflow: auto; }
+
+/* ── Preview (renderMarkdown → .md-prose) — token-driven, zero inline styles ── */
+.code-area--preview { background: var(--bg-0); }
+.md-prose {
+  max-width: 760px;
+  min-width: 0;
+  padding: var(--pad-doc-top) var(--pad-screen-x) calc(var(--pad-screen-y) * 2);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-d-2);
+  line-height: 1.65;
+  /* B4a-02: prose must break long unbroken tokens (URLs, stress strings) rather
+     than run off the pane. Fenced code keeps its own overflow-x scroller below. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* Fenced/inline code and links keep their own overflow behavior — code blocks
+   scroll horizontally (`pre` below), inline code + links still break so a long
+   token never punches out of the pane. */
+.md-prose a.md-link,
+.md-prose .md-link-plain,
+.md-prose code.md-code-inline { overflow-wrap: anywhere; }
+.md-prose > *:first-child { margin-top: 0; }
+.md-prose h1, .md-prose h2, .md-prose h3,
+.md-prose h4, .md-prose h5, .md-prose h6 {
+  color: var(--fg-strong);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin: 22px 0 10px;
+}
+.md-prose h1 { font-size: var(--fs-d-10); }
+.md-prose h2 { font-size: var(--fs-d-7); }
+.md-prose h3 { font-size: var(--fs-d-5); }
+.md-prose h4 { font-size: var(--fs-d-2); }
+.md-prose h5 { font-size: var(--fs-7); color: var(--fg-mid); }
+.md-prose h6 { font-size: var(--fs-5); color: var(--fg-mid); text-transform: none; }
+.md-prose p { margin: 10px 0; }
+/* Tailwind Preflight strips list markers globally — restore them for prose. */
+.md-prose ul { margin: 8px 0; padding-left: 22px; list-style: disc outside; }
+.md-prose ol { margin: 8px 0; padding-left: 24px; list-style: decimal outside; }
+.md-prose li { margin: 4px 0; }
+.md-prose li::marker { color: var(--fg-mute); }
+.md-prose li > ul { margin: 4px 0; list-style: circle outside; }
+.md-prose li > ol { margin: 4px 0; }
+.md-prose blockquote {
+  margin: 12px 0;
+  padding: 4px 0 4px 14px;
+  border-left: 3px solid var(--border-active);
+  color: var(--fg-mid);
+}
+.md-prose a.md-link { color: var(--anchor); text-decoration: none; cursor: pointer; }
+.md-prose a.md-link:hover { text-decoration: underline; }
+.md-prose .md-link-plain { color: var(--fg-mid); }
+.md-prose strong { font-weight: 600; color: var(--fg-strong); }
+.md-prose em { font-style: italic; }
+.md-prose code.md-code-inline {
+  font-family: var(--font-mono);
+  color: var(--fg-mid);
+  background: var(--bg-2);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  font-size: .92em;
+}
+.md-prose pre {
+  background: var(--bg-2);
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.md-prose pre code { font-family: var(--font-mono); color: var(--fg); }
+.md-prose hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ── Diff (lineDiff → unified hunks) — token-styled add/remove/context ── */
+.code-area--diff { background: var(--bg-0); font-family: var(--font-mono); }
+.diff-empty {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 200px;
+  color: var(--fg-mute); font-family: var(--font-sans); font-size: var(--fs-7);
+}
+.diff-body { padding: var(--pad-doc-top) 0 20px; font-size: var(--fs-5); line-height: 1.55; }
+.diff-hunk { margin-bottom: 4px; }
+.diff-hunk-header {
+  color: var(--fg-dim);
+  background: var(--bg-1);
+  padding: 3px var(--pad-screen-x);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+.diff-line {
+  display: flex;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--fg-mid);
+  padding-right: var(--pad-screen-x);
+}
+.diff-line[data-kind="+"] { background: color-mix(in oklab, var(--green) 12%, transparent); color: var(--green); }
+.diff-line[data-kind="-"] { background: color-mix(in oklab, var(--red) 12%, transparent); color: var(--red); }
+.diff-gutter {
+  flex: 0 0 auto;
+  width: 40px;
+  padding: 0 8px;
+  text-align: right;
+  color: var(--fg-dim);
+  user-select: none;
+}
+.diff-gutter-a { padding-left: var(--pad-screen-x); }
+.diff-sign { flex: 0 0 auto; width: 16px; text-align: center; color: var(--fg-dim); user-select: none; }
+.diff-text { flex: 1 1 auto; }
+
+/* ── DocumentEditorShell (shared editor chrome: bar + editor|side split) ── */
+.doc-editor-shell { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+/* Archive/forget page lock (useSkillRemoval `busy`): expressed on descendants
+   via the screen root's `data-busy`, NOT by wrapping `.doc-editor-shell` in an
+   extra element — that element has none of the flex/min-height contract above
+   and silently breaks the shell's height (an empty editor pane, the whole
+   main column scrolling with the header pushed off-screen). `.editor-side`
+   is the side panel + danger zone (ResizableSplit's other pane). */
+[data-busy="true"] .doc-editor-shell,
+[data-busy="true"] .editor-side {
+  pointer-events: none;
+  opacity: 0.6;
+}
+/* The editor column (bar + body + foot). It is one pane of the editor|side
+   split, so the Details panel is a full-height sibling that starts at the
+   header, and the bar spans only the text it acts on. Inline-size container
+   for the chip-label collapse below. */
+.doc-editor-pane {
+  display: flex; flex-direction: column;
+  flex: 1; min-height: 0; min-width: 0;
+  container-type: inline-size; container-name: editorpane;
+}
+.resizable-split-pane > .doc-editor-pane { flex: 1; min-height: 0; }
+.doc-editor-pane > .editor-main { flex: 1; min-height: 0; }
+.doc-editor-bar {
+  /* Same height token, gutter, surface and hairline as `.main-subheader`, so
+     the band reads as row 2 of the header — but it lives INSIDE the editor
+     column now (the Details panel runs from the header down beside it).
+     Two clusters: formatting verbs (+ document identity) anchored LEFT at the
+     gutter, mode chips + document verbs + Save anchored RIGHT. The bar wraps
+     whenever the two do not fit side by side — the right cluster drops under
+     the left one, still right-aligned — instead of squeezing the left cluster
+     (which would clip the last verbs behind a hidden scrollbar). */
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; row-gap: 8px; column-gap: 12px;
+  min-height: var(--header-row-2);
+  /* The 4px block padding is on the BASE rule: either cluster can wrap onto a
+     second line at any width, and with `padding-block: 0` that second row
+     butted straight into the hairline below. */
+  padding: 4px var(--pad-screen-x);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-0);
+  flex-shrink: 0;
+}
+/* C5: `headerExtras` (the snippet/document identity) rides after the verbs —
+   it wraps onto its own line rather than being ground down to a stub ("· an…"). */
+.doc-editor-bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; row-gap: 6px; min-width: 0; overflow-x: auto; overflow-y: visible; scrollbar-width: none; }
+/* `overflow-x: auto` forces the y axis to clip too, and the formatting verbs
+   are shorter than the chips well: a focus ring or a hover frame reaching 4px
+   past a button would be cut. Grow the clip box by that much without moving
+   anything. */
+.doc-editor-bar-left { padding-block: 4px; margin-block: -4px; }
+.doc-editor-bar-left::-webkit-scrollbar { display: none; }
+/* margin-left:auto keeps the cluster right-aligned once it wraps to its own row
+   (space-between only aligns the first line). It wraps INTERNALLY too — at a
+   narrow width the chips well takes one line and Export/Save the next, both
+   flush right — so the trailing Diff chip is never clipped (F13). */
+.doc-editor-bar-right { display: flex; align-items: center; justify-content: flex-end; gap: 10px; row-gap: 6px; flex-wrap: wrap; flex-shrink: 0; margin-left: auto; min-width: 0; }
+/* The bar is narrower than the screen now (the Details panel takes ~330px).
+   Below ~880px of editor column the mode chips go icon-only EXCEPT the
+   selected one, which keeps its label: the frame says "a mode is active",
+   the word says which. The chips well grows leftward, so Export and Save
+   never move when the mode changes. `title` on each chip keeps the name. */
+@container editorpane (max-width: 880px) {
+  .doc-editor-bar .chip:not([aria-selected="true"]) .chip-label { display: none; }
+  .doc-editor-bar .chip { padding-inline: 8px; }
+}
+/* The editor pane column: body (sole scroll owner) + foot. */
+.doc-editor-body { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+.doc-editor-body > .code-area,
+.doc-editor-body > .doc-editor-split { flex: 1 1 0; min-height: 0; }
+.doc-editor-foot .doc-editor-wrap-label { font-family: var(--font-mono); font-size: var(--fs-2); }
+/* Footer caption naming the open document (the skill editor's active file
+   path, the sub-agent editor's "system prompt") — shared shell vocabulary. */
+.editor-foot .editor-active-path {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  min-width: 0;
+}
+.editor-foot .editor-active-path > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Split mode: an inner ResizableSplit (edit | preview) inside the editor pane. */
+.doc-editor-split.resizable-split { flex: 1; min-height: 0; }
+.doc-editor-split .resizable-split-pane { min-width: 0; overflow: hidden; }
+.doc-editor-split .resizable-split-pane > .code-area { height: 100%; }
+.danger-zone {
+  margin: 18px 12px 20px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in oklab, var(--red) 30%, transparent);
+  border-radius: var(--radius-frame);
+  background: color-mix(in oklab, var(--red) 5%, var(--bg-1));
+  box-shadow: var(--engrave);
+}
+.danger-zone h4 { margin: 0 0 8px; color: var(--red); font-size: var(--fs-3); letter-spacing: .12em; text-transform: uppercase; font-family: var(--font-mono); }
+/* Wraps instead of overflowing the panel edge — a narrow side column
+   (~300-360px) plus two verbs (Detach + Delete, both with trailing "…") can
+   exceed the row's width; every danger zone shares this rule. */
+.danger-zone .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+

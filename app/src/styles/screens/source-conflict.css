@@ -1,0 +1,67 @@
+/* ─── Source conflict resolver ───────────────────────────────────────────── */
+.source-add-summary {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-0);
+}
+.source-add-summary > div {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+}
+.source-add-summary span {
+  color: var(--fg-mute);
+  font-size: var(--fs-3);
+}
+.source-add-summary strong {
+  min-width: 0;
+  color: var(--fg-mid);
+  font-size: var(--fs-5);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+/* An ErrorCard used IN FLOW inside the add-source wizard: it keeps the card's
+   language (red edge, Fix list, action row) but drops the full-screen
+   centering/scale that the blocking Python-missing screen needs. */
+.source-add-error .error-card {
+  margin: 4px 0 0;
+  max-width: none;
+  padding: 14px 16px;
+}
+.source-add-error .error-card h2 {
+  font-size: var(--fs-d-2);
+}
+.source-add-error .error-card ol,
+.source-add-error .error-card li {
+  font-size: var(--fs-5);
+  line-height: 1.6;
+}
+.source-add-error .error-card .fix-label {
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.source-add-error .error-card .actions {
+  margin-top: 12px;
+}
+.source-conflict-resolver {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid color-mix(in oklab, var(--amber) 30%, var(--border));
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--amber) 5%, var(--bg-1));
+}
+.conflict-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.conflict-name { font-size: var(--fs-5); min-width: 120px; }
+.resolved-row { align-items: center; }
+

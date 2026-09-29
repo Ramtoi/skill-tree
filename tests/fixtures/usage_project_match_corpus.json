@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_usage_classify.py"}
+  ],
+  "cases": [
+    {
+      "name": "component-bounded-not-string-prefix",
+      "cwd": "/x/yz/foo",
+      "projects": [["a", "/x/y"]],
+      "expect": null
+    },
+    {
+      "name": "deepest-candidate-wins",
+      "cwd": "/repo/apps/web/src/index.ts",
+      "projects": [["root", "/repo"], ["web", "/repo/apps/web"]],
+      "expect": "web"
+    },
+    {
+      "name": "equal-depth-smaller-name-wins",
+      "cwd": "/repo/shared/pkg/file.ts",
+      "projects": [["zeta", "/repo/shared"], ["alpha", "/repo/shared"]],
+      "expect": "alpha"
+    },
+    {
+      "name": "worktree-segment-matches-project-name",
+      "cwd": "/Users/dev/worktrees/notes-vault/src/App.tsx",
+      "projects": [["notes-vault", "/somewhere/else"], ["other", "/other/path"]],
+      "expect": "notes-vault"
+    },
+    {
+      "name": "worktree-segment-matches-path-leaf",
+      "cwd": "/Users/dev/worktrees/notes-vault/src/App.tsx",
+      "projects": [["mp-alias", "/repo/checkouts/notes-vault"]],
+      "expect": "mp-alias"
+    },
+    {
+      "name": "worktree-name-match-beats-leaf-match",
+      "cwd": "/Users/dev/worktrees/x/src/index.ts",
+      "projects": [["leafname", "/some/x"], ["x", "/other/place"]],
+      "expect": "x"
+    },
+    {
+      "name": "worktree-leaf-tiebreak-smallest-name-wins",
+      "cwd": "/Users/dev/worktrees/x/src/index.ts",
+      "projects": [["proj-b", "/checkouts/b/x"], ["proj-a", "/checkouts/a/x"]],
+      "expect": "proj-a"
+    },
+    {
+      "name": "worktree-marker-needs-trailing-slash",
+      "cwd": "/Users/dev/worktrees/notes-vault",
+      "projects": [["notes-vault", "/somewhere/else"]],
+      "expect": null
+    },
+    {
+      "name": "case-sensitive-no-match",
+      "cwd": "/Repo/App/File.ts",
+      "projects": [["app", "/repo/app"]],
+      "expect": null
+    },
+    {
+      "name": "relative-registry-path-never-matches-absolute-cwd",
+      "cwd": "/abs/project/file.ts",
+      "projects": [["rel", "project"]],
+      "expect": null
+    },
+    {
+      "name": "no-candidate-and-no-worktree-segment-is-null",
+      "cwd": "/somewhere/unrelated/file.ts",
+      "projects": [["a", "/other"]],
+      "expect": null
+    }
+  ]
+}

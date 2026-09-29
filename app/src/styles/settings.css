@@ -1,0 +1,51 @@
+/* Settings overlay — composition-specific details. Shared overlay mechanics
+   and material tokens remain in overlays.css. */
+.settings-dialog .modal-head {
+  border-bottom-color: var(--border);
+}
+.settings-dialog .field > label {
+  color: var(--fg-strong);
+  font-size: var(--fs-4);
+}
+.settings-dialog .select {
+  min-width: 170px;
+}
+.settings-dialog .chip-radios {
+  flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+  .settings-dialog .settings-density-row {
+    flex-direction: column;
+  }
+  .settings-dialog .settings-density-row .chip-radios {
+    align-self: stretch;
+  }
+}
+
+.settings-density-row { flex-direction: column; align-items: stretch; }
+.settings-density-row > div { min-width: 0; }
+.settings-category-select-label > span { display: block; margin-bottom: 6px; }
+.settings-category-menu { z-index: var(--z-modal-float); }
+.settings-actions { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+.settings-content > .field { margin-top: 18px; }
+.settings-content input[type="text"] { min-width: 0; width: 100%; }
+.settings-details { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 16px; font-size: var(--fs-4); }
+.settings-details dt { color: var(--fg-mute); }
+.settings-details dd { margin: 0; overflow-wrap: anywhere; }
+.settings-path-preview { margin: 18px 0; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-panel); }
+.settings-path-preview code { display: block; margin-top: 6px; overflow-wrap: anywhere; font-size: var(--fs-4); }
+.settings-content .browse-row > input { flex: 1; }
+
+.settings-category-panel { margin: 0; padding: 0; border: 0; min-width: 0; min-height: 0; overflow: auto; }
+.settings-category-panel[hidden] { display: none; }
+
+.settings-dialog { background: var(--surface-panel); box-shadow: var(--engrave), var(--shadow-modal); }
+
+.settings-layout[hidden] { display: none; }
+
+.settings-pending { margin: 16px 24px 0; }
+
+.settings-remote-delivery { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.settings-delivery-result { display: contents; }
+.settings-remote-delivery .settings-row > div { min-width: 0; }

@@ -1,0 +1,177 @@
+/* ─── Recovery wizard (restore-onboarding) ──────────────────────────────────
+   Shares the Backup screen's guided-journey rhythm (`.backup-stage*`,
+   `.backup-card*`, `.backup-field*`, `.cred-rung*` in backup.css) rather than
+   inventing a second stepper language. This file holds only what that
+   vocabulary does not already cover: the recovery row list and its picker. */
+
+.recovery-screen-body {
+  padding: var(--pad-screen-y) var(--pad-screen-x) var(--fab-safe);
+  overflow: auto;
+}
+.recovery-screen-body > * { max-width: 900px; }
+
+/* The per-step heading `Back`/`Continue` moves focus to (keyboard/SR users
+   get the same "new step" signal the stepper's highlight gives sighted
+   users). Sized down from a screen h2 — it is a landmark, not a headline. */
+.recovery-step-heading {
+  margin: 4px 0 14px;
+  font-size: var(--fs-d-4);
+  font-weight: 600;
+  color: var(--fg-strong);
+  outline: none;
+}
+.recovery-wizard-nav { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: flex-start; }
+
+.recovery-lede { max-width: 620px; margin: 4px 0 28px; }
+.recovery-lede h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-d-8);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -0.01em;
+}
+.recovery-lede p {
+  margin: 0;
+  font-size: var(--fs-7);
+  line-height: 1.65;
+  color: var(--fg-mid);
+  max-width: 58ch;
+}
+
+/* ── Row list (sources / projects / local-only sources) ──
+   One `.recovery-row` per skill/project. Grid, not flex: name+detail must
+   truncate/wrap independently of the action cluster, and a long repository
+   URL or project path must never push the actions off the visible column
+   (skt-design-language: "long paths and repository names wrap or remain
+   inspectable without hiding actions"). */
+.recovery-rows { display: flex; flex-direction: column; }
+.recovery-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--bg-2);
+}
+.recovery-row:last-child { border-bottom: 0; }
+.recovery-row > .status-badge { margin-top: 3px; }
+
+.recovery-row-main { min-width: 0; }
+.recovery-row-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.recovery-row-name { font-size: var(--fs-7); font-weight: 500; color: var(--fg-strong); }
+.recovery-row-detail {
+  margin-top: 3px;
+  font-size: var(--fs-6);
+  line-height: 1.55;
+  color: var(--fg-mid);
+  word-break: break-word;
+}
+.recovery-row-path {
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+  word-break: break-all;
+}
+
+.recovery-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-content: flex-start;
+}
+
+/* At narrow widths the action cluster no longer fits beside the row body —
+   stack identity/status above actions (skt-design-language screen-geometry
+   note: "at narrow widths, stack identity, path, status, and actions"). */
+@container appmain (max-width: 640px) {
+  .recovery-row {
+    grid-template-columns: 14px 1fr;
+  }
+  .recovery-row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
+}
+
+.recovery-row-empty {
+  padding: 18px 0;
+  font-size: var(--fs-6);
+  color: var(--fg-mute);
+  text-align: center;
+}
+
+/* ── Repository picker (Sheet body) ── */
+.recovery-picker-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--bg-2);
+}
+.recovery-picker-tab {
+  padding: 8px 12px;
+  font-size: var(--fs-6);
+  color: var(--fg-mid);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+.recovery-picker-tab[aria-selected="true"] {
+  color: var(--fg-strong);
+  border-bottom-color: var(--anchor);
+  font-weight: 600;
+}
+
+.recovery-repo-list { display: flex; flex-direction: column; gap: 2px; max-height: 360px; overflow: auto; }
+.recovery-repo-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: var(--radius-frame, 6px);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+.recovery-repo-row:hover,
+.recovery-repo-row:focus-visible {
+  background: var(--bg-1);
+  border-color: var(--bg-3);
+  outline: none;
+}
+.recovery-repo-name { font-family: var(--font-mono); font-size: var(--fs-6); color: var(--fg-strong); }
+.recovery-repo-meta { font-size: var(--fs-4); color: var(--fg-mute); margin-top: 2px; }
+
+.recovery-picker-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: 10px;
+}
+.recovery-picker-page-label { font-size: var(--fs-5); color: var(--fg-mute); }
+
+/* ── Finish summary ── */
+.recovery-finish-counts {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 4px 0 16px;
+}
+.recovery-finish-count { display: flex; flex-direction: column; gap: 2px; }
+.recovery-finish-count-n {
+  font-family: var(--font-mono);
+  font-size: var(--fs-d-6);
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+.recovery-finish-count-label { font-size: var(--fs-4); color: var(--fg-mute); text-transform: uppercase; letter-spacing: .04em; }

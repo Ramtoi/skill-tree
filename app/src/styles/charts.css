@@ -1,0 +1,539 @@
+/* ───────────────────────────────────────────────────────────────────────
+   Chart primitives — StackedColumnChart, HorizontalBarList, CompositionBar.
+   Flat marks only (Guild doctrine): no gradients, no glows, no drop shadows
+   on data marks. See COMPONENTS.md §Charts.
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* ── Shared ────────────────────────────────────────────────────────────── */
+
+.chart {
+  position: relative;
+  overflow: visible;
+}
+
+.chart-legend,
+.comp-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-bottom: 16px;
+  font-size: var(--fs-3);
+}
+
+.chart-legend-item,
+.comp-bar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-swatch,
+.comp-bar-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.chart-legend-label,
+.comp-bar-legend-label {
+  color: var(--fg-mute);
+}
+
+/* Hovering a legend item narrows attention to its series across every
+   column — the same emphasis a segment hover drives. */
+.chart-legend-item[data-emphasis="true"] .chart-legend-label {
+  color: var(--fg-strong);
+}
+
+.chart-legend-value,
+.comp-bar-legend-value {
+  font-family: var(--font-mono);
+  color: var(--fg-strong);
+}
+
+.comp-bar-legend-pct {
+  font-family: var(--font-mono);
+  color: var(--fg-dim);
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--fg-mute);
+  font-size: var(--fs-5);
+}
+
+/* ── StackedColumnChart ───────────────────────────────────────────────── */
+
+.chart-plot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* One fixed axis row under every column. Past 24 columns the x-axis label
+     is thinned to every k-th column, so a column WITHOUT a label must
+     reserve exactly the height of one WITH it — an `auto` row collapses to
+     0 there, the bars row grows by a label, and that column's baseline sinks
+     below its neighbours'. The grid box ends at the top of this row, so the
+     `0` hairline and every bar's foot share one edge. Geometry, not color:
+     both values are documented in COMPONENTS.md §Charts. */
+  --chart-axis-h: 14px;
+  --chart-axis-gap: 4px;
+}
+
+.chart-grid {
+  position: absolute;
+  inset: 0;
+  bottom: calc(var(--chart-axis-h) + var(--chart-axis-gap));
+  pointer-events: none;
+}
+
+/* The row IS the hairline: a zero-height box, so `bottom: N%` places the
+   line itself. A label-tall row centred its line half a label off the mark —
+   the `0` line hung above the bars' feet and the max line above the plot. */
+.chart-grid-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  display: flex;
+  align-items: center;
+}
+
+.chart-grid-line {
+  flex: 1;
+  border-top: 1px solid var(--border);
+}
+
+.chart-grid-label {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  padding-right: 6px;
+  background: transparent;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  white-space: nowrap;
+}
+
+.chart-columns {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: 2px;
+  padding-left: 36px; /* clearance for the grid tick labels */
+}
+
+.chart-col {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 6px;
+  display: grid;
+  grid-template-rows: 1fr var(--chart-axis-h);
+  row-gap: var(--chart-axis-gap);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+}
+
+/* The active-column wash — a faint band behind the whole column, bars and
+   label alike, so hover/focus reads as "this one" without a status color. */
+.chart-col::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-3);
+}
+
+.chart-col[data-active="true"]::before {
+  background: color-mix(in oklab, var(--fg) 5%, transparent);
+  border-radius: var(--radius-sm);
+  opacity: 1;
+}
+
+.chart-col-bars {
+  position: relative; /* paint above the .chart-col::before wash */
+  width: 100%;
+  max-width: 24px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column-reverse; /* series[0] renders first → sits at the baseline */
+  align-items: stretch;
+  gap: 2px;
+}
+
+.chart-col-marker {
+  position: absolute;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--fg-mid);
+  transform: translate(-50%, 50%) rotate(45deg);
+  z-index: 2;
+}
+
+.chart-col[data-active="true"] .chart-col-marker,
+.chart-col:focus-visible .chart-col-marker {
+  background: var(--fg-strong);
+}
+
+.chart-col-seg {
+  width: 100%;
+  /* Segments (not just the column) take their own hover — narrowing the
+     legend/segment emphasis to the exact mark the pointer is over. */
+  pointer-events: auto;
+  transition: opacity var(--dur-3);
+}
+
+.chart-col-seg[data-faded="true"] {
+  opacity: 0.35;
+}
+
+/* A backfilled column (durable-ledger days with no ccusage row of their
+   own — tokens only, from the Claude Code stats-cache import) fades its
+   segments so a range that reaches before the import stays honest about
+   which bars are real scans vs. carried-over token counts. No new color
+   token: opacity only, same segment hues. */
+.chart-col[data-provenance="backfilled"] .chart-col-seg {
+  opacity: 0.45;
+}
+
+/* Two hover gestures, two recessions. Pointing at a COLUMN (its bars, its
+   band, its label) is "this one": every other column recedes and the active
+   column stays at full ink, so the bars and the tooltip describe the same
+   thing. Pointing at a LEGEND item is "this series": no column is active,
+   and the per-segment `data-faded` above dims the other series in every
+   column instead. Inside the active column the segment fade still applies,
+   so the hovered segment reads as the one among its stack. Specificity: this
+   rule (0,4,0) outranks the segment fade (0,2,0) in the receded columns, so
+   a receded column never stacks both dims. */
+.chart-columns[data-has-active="true"] .chart-col:not([data-active="true"]) .chart-col-seg {
+  opacity: 0.4;
+}
+
+.chart-col[data-active="true"] .chart-col-label {
+  color: var(--fg-mute);
+}
+
+.chart-col-seg:last-child {
+  /* Data end only — the baseline stays square. --radius-sm is the 4px
+     inner-control radius; never a literal. */
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.chart-col-stub {
+  width: 100%;
+  height: 2px;
+  background: var(--border-strong);
+}
+
+.chart-col-label {
+  position: relative; /* paint above the .chart-col::before wash */
+  height: var(--chart-axis-h);
+  line-height: var(--chart-axis-h);
+  text-align: center;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A calendar-boundary marker (month change on a day axis, January on a
+   month axis) — one step brighter so a long axis still orients without
+   hovering for the tooltip. */
+.chart-col-label[data-emphasis="true"] {
+  color: var(--fg-mute);
+}
+
+.chart-tooltip {
+  position: fixed;
+  z-index: var(--z-tooltip);
+  width: max-content;
+  min-width: min(200px, calc(100vw - 24px));
+  max-width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 8px 10px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-tip);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-4);
+}
+
+.chart-tooltip.is-visible {
+  opacity: 1;
+}
+
+.chart-tooltip-title {
+  color: var(--fg-strong);
+  font-size: var(--fs-5);
+  margin-bottom: 4px;
+}
+
+.chart-tooltip-summary {
+  margin-bottom: 6px;
+}
+
+.chart-tooltip-total {
+  font-family: var(--font-mono);
+  color: var(--fg-strong);
+  font-size: var(--fs-6);
+}
+
+/* The change from the previous column — never a status color, since it is
+   context (this is more/less than before), not an error/warning/success. */
+.chart-tooltip-delta {
+  color: var(--fg-mute);
+  font-size: var(--fs-2);
+  margin-top: 2px;
+}
+
+.chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-3);
+  padding: 2px 0;
+}
+
+/* Hovering this row's segment or legend item — read as "the one I'm
+   pointing at" among an otherwise-faded stack. */
+.chart-tooltip-row[data-emphasis="true"] .chart-tooltip-row-label {
+  color: var(--fg-strong);
+}
+
+.chart-tooltip-row[data-emphasis="true"] .chart-tooltip-row-value {
+  color: var(--fg-strong);
+  font-weight: 600;
+}
+
+.chart-tooltip-row-label {
+  color: var(--fg-mute);
+  /* A bold emphasis row must not push its own label onto two lines. */
+  white-space: nowrap;
+  flex: 1 1 auto;
+  flex: 1;
+}
+
+.chart-tooltip-row-value {
+  font-family: var(--font-mono);
+  color: var(--fg-mid);
+}
+
+/* The row's share of the column's total — always dim, even in an
+   emphasised row: the number itself carries the emphasis. */
+.chart-tooltip-row-share {
+  color: var(--fg-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-tooltip,
+  .chart-col::before,
+  .chart-col-seg {
+    transition: none;
+  }
+}
+
+/* ── HorizontalBarList ────────────────────────────────────────────────── */
+
+/* ── LineChart ────────────────────────────────────────────────────────── */
+
+.line-chart-empty {
+  color: var(--fg-dim);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.line-chart-plot {
+  position: relative;
+  overflow: visible;
+}
+.line-chart-area { position: absolute; inset: 0 0 0 28px; }
+.line-chart-guide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-strong);
+  pointer-events: none;
+  transform: translateX(-0.5px);
+}
+
+.line-chart-axis, .line-chart-gridline { position: absolute; pointer-events: none; }
+.line-chart-axis { left: 0; color: var(--fg-dim); font: var(--fs-1) var(--font-mono); z-index: 1; }
+.line-chart-axis-max { top: 0; }
+.line-chart-axis-zero { bottom: 0; }
+.line-chart-gridline { left: 28px; right: 0; border-top: 1px solid var(--border); }
+.line-chart-gridline-max { top: 8px; }
+.line-chart-gridline-zero { bottom: 8px; }
+.line-chart-x-axis { position: relative; height: 18px; margin: 6px 0 0 28px; color: var(--fg-dim); font: var(--fs-1) var(--font-mono); }
+.line-chart-x-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.line-chart-x-axis span[data-edge="start"] { transform: none; }
+.line-chart-x-axis span[data-edge="end"] { transform: translateX(-100%); }
+.usage-model-mix .chart-stacked-column > .chart-legend { display: none; }
+
+.line-chart-svg {
+  display: block;
+  height: 100%;
+  overflow: visible;
+  width: 100%;
+}
+
+.line-chart-line {
+  fill: none;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.line-chart-line[data-emphasis="false"] { opacity: .35; }
+.line-chart-line[data-emphasis="true"] { stroke-width: 2.5; }
+
+.line-chart-point {
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  padding: 0;
+  position: absolute;
+  width: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.line-chart-point[data-single="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.line-chart-point:focus-visible {
+  outline: 2px solid var(--ctx);
+  outline-offset: 2px;
+}
+
+.line-chart-tooltip {
+  min-width: min(160px, calc(100vw - 24px));
+  max-width: min(240px, calc(100vw - 24px));
+  opacity: 1;
+  white-space: nowrap;
+}
+.line-chart-legend .chart-legend-item[data-emphasis="true"] { color: var(--fg-strong); }
+
+.hbar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hbar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(80px, 2fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.hbar-label-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hbar-label {
+  color: var(--fg-strong);
+  font-family: var(--font-sans);
+  font-size: var(--fs-5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hbar-sub {
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hbar-track {
+  height: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-3);
+  overflow: hidden;
+}
+
+.hbar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.hbar-value {
+  font-family: var(--font-mono);
+  color: var(--fg-mid);
+  font-size: var(--fs-5);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── CompositionBar ───────────────────────────────────────────────────── */
+
+.comp-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comp-bar {
+  display: flex;
+  align-items: stretch;
+  height: 14px;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+  /* Same track as .hbar-track: an all-zero composition must read as an empty
+     bar, not as a 14px hole in the card. */
+  background: var(--bg-3);
+  overflow: hidden;
+}
+
+.comp-bar-seg {
+  height: 100%;
+}
+
+/* Narrow content column: fourteen day labels at 520px overlap into "07-…".
+   Every second label drops (the tooltip still names every column).
+
+   Only from EIGHT columns up, though — the quantity query below
+   (`:nth-last-child(n + 8)` + the sibling sweep) matches every column when
+   there are at least eight and none when there are fewer. `StackedColumnChart`
+   already thins to ~12 labels past 24 columns, and halving THAT is fine; but a
+   month- or year-bucketed chart is a handful of wide columns with no overlap
+   to solve, and halving two labels leaves one. Eight is the floor at which the
+   surviving half is still four. */
+@container appmain (max-width: 600px) {
+  .chart-col:nth-last-child(n + 8):nth-child(even) .chart-col-label,
+  .chart-col:nth-last-child(n + 8) ~ .chart-col:nth-child(even) .chart-col-label {
+    visibility: hidden;
+  }
+}

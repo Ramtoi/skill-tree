@@ -1,0 +1,529 @@
+/* ─── Skeleton library first-paint ──────────────────────────────────────── */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Harnesses — global screen + inline surfaces (Loadout Sync card + Agent Docs)
+   Recreated from the harness-redesign handoff. See COMPONENTS.md once promoted.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Glyph: brand mark chip with the harness accent ring */
+.harness-glyph {
+  display: inline-grid; place-items: center;
+  flex-shrink: 0;
+  border-radius: 5px;
+  /* Quiet, uniform chip — identity reads from the logo color, not the backing. */
+  background: var(--bg-3);
+  color: var(--harness-accent, var(--fg-strong));
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.harness-glyph.has-icon {
+  font-size: 0;
+}
+.harness-glyph-mask {
+  display: block;
+  width: 68%;
+  height: 68%;
+  background: currentColor;
+  -webkit-mask: var(--harness-icon) center / contain no-repeat;
+  mask: var(--harness-icon) center / contain no-repeat;
+}
+.harness-glyph[data-harness="pi"] .harness-glyph-mask {
+  width: 72%;
+  height: 72%;
+}
+.harness-icon-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  vertical-align: middle;
+}
+.harness-icon-group .harness-glyph {
+  box-shadow: 0 0 0 1px var(--bg-1);
+}
+.harness-icon-more {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--bg-3);
+  color: var(--fg-mute);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3);
+}
+
+/* Inline harness pill (strip pills + file-overview readers) */
+.harness-inline-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-4);
+  color: var(--fg-strong);
+  white-space: nowrap;
+  padding: 3px 9px 3px 5px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--harness-accent, var(--anchor)) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--harness-accent, var(--anchor)) 28%, transparent);
+}
+.harness-inline-pill-icon-only {
+  width: 28px;
+  height: 26px;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ── Sync-card targets line (Loadout) ──────────────────────────────────── */
+.stat-card-sync { position: relative; }
+.harness-targets-row {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 8px;
+  align-items: center;
+}
+.harness-targets-none {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+  font-style: italic;
+  padding: 3px 0;
+}
+.harness-target-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 4px;
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--harness-accent, var(--anchor)) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--harness-accent, var(--anchor)) 28%, transparent);
+  font-size: var(--fs-3);
+  color: var(--fg-strong);
+  white-space: nowrap;
+  transition: background var(--dur-3), border-color var(--dur-3);
+}
+.harness-target-pill[data-icon-only] {
+  gap: 0;
+  padding: 2px;
+}
+/* The collapsed × keeps a -2px margin for the labelled pill's rhythm; on an
+   icon-only pill that margin pulled the glyph 2px off centre. */
+.harness-target-pill[data-icon-only] .harness-target-x { margin-left: 0; }
+.harness-target-pill:hover {
+  background: color-mix(in oklab, var(--harness-accent, var(--anchor)) 14%, transparent);
+  border-color: color-mix(in oklab, var(--harness-accent, var(--anchor)) 45%, transparent);
+}
+/* Hide the × until hover so the pill looks calm at rest. */
+.harness-target-x {
+  display: inline-grid; place-items: center;
+  width: 0; height: 16px;
+  padding: 0; margin-left: -2px;
+  border: none; background: transparent;
+  color: var(--fg-mute);
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transition: width var(--dur-4) ease, opacity var(--dur-4) ease, color var(--dur-2), background var(--dur-2);
+}
+.harness-target-pill:hover .harness-target-x,
+.harness-target-x:focus-visible { width: 14px; opacity: 1; }
+.harness-target-x:hover {
+  color: var(--red);
+  background: color-mix(in oklab, var(--red) 18%, transparent);
+}
+
+.harness-target-addwrap { position: relative; display: inline-flex; }
+.harness-target-add {
+  display: inline-grid; place-items: center;
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--fg-mute);
+  cursor: pointer; padding: 0;
+  transition: color var(--dur-3), border-color var(--dur-3), background var(--dur-3);
+}
+.harness-target-add:not(:disabled):hover {
+  color: var(--anchor-2);
+  border-color: var(--anchor);
+  background: color-mix(in oklab, var(--anchor) 8%, transparent);
+}
+.harness-target-add:disabled { opacity: 0.35; cursor: default; }
+
+.harness-add-menu {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  z-index: var(--z-menu);
+  min-width: 240px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-picker);
+  padding: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.harness-add-menu-head {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-dim);
+  padding: 4px 8px 6px;
+}
+.harness-add-menu-empty {
+  padding: 8px 10px; font-size: var(--fs-3);
+  color: var(--fg-mute); font-style: italic;
+}
+.harness-add-menu-row {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 10px; align-items: center;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 5px;
+  cursor: pointer; text-align: left;
+}
+.harness-add-menu-row:hover {
+  background: color-mix(in oklab, var(--harness-accent, var(--anchor)) 10%, transparent);
+  border-color: color-mix(in oklab, var(--harness-accent, var(--anchor)) 30%, transparent);
+}
+.harness-add-menu-row[data-disabled] { opacity: 0.55; cursor: not-allowed; }
+.harness-add-menu-row[data-disabled]:hover { background: transparent; border-color: transparent; }
+.harness-add-menu-name { display: flex; flex-direction: column; gap: 1px; }
+.harness-add-menu-name > span:first-child { font-size: var(--fs-5); color: var(--fg-strong); }
+.harness-add-menu-sub { font-size: var(--fs-2); color: var(--fg-mute); }
+.harness-add-menu-manage {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 4px; padding: 7px 8px;
+  border: 0; border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg-mute);
+  font-family: var(--font-mono); font-size: var(--fs-3);
+  cursor: pointer; text-align: left;
+}
+.harness-add-menu-manage:hover { color: var(--fg); }
+
+/* ── Manage dialog content (Agent Docs strip) ──────────────────────────── */
+.harness-strip-managewrap { display: inline-flex; }
+.harness-popover {
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 0;
+}
+.harness-popover-hint { font-size: var(--fs-2); color: var(--fg-mute); line-height: 1.5; }
+.harness-popover-list { display: flex; flex-direction: column; gap: 2px; }
+.harness-popover-row {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer; text-align: left;
+  color: var(--fg-mid);
+  transition: background var(--dur-3), border-color var(--dur-3);
+}
+.harness-popover-row:hover { background: var(--bg-1); border-color: var(--border); }
+.harness-popover-row[data-on] {
+  background: color-mix(in oklab, var(--harness-accent, var(--anchor)) 10%, transparent);
+  border-color: color-mix(in oklab, var(--harness-accent, var(--anchor)) 35%, transparent);
+  color: var(--fg-strong);
+}
+.harness-popover-row[data-disabled] { opacity: 0.55; cursor: not-allowed; }
+.harness-popover-row[data-pending] { opacity: 0.7; cursor: default; }
+.harness-popover-name { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.harness-popover-name > span:first-child { font-size: var(--fs-5); color: var(--fg-strong); }
+.harness-popover-sub { font-size: var(--fs-2); color: var(--fg-mute); }
+.harness-popover-check {
+  width: 16px; height: 16px; display: grid; place-items: center;
+  color: var(--harness-accent, var(--anchor));
+}
+
+/* ── Agent Docs strip (single horizontal row) ──────────────────────────── */
+.harness-strip {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-1);
+  width: 100%;
+}
+.harness-strip[data-tone="warn"]    { border-color: var(--border-strong); background: var(--bg-2); }
+.harness-strip[data-tone="suggest"] { border-color: color-mix(in oklab, var(--anchor) 25%, var(--border)); }
+.harness-strip-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-dim);
+  white-space: nowrap; flex-shrink: 0;
+}
+.harness-strip-none { font-size: var(--fs-4); color: var(--fg-mute); font-style: italic; }
+.harness-strip-summary { display: contents; }
+.harness-strip-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.harness-strip-divider { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+.harness-strip-stretch { flex: 1; }
+
+
+
+
+.harness-strip-manage {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--fg-mid);
+  font-family: var(--font-mono); font-size: var(--fs-2);
+  cursor: pointer;
+}
+.harness-strip-manage:hover { color: var(--fg); border-color: var(--anchor); }
+
+/* ── Global Harnesses screen ───────────────────────────────────────────── */
+.harnesses-screen {
+  /* C7: token gutter — the first content row lands header + --pad-screen-y on
+     every screen, and it follows [data-density] like everything else. */
+  padding: var(--pad-screen-y) var(--pad-screen-x) var(--fab-safe);
+  display: flex; flex-direction: column; gap: 28px;
+  overflow: auto;
+}
+
+/* Shared blue info/status banner (see components/InfoBanner.tsx). */
+.info-banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  background: var(--bg-1);
+  color: var(--fg-mid);
+  font-size: var(--fs-7);
+  line-height: 1.5;
+}
+.info-banner .info-banner-icon { margin-top: 1px; flex: none; }
+.info-banner strong { color: var(--fg-strong); }
+.harnesses-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 1280px;
+}
+@container appmain (max-width: 760px) {
+  .harnesses-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Guild container — the base `.stat-card` class carries --surface-panel,
+   the hairline, --engrave + the ambient shadow stack, --radius-frame and the
+   corner-tick ::after. This block only adapts padding/layout + the tick
+   state channel (lit = on globally, hover-wake otherwise). */
+.harness-card {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 0;
+  container-type: inline-size;
+  container-name: harnesscard;
+}
+.harness-card:not([data-on-globally])::after { opacity: 0; inset: 6px; }
+.harness-card:not([data-on-globally]):hover::after {
+  opacity: 1; inset: 5px; --tick-c: var(--tick-hover);
+}
+@container harnesscard (max-width: 340px) {
+  .harness-card .status-badge .status-badge-label { display: none; }
+  .harness-card-link-hint { display: none; }
+}
+
+.harness-card-head {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.harness-card-id { flex: 1; min-width: 0; }
+.harness-card-name {
+  font-size: var(--fs-d-4); color: var(--fg-strong); font-weight: 600;
+}
+.harness-card-file { font-size: var(--fs-3); color: var(--fg-mute); margin-top: 2px; }
+.harness-card-state { flex-shrink: 0; margin-left: auto; }
+
+.harness-card-meta {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 3px;
+  font-family: var(--font-mono); font-size: var(--fs-2);
+}
+.harness-meta-row { display: flex; justify-content: space-between; gap: 12px; }
+.harness-meta-row span:first-child { color: var(--fg-dim); }
+.harness-meta-row span:last-child {
+  color: var(--fg-mid); min-width: 0; flex: 1; text-align: right;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* "config" row — a text-style button (Guild frame, no bevel/gradient) that
+   opens the harness's config dir in Finder. Mirrors the plain value slot's
+   alignment but earns hover/focus affordances of its own. */
+.harness-meta-open {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: 1; min-width: 0; justify-content: flex-end;
+  padding: 2px 6px;
+  margin: -2px -6px -2px 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-frame);
+  color: var(--fg-mid);
+  font: inherit;
+  cursor: pointer;
+  transition: color var(--dur-3), border-color var(--dur-3);
+}
+.harness-meta-open .text-mono {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.harness-meta-open svg { flex-shrink: 0; color: var(--fg-dim); }
+.harness-meta-open:hover { color: var(--fg-strong); border-color: var(--border); }
+.harness-meta-open:hover svg { color: var(--fg-mid); }
+.harness-meta-open:focus-visible {
+  outline: 2px solid var(--anchor-2); outline-offset: 1px;
+}
+.harness-card-cta {
+  display: flex; align-items: flex-start; gap: 6px;
+  /* prose, not an identifier — the meta compartment around it is mono */
+  font-family: var(--font-sans);
+  font-size: var(--fs-4); color: var(--fg-mid); line-height: 1.5;
+}
+.harness-card-cta > svg { margin-top: 3px; flex-shrink: 0; }
+.harness-card-cta strong { color: var(--fg-strong); font-weight: 600; }
+
+.harness-card-toggle.toggle-field {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  border-top: 0;
+  display: flex; gap: 10px;
+  cursor: pointer; align-items: flex-start;
+}
+.harness-card-toggle .toggle { margin-top: 2px; }
+.harness-toggle-copy { display: block; }
+.toggle-title { display: block; font-size: var(--fs-5); color: var(--fg-strong); font-weight: 500; }
+.toggle-sub { display: block; font-size: var(--fs-2); color: var(--fg-mute); margin-top: 2px; line-height: 1.4; }
+
+.harness-card-users { padding: 12px 0; flex: 1 1 auto; }
+.harness-users-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-dim); margin-bottom: 8px;
+}
+.harness-users-empty { font-size: var(--fs-3); color: var(--fg-mute); font-style: italic; }
+/* A harness on the global switch reaches every project — this line says so
+   before the chip list, so "47" doesn't read as 47 individually-configured
+   projects. */
+.harness-users-hint {
+  font-size: var(--fs-2); color: var(--fg-dim);
+  margin-bottom: 6px;
+}
+.harness-users-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.harness-user-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px 3px 6px;
+  background: var(--surface-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  box-shadow: var(--engrave);
+  font-size: var(--fs-3); color: var(--fg-mid);
+  cursor: pointer;
+}
+.harness-user-chip:hover { color: var(--fg-strong); border-color: var(--anchor); }
+.harness-user-chip:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: 1px; }
+.harness-user-chip .project-dot { width: 6px; height: 6px; }
+/* Pinned = the project's own `harnesses:` names this one directly — the same
+   amber "direct provenance" channel the project loadout uses for a direct
+   equip (never a bundle/via-global implication, which stays neutral). */
+.harness-user-chip[data-pinned="true"] .project-dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--amber) 20%, transparent);
+}
+/* "+N more" / "Show less" — same chip frame, no identity dot (it names a
+   count, not a project). */
+.harness-user-chip.harness-users-more {
+  color: var(--fg-dim);
+  font-style: italic;
+}
+.harness-user-chip.harness-users-more:hover { color: var(--fg-mid); font-style: normal; }
+
+/* The two jump rows: the whole row is the target, not just a small button
+   with an orphaned arrow far to the right. */
+.harness-card-links {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+/* `.harness-card-configure` / `.harness-card-instructions` are plain wrapper
+   hooks (the e2e spec selects them); the row button owns all layout. */
+.harness-card-link {
+  display: flex; align-items: center; gap: 8px;
+  width: calc(100% + 16px);
+  min-height: 32px;
+  padding: 0 8px;
+  margin: 0 -8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-frame);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-3), border-color var(--dur-3);
+}
+.harness-card-link:not(:disabled):hover {
+  background: var(--bg-2);
+  border-color: var(--border);
+}
+.harness-card-link:not(:disabled):hover .harness-card-link-arrow {
+  transform: translateX(2px);
+}
+.harness-card-link:focus-visible {
+  outline: 2px solid var(--anchor-2); outline-offset: -2px;
+}
+.harness-card-link:disabled { opacity: 0.55; cursor: default; }
+.harness-card-link-label { font-size: var(--fs-5); color: var(--fg-strong); }
+.harness-card-link-hint {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.harness-card-link .stretch { flex: 1; }
+.harness-card-link-arrow {
+  display: inline-flex; color: var(--fg-dim); flex-shrink: 0;
+  transition: transform var(--dur-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .harness-card-link:not(:disabled):hover .harness-card-link-arrow { transform: none; }
+  .harness-card-link-arrow { transition: none; }
+}
+
+.harnesses-files {
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.harnesses-section-eyebrow {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-mid);
+}
+.harnesses-files-grid { --tile-min: 240px; --tile-gap: 12px; }
+/* `.harness-file-card` composes the base `.stat-card` (Guild frame, always-lit
+   ticks) — a real stat: a project count with a label. */
+.harness-file-card { padding: 12px 14px; }
+.harness-file-card .label {
+  display: flex; align-items: center; gap: 6px;
+  text-transform: none; color: var(--fg-mid);
+}
+.harness-file-card .unit {
+  font: inherit;
+  font-family: var(--font-mono); font-size: var(--fs-3); font-weight: 400;
+  color: var(--fg-mute); margin-left: 6px; letter-spacing: 0;
+}
+.harness-file-card-readers { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.harnesses-files-explainer {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 12px 14px;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  color: var(--fg-mute);
+  font-size: var(--fs-4); line-height: 1.55;
+}
+.harnesses-files-explainer strong { color: var(--fg-mid); font-weight: 500; }

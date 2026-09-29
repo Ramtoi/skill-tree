@@ -1,0 +1,3 @@
+{"at":"2026-09-16T08:00:00Z","harness":"claude-code","hash":"1111111111111111111111111111111111111111111111111111111111111111","mcp":["touchpoint"],"project":"alpha","schema_version":1,"skills":["brainstorm"]}
+{"at":"2026-09-16T08:00:00Z","harness":"codex","hash":"2222222222222222222222222222222222222222222222222222222222222222","mcp":["touchpoint"],"project":"alpha","schema_version":1,"skills":["brainstorm"]}
+{"at":"2026-09-17T08:30:00Z","harness":"claude-code","hash":"3333333333333333333333333333333333333333333333333333333333333333","mcp":["touchpoint"],"project":"alpha","schema_version":1,"skills":["brainstorm","verify-it"]}

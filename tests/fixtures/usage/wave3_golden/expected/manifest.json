@@ -1,0 +1,245 @@
+{
+  "accepted_additive_fields": [
+    "summary_provenance",
+    "capture_coverage"
+  ],
+  "arguments": [
+    [
+      "hub",
+      "usage",
+      "scan-sessions",
+      "--order",
+      "path",
+      "--budget-seconds",
+      "60",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "project",
+      "alpha",
+      "--window",
+      "30",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "timeline",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "timeline",
+      "--project",
+      "alpha",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "findings",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "findings",
+      "--project",
+      "alpha",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "session",
+      "aaaaaaaa-1111-4111-8111-111111111111",
+      "--harness",
+      "claude-code",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect",
+      "aaaaaaaa-1111-4111-8111-111111111111",
+      "--harness",
+      "claude-code",
+      "--view",
+      "overview",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "session",
+      "ffffffff-6666-4666-8666-666666666666",
+      "--harness",
+      "claude-code",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect",
+      "ffffffff-6666-4666-8666-666666666666",
+      "--harness",
+      "claude-code",
+      "--view",
+      "overview",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "session",
+      "cccccccc-3333-4333-8333-333333333333",
+      "--harness",
+      "codex",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect",
+      "cccccccc-3333-4333-8333-333333333333",
+      "--harness",
+      "codex",
+      "--view",
+      "overview",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "session",
+      "dddddddd-4444-4444-8444-444444444444",
+      "--harness",
+      "codex",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect",
+      "dddddddd-4444-4444-8444-444444444444",
+      "--harness",
+      "codex",
+      "--view",
+      "overview",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "session",
+      "eeeeeeee-5555-4555-8555-555555555555",
+      "--harness",
+      "codex",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect",
+      "eeeeeeee-5555-4555-8555-555555555555",
+      "--harness",
+      "codex",
+      "--view",
+      "overview",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "inspect-index",
+      "--json"
+    ],
+    [
+      "hub",
+      "usage",
+      "scan-sessions",
+      "--order",
+      "path",
+      "--budget-seconds",
+      "60",
+      "--json"
+    ]
+  ],
+  "baseline_schema": 1,
+  "clock": "2026-09-17T12:00:00Z",
+  "comparator_omissions": [
+    "frozen",
+    "last_scan_at"
+  ],
+  "equal_timestamp_event_order": "original golden remains exact; source-ordinal delta is pending wave 3 schema",
+  "expanded_source_hashes": {
+    ".claude/projects/alpha-project/aaaaaaaa-1111-4111-8111-111111111111.jsonl": "ff6a6c6f51512dff0a9d48e46eb42cf0f230b9f9eac4b2728460b8cbe8087cb7",
+    ".claude/projects/alpha-project/aaaaaaaa-1111-4111-8111-111111111111/subagents/agent-bbbbbbbb-2222-4222-8222-222222222222.jsonl": "cd4490185eace0d131532add3494ea2ebd293c0d92c52695afe34b46735b6bbf",
+    ".codex/sessions/2026/09/17/rollout-2026-09-17T08-10-00-cccccccc-3333-4333-8333-333333333333.jsonl": "6ee6befa11c7b8cc6d32f65223267578de3c7406a070b8897ef441fcc3a34043",
+    ".codex/sessions/2026/09/17/rollout-2026-09-17T08-11-00-dddddddd-4444-4444-8444-444444444444.jsonl": "76ae0d3c4597e9e29b4dda1783f5e1ba4daae08edf8c0f47bd6586f5fa567642",
+    ".codex/sessions/2026/09/17/rollout-2026-09-17T08-12-00-eeeeeeee-5555-4555-8555-555555555555.jsonl": "02a5288e4f841f007ec26ea0b0d2c1d79da617976b4ca276e2bc15f846330f93"
+  },
+  "expected_hashes": {
+    "findings_alpha": "8285c4587748cf067406b9a18ed3615ecc30ec06a8fd1a3fd039cad9717839bb",
+    "findings_global": "8285c4587748cf067406b9a18ed3615ecc30ec06a8fd1a3fd039cad9717839bb",
+    "project_alpha_window_30": "6e12c269f28db48fa6b86256e85e256392aba9fd86671f0434d4edd5fd9c5538",
+    "session_claude-code_aaaaaaaa-1111-4111-8111-111111111111": "ad1b93da3081838d5a527fcf166048a376ceb25acb97d6d5edfa9541ef7146d2",
+    "session_claude-code_ffffffff-6666-4666-8666-666666666666": "bbf29e167fabfa07ea2464e372eafa538dfb88109ad69f0af500b34f233cc48a",
+    "session_codex_cccccccc-3333-4333-8333-333333333333": "f28531319c10681069108c3c313c53007cf83ab8008cf977b139f01dcb3ec361",
+    "session_codex_dddddddd-4444-4444-8444-444444444444": "030107a0c3e81082fff3bf086afd44bc45fc8474f09247a9499b10ee4073ec31",
+    "session_codex_eeeeeeee-5555-4555-8555-555555555555": "bab86081b9c4c1efeb4734b7d17d53183e7bdaa3f0d3bbaa6649054c984e5125",
+    "session_rows": "b159eabe108b0ad5ec5e01dd1d5555e82224e30e886eedd09221713036ef647e",
+    "timeline_alpha": "ec12453cb102e056c8b20f0f583fadac16480e02a1e6a1e57b21c99d9fa27e01",
+    "timeline_global": "9dc11662c273b162c76aa494cb63dca15ff2ec4c8d7c83e60585c0673fda4c7f"
+  },
+  "external_compact_record": {
+    "digest": "64f3322b9b86f82fbc86989b9d5a81134a9b2b2fd82a8b8e5a34b94ee6078c25",
+    "fixture": "input/provider-evidence/ccusage-20.0.17-with-child.json",
+    "fixture_digest": "fe5d5c20226ae18e094558c9a8c3266d131d5a8398fb05ada4ef3f4275322934",
+    "path": "docs/changes/DESIGN-usage-wave-2/ccusage-subagent-probe/compact-records/with-child.stdout.json"
+  },
+  "health_evidence_hashes": {
+    "inspect_index": "7d38f54ba864fe8b1d67a918e441f0989e4accb5642838798a675b600d4ddeac",
+    "overview_claude-code_aaaaaaaa-1111-4111-8111-111111111111": "ce174de4084acfab5bd34c622817f987b24aaa568fdc27ddd4404dfed7a9e5cc",
+    "overview_claude-code_ffffffff-6666-4666-8666-666666666666": "38e62df0e97f680be79041f72731dfe38f68117c282566064467cdd1caa5812a",
+    "overview_codex_cccccccc-3333-4333-8333-333333333333": "e66a10e91019a02ead03276423320ab2f6b4ead30d40b4e0b3be9f19ff69c0dd",
+    "overview_codex_dddddddd-4444-4444-8444-444444444444": "e66a10e91019a02ead03276423320ab2f6b4ead30d40b4e0b3be9f19ff69c0dd",
+    "overview_codex_eeeeeeee-5555-4555-8555-555555555555": "141711a6ebfe8c0c657186f67e89af4dd25e8a20d448fa3485fa7203a80bb7d0",
+    "repeat_scan": "ad92659de963f1417e698dbb5cfb05aa8af2991293b7d3fb88dfb56b3ca911fb",
+    "scan": "879a4a0adc18ef81a10aff76b451b213b19cc176a0952eedb14a54f8432505f2"
+  },
+  "producer_commit": "43f47363cdc9a7f27503a297c2b373e1a9226c03",
+  "producer_tree": "b460540091a870e240e5b4ed74ba578ac94e7520",
+  "project_path_substitution": {
+    "expanded_path": "/private/var/folders/4x/5_xrq3qj2nj0vwmldzcbk_6c0000gn/T/pytest-of-ramtoi/pytest-925/test_wave3_golden_baseline0/fixture-project-alpha",
+    "template": "/tmp/skill-hub-wave3-fixture/alpha"
+  },
+  "raw_public_hashes": {
+    "findings_alpha": "e894db6abe0c070be564f9b50eb2b878629b4d1d33fdcb5e1f037d0bf9394aee",
+    "findings_global": "e894db6abe0c070be564f9b50eb2b878629b4d1d33fdcb5e1f037d0bf9394aee",
+    "project_alpha_window_30": "dcc18b7fa1590158862f3e23ab683333ec2525749e77d563b77c9c269feb62ae",
+    "session_claude-code_aaaaaaaa-1111-4111-8111-111111111111": "7bcfb5139300bcbbd7a7114879538cd2cdfc26d625eafd76fe2c775ae6c99376",
+    "session_claude-code_ffffffff-6666-4666-8666-666666666666": "3065a76739cbc92aa1835d52795b888780d38e0aa840f7bbbf9b97a3ad27f0ec",
+    "session_codex_cccccccc-3333-4333-8333-333333333333": "e4c2b9a1436484efbcf47823aefd7bad28692efe27cca98a0f553cedcbab1491",
+    "session_codex_dddddddd-4444-4444-8444-444444444444": "66b7055c5d6d9dd765d72fef58a3a8aa4c1371dbfa99386583bbae011f86a855",
+    "session_codex_eeeeeeee-5555-4555-8555-555555555555": "eab755d3ac1a537ef27de311c4b737939e9adca3b3086dd153676c5bb3643f67",
+    "timeline_alpha": "8553b2a9921a5ada805cc347b45dd35a3b380d09254c21d9bd79b4dee8cfb58a",
+    "timeline_global": "1c87c2fb990d17d4ad92f4f7f173169ce4414bcefec14a5fcf86a026845c70b9"
+  },
+  "source_registry_loadout_hashes": {
+    "claude/projects/alpha-project/aaaaaaaa-1111-4111-8111-111111111111.jsonl": "06b30225251f7daad4a9208e053c745a09ea68158af0bf3f653d8caae97056b5",
+    "claude/projects/alpha-project/aaaaaaaa-1111-4111-8111-111111111111/subagents/agent-bbbbbbbb-2222-4222-8222-222222222222.jsonl": "7b0fd605659949baf00c75ef6c3afc88257d164c2e8a80112b099a24588acdfa",
+    "codex/sessions/2026/09/17/rollout-2026-09-17T08-10-00-cccccccc-3333-4333-8333-333333333333.jsonl": "26afc3882b0ee1fb1c1494b2cf10d75c69bc01f242a4547e86c0b7c411df5c8e",
+    "codex/sessions/2026/09/17/rollout-2026-09-17T08-11-00-dddddddd-4444-4444-8444-444444444444.jsonl": "7eb56e3d08df97c800e9814dd1adbdd849b459329738f1d490a56d207a03b713",
+    "codex/sessions/2026/09/17/rollout-2026-09-17T08-12-00-eeeeeeee-5555-4555-8555-555555555555.jsonl": "ce46e6eb7b151e07e5f57ac67aa74c8672a29e1f86783755d58b60db80e92917",
+    "legacy/claude-code-legacy-only.json": "fd1b31bc2dcf5ae610476e6f0860d695d0a0c6fe624e318cc5f13aca03425976",
+    "loadouts.jsonl": "8bf2b4c5ae8d0afa3b5523720a824a25480d4c8714c25fdea1f69ca7d0eaee84",
+    "provider-evidence/ccusage-20.0.17-with-child.json": "fe5d5c20226ae18e094558c9a8c3266d131d5a8398fb05ada4ef3f4275322934",
+    "registry-template.yaml": "c085228cc42cf871470aaac8fffa09cb941f0ee85a3714e98b86c5b5adbd78d0"
+  },
+  "state_hash": "absent",
+  "timezone": "UTC"
+}

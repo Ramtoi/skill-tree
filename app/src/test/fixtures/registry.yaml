@@ -1,0 +1,63 @@
+version: '1'
+hub_path: ~/Dev/.skill-hub
+skills:
+  brainstorm:
+    version: 1.0.0
+    description: Spin up a team of expert agents for structured deliberation
+    source: ~/Dev/.skill-hub/skills/brainstorm
+    type: claude-skill
+    scope: global
+    upstream: null
+  grill:
+    version: 1.0.0
+    description: Devil's advocate for any idea or code
+    source: ~/Dev/.skill-hub/skills/grill
+    type: claude-skill
+    scope: portable
+    upstream: null
+  my-mcp-tool:
+    version: 0.1.0
+    description: An example MCP server tool
+    source: ~/Dev/.skill-hub/skills/my-mcp-tool
+    type: mcp-server
+    scope: project-specific
+    upstream: null
+  frontend-design:
+    version: 1.0.0
+    description: Create distinctive, production-grade frontend interfaces
+    source: ~/Dev/.skill-hub/skills/frontend-design
+    type: claude-skill
+    scope: global
+    upstream: null
+  android-expert:
+    version: 1.0.0
+    description: Plan-only expert for Jetpack Compose + Clean Architecture
+    source: ~/Dev/.skill-hub/skills/android-expert
+    type: claude-skill
+    scope: portable
+    upstream: null
+projects:
+  project-alpha:
+    path: /Users/test/projects/alpha
+    bundles:
+    - workflow
+    enabled:
+    - grill
+  project-beta:
+    path: /Users/test/projects/beta
+    bundles: []
+    enabled:
+    - brainstorm
+    - frontend-design
+bundles:
+  workflow:
+    description: Core workflow and productivity
+    icon: "⚡"
+    skills:
+    - brainstorm
+    - grill
+  android:
+    description: Android development stack
+    icon: "📱"
+    skills:
+    - android-expert

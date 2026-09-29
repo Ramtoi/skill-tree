@@ -1,0 +1,298 @@
+/* ─── Unit primitives — additions layered on rows-cards.css ───────────────
+   Everything in this file is new CSS the "unit primitives" redesign (Wave A)
+   ADDS on top of `.resource-row`/`.resource-card` — split out so
+   `rows-cards.css` stays a clean diff of its OWN pre-existing rules and has
+   real headroom under the 650-line guard for Wave B. Imported immediately
+   after `rows-cards.css` (see `index.css`) — cascade order matters: every
+   selector here is more specific than, or declared later than, anything it
+   overrides in that file. */
+
+/* ─── The explicit grid — every cell placed, never auto-placed ─────────── */
+.resource-row > .resource-glyph      { grid-row: 1; grid-column: 1; }
+.resource-row > .resource-line       { grid-row: 1; grid-column: 2; }
+.resource-row > .resource-actions    { grid-row: 1; grid-column: 3; }
+.resource-row > .resource-badges     { grid-row: 1; grid-column: 4; }
+.resource-row > .resource-disclosure { grid-row: 1; grid-column: 5; }
+/* ─── Content-search excerpt (Library) ───────────────────────────────────
+   The "why is this row here" line for a match that landed in a skill's or
+   snippet's BODY — the row's own name and description do not contain it, so
+   without this the row reads as a false positive. Full width at row 2; the
+   disclosure panel moves to row 3 so the two never collide (an absent
+   excerpt leaves a zero-height implicit track, `row-gap: 0`, so no other
+   row in the app moves). */
+.resource-row > .resource-excerpt { grid-row: 2; grid-column: 2 / -1; }
+.resource-row > .resource-detail  { grid-row: 3; grid-column: 1 / -1; }
+.resource-excerpt {
+  font-family: var(--font-sans);
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+  line-height: 1.45;
+  padding-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.resource-excerpt-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 8px;
+}
+.resource-card .resource-excerpt { margin-top: 4px; }
+/* A search mark is a faint CONTEXT-hue wash, not a weight change: on a
+   mono name at --fs-7, 500 -> 600 weight at the same colour is invisible at
+   normal viewing distance (REVIEW-3 M1). `--slot-fill-soft` is a sanctioned
+   context-channel fill (<=10%, DESIGN.md §Accents) already used for "this is
+   the current one" states elsewhere in this file — a mark reuses the same
+   register at its SOFT (6%) strength so many marks in one excerpt line don't
+   compete with a stronger lit-slot row. One rule reaches the name,
+   description, and excerpt in every list unit alike, so the typed
+   characters read identically everywhere and the row width never shifts
+   (padding is absorbed by the mark's own inline box, not extra layout). */
+.resource-row mark, .resource-card mark {
+  background: var(--slot-fill-soft);
+  color: var(--fg-strong);
+  font-weight: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.resource-row > .resource-glyph:not(:empty)   { margin-right: 14px; }
+.resource-row > .resource-actions:not(:empty) { margin-left: 14px; }
+.resource-row > .resource-badges:not(:empty)  { margin-left: 14px; }
+.resource-row > .resource-disclosure          { margin-left: 10px; }
+@container appmain (max-width: 600px) {
+  /* `gap` is inert on this grid (spacing rides cell margins, see above) — the
+     narrow ladder tightens those margins instead. */
+  .resource-row > .resource-glyph:not(:empty)   { margin-right: 8px; }
+  .resource-row > .resource-actions:not(:empty) { margin-left: 8px; }
+  .resource-row > .resource-badges:not(:empty)  { margin-left: 8px; }
+}
+
+/* ─── Roving list-nav focus = the same lit slot, one grammar ───────────────
+   (Replaces a dead `.skill-row[data-listnav-active]` stripe that never
+   painted — the attribute lands on the `.lib-nav-row`/`.avail-row-wrap`
+   WRAPPER, never on `.skill-row` — see command-layer.css.) */
+.lib-nav-row[data-listnav-active="true"] > .resource-row,
+.avail-row-wrap[data-listnav-active="true"] > .resource-row {
+  background: var(--slot-fill);
+  box-shadow: inset 0 0 0 1px var(--slot-ring), var(--slot-glow);
+}
+/* G10: the grid card shares the row's lit-slot treatment — `.resource-card`
+   is a DIFFERENT class than `.resource-row` (ResourceRow's `card` layout),
+   so it needs its own selector, not a shared one. */
+.lib-nav-row[data-listnav-active="true"] > .resource-card {
+  background: var(--slot-fill);
+  box-shadow: inset 0 0 0 1px var(--slot-ring), var(--slot-glow);
+}
+/* G10: the wrapper is now the grid item (SkillCard's own `width: 100%` no
+   longer reaches the grid cell once it's one level deeper) — `stretch` is
+   the grid default for a block box, but pin it explicitly so a future grid
+   tweak can't silently shrink the wrapper to its content and orphan the
+   focus ring from the cell it should fill.
+   Grill MAJOR 3: `width: 100%` alone only stretches the WRAPPER — the
+   `.resource-card` inside it is a plain block box with no height rule of
+   its own, so it still sizes to its OWN content. Two cards in the same grid
+   row with different description lengths then end up different heights,
+   and `.resource-footer`'s `position: absolute; bottom: 13px` (relative to
+   the card, rows-cards.css ~406) lands at a different Y per card instead of
+   sharing one bottom edge. Making the wrapper a flex column and stretching
+   the card to fill it closes that gap without touching the card's own
+   layout rules (a lit slot / focus ring painted on the wrapper still
+   outlines the full cell). */
+.skill-grid > .lib-nav-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+.skill-grid > .lib-nav-row > .resource-card {
+  flex: 1 1 auto;
+  width: 100%;
+}
+/* REVIEW-A #8: the wrapper's OWN focus-visible ring is suppressed, not
+   redrawn — `focusIndex` moves DOM focus to the active row via `.focus()`,
+   so `:focus-visible` and `[data-listnav-active="true"]` land on the same
+   element together every time keyboard nav fires; the lit slot above is
+   already that state's one indicator. Drawing a second `--anchor-2` outline
+   on top of it painted two indicators for one state. */
+.lib-nav-row:focus-visible, .avail-row-wrap:focus-visible { outline: none; }
+/* The unscoped `[data-listnav-active="true"] { outline:none }` this replaces
+   (command-layer.css) quietly served two OTHER lists too — kept here,
+   scoped, since `.hook-row` draws its own anchor border and `.sf-file` uses
+   its `aria-current` highlight as their own roving-focus indicator. */
+.hook-row[data-listnav-active="true"],
+.sf-file[data-listnav-active="true"] { outline: none; }
+
+/* The grid card shares the row's equipped-pip style (same badge, two
+   layouts) — `.resource-row .equipped-pip` itself lives in rows-cards.css. */
+.resource-card .equipped-pip {
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-mute);
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 6px; border-radius: 3px; background: var(--bg-2); border: 1px solid var(--border);
+}
+.resource-card .equipped-pip[data-active="true"] { color: var(--green); border-color: color-mix(in oklab, var(--green) 35%, transparent); background: color-mix(in oklab, var(--green) 10%, transparent); }
+
+/* ─── Disclosure chevron + detail panel — the one progressive-disclosure
+   idiom for list units (COMPONENTS.md §Resource row / card). ─────────────── */
+.resource-disclosure {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; flex-shrink: 0;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: transparent; color: var(--fg-dim); cursor: pointer;
+  transition: color var(--dur-4), border-color var(--dur-4), background var(--dur-4);
+}
+.resource-disclosure:hover { color: var(--fg); border-color: var(--border); background: var(--bg-2); }
+.resource-disclosure:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: -2px; }
+.resource-disclosure[aria-expanded="true"] { color: var(--anchor-2); }
+.resource-disclosure svg { transition: transform var(--dur-5); }
+.resource-disclosure[aria-expanded="true"] svg { transform: rotate(180deg); }
+.resource-detail {
+  padding: 9px 10px; margin: 6px 0 2px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--bg-0) 38%, transparent);
+  font-size: var(--fs-4); color: var(--fg-mute); line-height: 1.4;
+  animation: details-in .16s cubic-bezier(.2,.7,.2,1);
+}
+.resource-card .resource-detail { margin: 6px 0 0; }
+/* KindMark (Tag.tsx): the icon-only, deviation-only MCP mark (R1). */
+.kind-mark { display: inline-flex; align-items: center; color: var(--id-1); flex-shrink: 0; }
+
+/* BundleChipAdd's popover menu (R6): rows are `ResourceRow role="menuitem"`;
+   tokens replace the old inline style object (`--radius` for menus/popovers,
+   `--shadow-popover-soft` instead of a bare rgba literal). */
+.bundle-chip-add-menu {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: var(--z-popover-local);
+  min-width: 200px; padding: 4px;
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  background: var(--bg-3); box-shadow: var(--shadow-popover-soft);
+}
+.bundle-chip-add-menu .empty { padding: 10px; font-size: var(--fs-3); color: var(--fg-mute); }
+.bundle-chip-add-menu .bundle-pick-row { padding: 7px 8px; min-height: auto; border-radius: var(--radius-sm); border-bottom: 0; }
+.bundle-glyph {
+  width: 18px; height: 18px; flex-shrink: 0; border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--bg-0);
+}
+.bundle-count { font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim); }
+
+/* `.resource-actions` is `display: contents` on a card (no box to hide), so
+   a hover-revealed cluster names its own box. Fade only — the card already
+   lifts on hover, a second motion on top reads as a glitch. Wave B wires
+   `SkillCard.actions` content here (the loadout's `SkillInvocationOverride`
+   trigger — `screens/project/EquippedSkillsGrid.tsx`) — the offset is
+   pre-clearanced against `.equip-toggle`'s real footprint (`right:8px`, 22px
+   wide → right edge at 30px) with a few px of margin. */
+.skill-card .card-actions {
+  position: absolute; top: 8px; right: 36px; /* clears .equip-toggle's 30px right edge */
+  display: inline-flex; align-items: center; gap: 4px;
+  opacity: 0; transition: opacity var(--dur-4);
+}
+/* A via-bundle card has no unequip ✕, so the cluster takes the corner itself. */
+.skill-card[data-via="bundle"] .card-actions { right: 8px; }
+.skill-card:hover .card-actions,
+.skill-card:focus-within .card-actions,
+.skill-card:has(.invocation-override-menu) .card-actions { opacity: 1; }
+/* REVIEW-B #1: the at-rest override badge and the hover-revealed trigger
+   share the same corner (the badge lives in `.resource-cardhead`'s
+   `padding-right: 28px` reservation, the cluster is absolute at `right: 36px`)
+   — a deliberate swap, not a collision. The badge fades OUT under the exact
+   same trio that fades the cluster IN, so the two are never both painted. */
+.skill-card .invocation-override-badge { transition: opacity var(--dur-4); }
+.skill-card:hover .invocation-override-badge,
+.skill-card:focus-within .invocation-override-badge,
+.skill-card:has(.invocation-override-menu) .invocation-override-badge { opacity: 0; }
+
+/* ─── Available panel rows (B1) — `.avail-row-wrap` is a roving list item
+   around an Equip `ResourceRow` (`tabIndex={-1}`) and its sibling Read action.
+   Replaces the retired `.avail-skill*`
+   tree (rows-cards.css) — the SAME one-row grammar, not a bespoke shape; only
+   the equip-specific pending/success/error paint and the equip-copy reveal
+   are unique to this surface. ─────────────────────────────────────────────── */
+.avail-row-wrap { position: relative; }
+.avail-row-wrap .avail-row { border-radius: var(--radius-sm); }
+.avail-row-read { margin: 2px 6px 6px auto; }
+/* Guards the optimistic mutation window — `onClick` also no-ops while
+   pending, this just keeps a stray click/hover from doing anything visible
+   (also freezes the disclosure chevron for the same ~300ms; accepted, see
+   COMPONENTS.md). */
+.avail-row-wrap[data-status="pending"] .avail-row {
+  pointer-events: none;
+  background: color-mix(in oklab, var(--amber) 7%, var(--bg-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--amber) 38%, transparent);
+}
+.avail-row-wrap[data-status="success"] .avail-row {
+  background: color-mix(in oklab, var(--green) 7%, var(--bg-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--green) 42%, transparent);
+}
+.avail-row-wrap[data-status="error"] .avail-row {
+  background: color-mix(in oklab, var(--red) 6%, var(--bg-2));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--red) 40%, transparent);
+}
+.avail-row .equip-copy {
+  max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+  color: var(--anchor-2); font-family: var(--font-mono); font-size: var(--fs-2);
+  transition: max-width var(--dur-7), opacity var(--dur-7);
+}
+.avail-row .equip { color: var(--fg-dim); opacity: 0; transition: opacity var(--dur-5), color var(--dur-5), transform var(--dur-5); }
+.avail-row-wrap:hover .avail-row .equip-copy,
+.avail-row-wrap:focus-within .avail-row .equip-copy,
+.avail-row-wrap[data-status="pending"] .avail-row .equip-copy,
+.avail-row-wrap[data-status="success"] .avail-row .equip-copy,
+.avail-row-wrap[data-status="error"] .avail-row .equip-copy { max-width: 82px; opacity: 1; }
+.avail-row-wrap:hover .avail-row .equip,
+.avail-row-wrap:focus-within .avail-row .equip { opacity: 1; color: var(--anchor-2); transform: translateX(1px); }
+.avail-row-wrap[data-status="pending"] .avail-row .equip { opacity: 1; color: var(--amber); animation: equip-pulse 1s ease-in-out infinite; }
+.avail-row-wrap[data-status="success"] .avail-row .equip,
+.avail-row-wrap[data-status="success"] .avail-row .equip-copy { opacity: 1; color: var(--green); }
+.avail-row-wrap[data-status="error"] .avail-row .equip,
+.avail-row-wrap[data-status="error"] .avail-row .equip-copy { opacity: 1; color: var(--red); }
+/* Detail body (`AvailableSkillDetail`): the desc paragraph inherits
+   `.resource-detail`'s color/size/line-height (both inherited props); this
+   only adds spacing + the meta row + the "would also come via" line. */
+.avail-row-desc { margin: 0 0 7px; }
+.avail-row-meta { display: flex; align-items: center; gap: 8px; }
+.avail-row-bundles { margin-top: 7px; color: var(--anchor-2); font-family: var(--font-mono); font-size: var(--fs-1); }
+
+/* ─── Available panel chrome (REVIEW-B #14) — folds `AvailableSkillsPanel.tsx`'s
+   six inline `style` objects into named classes, same pass that owns the
+   panel's rows above. `.avail-scope-label` is the group headers decision 1
+   makes load-bearing (the ONLY place scope now shows, since `.avail-row`
+   itself drops the retired scope word). ─────────────────────────────────── */
+.avail-panel-head { margin-bottom: 18px; }
+.avail-panel-title-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.avail-panel-title { font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: .12em; color: var(--fg-dim); text-transform: uppercase; }
+.avail-panel-count { font-size: var(--fs-2); }
+.avail-panel-search { margin-bottom: 10px; }
+.avail-list { border-radius: var(--radius-sm); padding: 4px 0; }
+.avail-scope-group { margin-bottom: 12px; }
+.avail-scope-label { font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .14em; color: var(--fg-dim); text-transform: uppercase; padding: 6px 8px; }
+.avail-empty { padding: 16px 8px; color: var(--fg-mute); font-size: var(--fs-4); font-family: var(--font-mono); }
+
+/* ─── B3 (bundle grid) — read-only linked-bundle lock badge, icon-only like
+   `.kind-mark` (a bundle card's `badges` slot, never amber — R5 reserves
+   amber for direct-equip provenance, and membership isn't that). ─────────── */
+.card-lock { display: inline-flex; align-items: center; color: var(--fg-dim); flex-shrink: 0; }
+
+/* ─── B5 (remote detail) — the merged "Skills on this remote" list rides
+   plain `SkillRow`/`ResourceRow` (`.remote-unit` needs no override of its
+   own); these two fill the slots B5's `detail`/orphan-row callers pass a
+   className into, so that surface never adds CSS of its own. ─────────────── */
+.remote-unit-desc { margin: 0 0 6px; }
+.remote-unit-orphan { border: 1px dashed var(--border-strong); border-radius: var(--radius); background: var(--bg-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  .resource-disclosure,
+  .resource-disclosure svg,
+  .resource-detail,
+  .skill-card .card-actions,
+  .skill-card .invocation-override-badge,
+  .avail-row-wrap,
+  .avail-row,
+  .avail-row .equip,
+  .avail-row .equip-copy {
+    animation: none !important;
+    transition: none !important;
+  }
+}

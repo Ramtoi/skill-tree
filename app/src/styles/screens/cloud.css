@@ -1,0 +1,145 @@
+/* ─── Cloud apps (claude.ai / ChatGPT web) ───────────────────────────────────
+   A band on the Remotes screen + its detail route. Deliberately quiet: the
+   drift cluster is the only thing that should catch the eye, and it borrows the
+   StatusBadge channels (never amber — that stays provenance-only). */
+.cloud-section { margin-top: 26px; }
+.cloud-section-lede {
+  margin: 2px 0 12px; max-width: 68ch;
+  font-size: var(--fs-6); line-height: 1.55; color: var(--fg-mute);
+}
+.cloud-section-hint { padding: 10px 0; color: var(--fg-mute); font-size: var(--fs-6); line-height: 1.5; }
+
+.cloud-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.cloud-card {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 14px; text-align: left; min-width: 0;
+  background: var(--bg-1); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); cursor: pointer;
+  transition: border-color var(--dur-4) ease, background var(--dur-4) ease;
+}
+.cloud-card:hover { border-color: var(--border-strong); background: var(--bg-2); }
+.cloud-card:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+/* The desktop-app card states a fact and offers no target action. */
+.cloud-card-info { cursor: default; background: var(--bg-0); }
+.cloud-card-info:hover { background: var(--bg-0); border-color: var(--border); }
+
+.cloud-card-head { display: flex; align-items: center; gap: 10px; }
+/* Identity register (chroma 0.10), never a semantic accent: the card sets an
+   `--id-*` token as `color` so two targets sharing one generic globe are still
+   told apart. The tile stays NEUTRAL — same as the NavPanel bundle glyphs — so
+   identity tints the mark without out-shouting the drift cluster, which is the
+   thing on this card that a glance is actually for. */
+.cloud-card-glyph {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  border-radius: var(--radius); flex-shrink: 0;
+  color: var(--fg-mid); background: var(--bg-3);
+}
+.cloud-card-id { min-width: 0; flex: 1; }
+.cloud-card-name { font-size: var(--fs-d-2); color: var(--fg-strong); }
+.cloud-card-sub { font-size: var(--fs-4); color: var(--fg-mute); }
+.cloud-card-note {
+  margin: 0; font-size: var(--fs-6); line-height: 1.55; color: var(--fg-mid);
+}
+.cloud-card-meta { display: flex; flex-direction: column; gap: 5px; }
+.cloud-meta-row { display: flex; justify-content: space-between; gap: 12px; font-size: var(--fs-5); }
+.cloud-meta-row > span:first-child { color: var(--fg-mute); flex-shrink: 0; }
+.cloud-card-drift { display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px; align-items: center; }
+.cloud-card-idle { font-size: var(--fs-5); color: var(--fg-dim); }
+/* `margin-top: auto` keeps the action on one baseline across the band: the grid
+   stretches cards to equal height, and the info card's prose is a different
+   length from the two targets' meta + drift rows. */
+.cloud-card-foot { display: flex; gap: 8px; align-items: center; margin-top: auto; }
+.cloud-card-foot .btn-ghost { margin-left: auto; }
+.status-badge.cloud-status-badge { font-family: var(--font-mono); font-size: var(--fs-2); }
+
+/* `.cloud-skill-row`'s bespoke `grid-template-columns` override is retired:
+   `.resource-row` now places every cell explicitly and an absent glyph/
+   actions cell costs zero width (PLAN §A1-b) — a cloud row needs no override
+   to line its badge up as a real right-hand column any more. */
+
+/* The narrow ladder (<=600px) drops `.resource-desc` because it is normally a
+   secondary description. On a cloud row it is NOT secondary — the lint text and
+   the "not exportable" reason are the only place that warning is ever stated —
+   so these rows opt back in and let it wrap onto its own line. Wrapping needs
+   `white-space` too: the base rule is `nowrap`, so a long reason was clipped
+   mid-word instead of running onto a second line. */
+@container appmain (max-width: 600px) {
+  .cloud-skill-row .resource-desc {
+    display: block; flex: 1 1 100%;
+    white-space: normal; text-overflow: clip;
+  }
+}
+
+/* ── Detail route ── */
+.cloud-detail {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 16px var(--pad-screen-x) var(--fab-safe);
+}
+.cloud-detail-section { margin-top: 22px; }
+.cloud-detail-section:first-child { margin-top: 4px; }
+.cloud-skill-list { display: flex; flex-direction: column; gap: 2px; }
+.cloud-row-when { font-size: var(--fs-3); }
+/* Lint warnings are advisory, never blocking — muted, never a red/amber alarm.
+   `flex-start` (not `center`): once these wrap to two lines at narrow widths the
+   centred marker floated into the middle of the block instead of leading it. */
+.cloud-lint {
+  display: inline-flex; align-items: flex-start; gap: 5px;
+  font-size: var(--fs-4); color: var(--fg-mute);
+}
+.cloud-lint > svg { flex-shrink: 0; margin-top: 2px; }
+.cloud-warning {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 9px 12px; margin-bottom: 12px; border-radius: var(--radius);
+  font-size: var(--fs-6); line-height: 1.5;
+  color: var(--fg-mid); background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+}
+.cloud-notes {
+  /* Full sentences, not a bulleted list — the markers were suppressed but the
+     indent they hung from was still there, so the block sat orphaned to the
+     right of everything above it. */
+  margin: 4px 0 0; padding-left: 0; list-style: none; max-width: 78ch;
+  display: flex; flex-direction: column; gap: 7px;
+  font-size: var(--fs-6); line-height: 1.55; color: var(--fg-mute);
+}
+.cloud-notes code,
+.cloud-howto code,
+.cloud-notes .text-mono {
+  font-family: var(--font-mono); font-size: .94em;
+  color: var(--fg); background: var(--bg-3);
+  padding: 1px 5px; border-radius: 4px;
+  /* An in-product breadcrumb is long enough to wrap; without this each wrapped
+     fragment loses its padding and the box reads as a rendering glitch. */
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+/* ── The manual seam, stated in place ──
+   Export hands the user off to Finder and a browser tab, so the one step hub
+   cannot perform has to survive that round trip — a toast would have said it
+   once and evaporated. Quiet by construction: no accent, no icon, no call to
+   action. It is a label on the mechanism, not a thing to click. */
+.cloud-howto {
+  display: flex; flex-wrap: wrap; gap: 6px 26px;
+  margin: 0 0 4px; padding: 10px 12px; list-style: none;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-1);
+  font-size: var(--fs-6); line-height: 1.55; color: var(--fg-mute);
+}
+.cloud-howto > li {
+  display: flex; align-items: baseline; gap: 8px;
+  flex: 1 1 300px; min-width: 0;
+}
+.cloud-howto b { color: var(--fg-strong); font-weight: 500; }
+.cloud-howto-num {
+  flex-shrink: 0;
+  display: inline-grid; place-items: center;
+  width: 17px; height: 17px; border-radius: 50%;
+  font-family: var(--font-mono); font-size: var(--fs-2); line-height: 1;
+  color: var(--fg-mute); background: var(--bg-3);
+  transform: translateY(2px);
+}
+

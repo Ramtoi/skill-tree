@@ -1,0 +1,516 @@
+/* ─── Backup & restore (backup-ux) ─────────────────────────────────────────
+   The backup screen is the app's one true onboarding surface, so its rhythm is
+   deliberately looser than a dense library list: a first-run user reads here,
+   they do not scan. Everything still comes out of the token system — the
+   spacing scale is the only thing dialled up, and only on this screen. */
+
+.backup-screen-body {
+  /* C7: token gutter (was a hard-coded 24/24/56 that ignored density). */
+  padding: var(--pad-screen-y) var(--pad-screen-x) var(--fab-safe);
+  overflow: auto;
+}
+/* A guided flow is a reading column, not a dashboard: past ~900px the eye has
+   to travel from a label on the far left to its value on the far right, and the
+   setup copy stops scanning as a single thought. Every top-level block on this
+   screen is capped, left-aligned like the rest of the app. */
+.backup-screen-body > * { max-width: 900px; }
+
+/* ── The setup lede: one sentence that says what happens ── */
+.backup-lede { max-width: 620px; margin: 4px 0 28px; }
+.backup-lede h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-d-8);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -0.01em;
+}
+.backup-lede p {
+  margin: 0;
+  font-size: var(--fs-7);
+  line-height: 1.65;
+  color: var(--fg-mid);
+  max-width: 58ch;
+}
+
+/* ── Staged journey ─────────────────────────────────────────────────────
+   A numbered rail with a connecting spine. The pip carries the state: violet
+   for the one CURRENT stage (brand = active, COMPONENTS.md §Accents), green
+   check for done, neutral for later. Nothing else on this screen is violet. */
+.backup-journey { margin-bottom: 28px; }
+.backup-stages { list-style: none; margin: 0; padding: 0; }
+
+.backup-stage {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 22px;
+}
+.backup-stage:last-child { padding-bottom: 0; }
+
+/* Spine between pips. Stops at the last stage so it never dangles. */
+.backup-stage:not(:last-child) .backup-stage-rail::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 30px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--bg-3);
+}
+.backup-stage-rail { position: relative; }
+
+/* The pip is decoration (`aria-hidden`), so the stage's state reaches assistive
+   tech as a word instead. Clipped, not `display:none` — the latter is skipped
+   by screen readers too. */
+.backup-stage-state {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.backup-stage-pip {
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  border: 1px solid var(--bg-3);
+  background: var(--bg-1);
+  color: var(--fg-dim);
+}
+.backup-stage[data-state="current"] .backup-stage-pip {
+  border-color: var(--ctx);
+  background: color-mix(in oklab, var(--ctx) 16%, transparent);
+  color: var(--ctx-2);
+  font-weight: 600;
+}
+.backup-stage[data-state="done"] .backup-stage-pip {
+  border-color: color-mix(in oklab, var(--green) 45%, transparent);
+  color: var(--green);
+}
+
+.backup-stage-body { min-width: 0; padding-top: 3px; }
+.backup-stage-head { display: flex; align-items: center; gap: 10px; min-height: 22px; }
+.backup-stage-title {
+  margin: 0;
+  font-size: var(--fs-d-3);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -0.005em;
+}
+.backup-stage[data-state="todo"] .backup-stage-title { color: var(--fg-mute); font-weight: 500; }
+/* The reopen control belongs NEXT to the title it reopens — pushed to the far
+   right of a 900px column it reads as an unrelated screen action. */
+.backup-stage-head .btn { margin-left: 4px; }
+
+.backup-stage-summary {
+  margin: 5px 0 0;
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+  max-width: 62ch;
+}
+.backup-stage[data-state="todo"] .backup-stage-summary { color: var(--fg-dim); }
+.backup-stage[data-state="done"] .backup-stage-summary {
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+  word-break: break-all;
+}
+
+.backup-stage-content {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+  animation: details-in .16s cubic-bezier(.2,.7,.2,1);
+}
+/* The ladder, banners and field rows want the full column; a lone action button
+   does not — stretched to 900px the first-snapshot CTA reads as a banner rather
+   than a button. */
+.backup-stage-content > .btn,
+.backup-stage-content > .toggle-field { align-self: flex-start; }
+
+/* ── Credential ladder rows ── */
+.cred-ladder { display: flex; flex-direction: column; gap: 2px; }
+.cred-rung {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--bg-2);
+}
+.cred-rung:last-child { border-bottom: 0; }
+.cred-rung > .status-badge { margin-top: 3px; }
+.cred-rung-main { min-width: 0; }
+.cred-rung-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cred-rung-label { font-size: var(--fs-7); font-weight: 500; color: var(--fg-strong); }
+.cred-rung[data-available="false"] .cred-rung-label { color: var(--fg-mid); }
+.cred-rung-method {
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-dim);
+}
+.cred-rung-human {
+  margin-top: 3px;
+  font-size: var(--fs-6);
+  line-height: 1.55;
+  color: var(--fg-mid);
+}
+.cred-rung[data-available="false"] .cred-rung-human { color: var(--fg-mute); }
+.cred-rung-fix { margin-top: 9px; }
+
+.cred-fix-cmd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cred-fix-label { font-size: var(--fs-5); color: var(--fg-mute); }
+.cred-fix-then { font-size: var(--fs-5); color: var(--fg-dim); }
+.cred-cmd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm, 5px);
+  background: var(--bg-2);
+  border: 1px solid var(--bg-3);
+  color: var(--fg-strong);
+  white-space: nowrap;
+}
+
+/* Ligatures are off globally (see the `:root` rule near the top of this file) —
+   a command renders exactly as typed in every mono context, not just the two
+   classes that happened to be on screen when the defect was first reported. */
+
+/* ── Fields on the journey ── */
+.backup-field-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.backup-field { flex: 1 1 320px; min-width: 200px; }
+.backup-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+}
+.backup-field input,
+.pat-input {
+  width: 100%;
+  padding: 9px 11px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-6);
+  background: var(--bg-0);
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--fg-strong);
+}
+.backup-field input:focus-visible,
+.pat-input:focus-visible {
+  outline: none;
+  border-color: var(--anchor);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--anchor) 18%, transparent);
+}
+
+.backup-toggle-label { font-size: var(--fs-6); color: var(--fg-mid); }
+
+.backup-hint-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border: 1px dashed var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+}
+.backup-hint-row > span { flex: 1 1 280px; min-width: 0; }
+.backup-hint-row code { font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg-strong); }
+
+.backup-celebrate {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg, 10px);
+  border: 1px solid color-mix(in oklab, var(--green) 35%, transparent);
+  background: color-mix(in oklab, var(--green) 7%, transparent);
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+}
+
+/* ── PAT form ── */
+.pat-form {
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-1);
+}
+.pat-form-label { font-size: var(--fs-5); color: var(--fg-mute); margin-bottom: 7px; }
+.pat-form .pat-input { max-width: 460px; }
+.pat-form-note {
+  margin: 8px 0 12px;
+  font-size: var(--fs-4);
+  line-height: 1.55;
+  color: var(--fg-dim);
+  max-width: 60ch;
+}
+.pat-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── Cards (configured state) ── */
+.backup-card {
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-1);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.backup-card[data-tone="danger"] { border-color: var(--red); }
+.backup-card-head { display: flex; gap: 16px; align-items: flex-start; }
+.backup-card-heading { flex: 1; min-width: 0; }
+.backup-card-heading h3 {
+  margin: 0;
+  font-size: var(--fs-d-2);
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+.backup-card-heading p {
+  margin: 5px 0 0;
+  font-size: var(--fs-6);
+  line-height: 1.55;
+  color: var(--fg-mute);
+  max-width: 62ch;
+}
+.backup-card-right { flex-shrink: 0; }
+.backup-card-body { margin-top: 14px; display: flex; flex-direction: column; gap: 2px; }
+
+.backup-auto-toggle { display: flex; align-items: center; gap: 8px; font-size: var(--fs-5); }
+.backup-auto-toggle > span { color: var(--fg-mid); }
+
+.backup-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 140px) 1fr;
+  gap: 14px;
+  padding: 7px 0;
+  align-items: baseline;
+  border-bottom: 1px solid var(--bg-2);
+}
+.backup-row:last-of-type { border-bottom: 0; }
+.backup-row-label { font-size: var(--fs-5); color: var(--fg-mute); }
+.backup-row-value { font-size: var(--fs-6); color: var(--fg-mid); min-width: 0; }
+.backup-mono { font-family: var(--font-mono); color: var(--fg-strong); word-break: break-all; }
+.backup-dim { color: var(--fg-dim); }
+
+.backup-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+.backup-result {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--bg-2);
+  font-size: var(--fs-5);
+  color: var(--fg-mid);
+}
+
+/* ── Progressive disclosure ── */
+.backup-disclosure {
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-1);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.backup-disclosure-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 16px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--fg-mid);
+}
+.backup-disclosure-head:hover { background: var(--bg-2); }
+.backup-disclosure-title { font-size: var(--fs-7); font-weight: 500; color: var(--fg-strong); }
+/* The right-hand hint is the only thing on a collapsed row that says what is
+   behind it ("via ssh", "merge or replace, previewed first") — i.e. the exact
+   text an unsure user needs. At `--fg-dim` on `--bg-1` it measured 2.2:1 and
+   was, in practice, invisible.
+   Two changes: `--fg-mute` (4.6:1), and PROSE IN SANS — the whole hint used to
+   render in mono, which typed "merge or replace, previewed first" as if it
+   were an identifier. Bare identifiers inside it keep mono via `.hint-mono`,
+   which is the rule in COMPONENTS.md §Type applied properly rather than
+   inverted. */
+.backup-disclosure-hint {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+}
+.backup-disclosure-hint .hint-mono { font-family: var(--font-mono); }
+/* Compact: the row's own title wraps to two lines here, and an ancillary hint
+   that survives that wrap is competing with the thing it annotates. */
+@container appmain (max-width: 560px) {
+  .backup-disclosure-hint { display: none; }
+}
+.backup-disclosure-body {
+  padding: 4px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: details-in .16s cubic-bezier(.2,.7,.2,1);
+}
+
+/* ── The restore fork on a fresh machine ── */
+.backup-fork {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  margin: 4px 0 16px;
+  border: 1px dashed var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+}
+.backup-fork-copy { flex: 1 1 300px; min-width: 0; }
+.backup-fork-copy h3 {
+  margin: 0;
+  font-size: var(--fs-7);
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+.backup-fork-copy p { margin: 4px 0 0; font-size: var(--fs-6); color: var(--fg-mute); }
+
+/* ── Banners ── */
+/* `pending_reconcile` is a TRANSITIONAL state, not a severity or a provenance —
+   the snapshot is fine, the push is simply held until a human says the restore
+   looks right. Amber in this system means provenance/risk severity only, and
+   spending it here also put the same one state into two different colour
+   channels at once: this card and the StatusBar string were amber while the
+   header chip and the Cloud-copy row rendered it as a neutral hollow ring. The
+   ring instances were the correct ones, so the amber moves out and weight
+   carries the emphasis instead — strong border, strong title, ⚠ glyph kept. */
+.backup-banner {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-1);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.backup-banner-head {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--fg-strong); font-size: var(--fs-7); font-weight: 600;
+}
+.backup-banner p {
+  margin: 9px 0 14px;
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+  max-width: 74ch;
+}
+.backup-banner-inert { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.backup-banner-inert-why { font-size: var(--fs-5); color: var(--fg-mute); }
+
+/* ── The labelled twin of the header primary (compact widths only) ──────────
+   At 480px the header strips every button label, so the screen's one primary
+   became a bare ⚡ glyph while the card under it said "then use **Acknowledge &
+   back up** above" — copy naming a control with no name on it. Same action,
+   same builder, rendered full-width and labelled exactly where the header stops
+   being able to carry a word.
+   Visibility is owned by JS (`HEADER_LABEL_SHED_PX` in BackupScreen), not by a
+   second container query here: two thresholds resolving against two different
+   elements would eventually disagree and leave a width band with no labelled
+   primary at all. This rule is layout only. */
+.backup-compact-action { margin-bottom: 16px; }
+.backup-compact-action .btn { width: 100%; justify-content: center; }
+.backup-alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--amber);
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+}
+.backup-alert strong { color: var(--amber); }
+.backup-refusal-detail {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  color: var(--fg-strong);
+  word-break: break-all;
+}
+
+/* An ErrorCard used as a BANNER above live content, not as a dead screen.
+   Its default frame (`margin: 80px auto; max-width: 540px`) belongs to a
+   full-screen failure; here it left a ~150px void under the header and pushed
+   the health card below the fold. */
+.backup-alert-card { margin-bottom: 20px; }
+.backup-alert-card > .error-card { margin: 0; max-width: none; }
+
+.backup-alert-cmd { margin-top: 10px; }
+
+.backup-field-problem {
+  margin: 6px 0 0;
+  font-size: var(--fs-4);
+  color: var(--red);
+}
+
+/* ── Restore surface ──
+   NEUTRAL, elevated — the same frame as every other card on this screen. Red
+   is the status channel's error/danger endpoint and belongs on the destructive
+   CONFIRM (the typed-word dialog, the danger button), not on a form whose only
+   action is a dry-run preview. A permanently-red panel is a panel whose red has
+   stopped meaning anything. */
+.restore-zone {
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-1);
+  padding: 18px 20px;
+}
+.restore-zone h3 {
+  margin: 0;
+  font-size: var(--fs-d-2);
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+.restore-zone-lede {
+  margin: 8px 0 16px;
+  font-size: var(--fs-6);
+  line-height: 1.6;
+  color: var(--fg-mid);
+  max-width: 72ch;
+}
+.restore-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.restore-controls .backup-field { flex: 1 1 320px; }
+/* The mode select sizes to its own content — it must not compete with the URL
+   field for the row's flexible space. */
+.restore-controls .restore-mode-field { flex: 0 0 auto; }
+.restore-select {
+  padding: 9px 11px;
+  font-size: var(--fs-6);
+  background: var(--bg-0);
+  border: 1px solid var(--bg-3);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--fg-strong);
+}
+.restore-plan {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: var(--radius-lg, 10px);
+  background: var(--bg-2);
+}
+
+/* ── Narrow ── */
+@media (max-width: 720px) {
+  .backup-screen-body { padding: 18px 16px 48px; }
+  .backup-row { grid-template-columns: 1fr; gap: 2px; }
+  .backup-card-head { flex-direction: column; gap: 10px; }
+  .backup-card-right { align-self: flex-start; }
+  .backup-stage { grid-template-columns: 26px 1fr; gap: 11px; }
+  .backup-stage-pip { width: 24px; height: 24px; font-size: var(--fs-3); }
+  .backup-stage:not(:last-child) .backup-stage-rail::after { left: 12px; top: 26px; }
+  .cred-fix-cmd { align-items: flex-start; }
+}

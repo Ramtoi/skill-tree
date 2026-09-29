@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-07T12:00:00.000Z",
+  "horizon": "2026-08-24",
+  "since": null,
+  "until": null,
+  "days": [
+    {
+      "date": "2026-09-05",
+      "provenance": "scanned",
+      "tokens": {
+        "input": 1,
+        "output": 2,
+        "cacheCreation": 3,
+        "cacheRead": 4,
+        "total": 10
+      },
+      "costUsd": 0.1,
+      "costKnown": true,
+      "splitKnown": true,
+      "sessions": null,
+      "sessionsKnown": false,
+      "agents": [
+        {
+          "agent": "claude",
+          "name": "Claude Code",
+          "provenance": "scanned",
+          "source": "ccusage",
+          "tokens": {
+            "input": 1,
+            "output": 2,
+            "cacheCreation": 3,
+            "cacheRead": 4,
+            "total": 10
+          },
+          "costUsd": 0.1,
+          "costKnown": true,
+          "splitKnown": true,
+          "sessions": null,
+          "sessionsKnown": false,
+          "models": [
+            {
+              "model": "m",
+              "costUsd": 0.1,
+              "costKnown": true,
+              "splitKnown": true,
+              "tokens": {
+                "input": 1,
+                "output": 2,
+                "cacheCreation": 3,
+                "cacheRead": 4,
+                "total": 10
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-06",
+      "provenance": "scanned",
+      "tokens": {
+        "input": 1,
+        "output": 2,
+        "cacheCreation": 3,
+        "cacheRead": 4,
+        "total": 10
+      },
+      "costUsd": 0.1,
+      "costKnown": true,
+      "splitKnown": true,
+      "sessions": 2,
+      "sessionsKnown": true,
+      "agents": [
+        {
+          "agent": "claude",
+          "name": "Claude Code",
+          "provenance": "scanned",
+          "source": "ccusage",
+          "tokens": {
+            "input": 1,
+            "output": 2,
+            "cacheCreation": 3,
+            "cacheRead": 4,
+            "total": 10
+          },
+          "costUsd": 0.1,
+          "costKnown": true,
+          "splitKnown": true,
+          "sessions": 2,
+          "sessionsKnown": true,
+          "models": [
+            {
+              "model": "m",
+              "costUsd": 0.1,
+              "costKnown": true,
+              "splitKnown": true,
+              "tokens": {
+                "input": 1,
+                "output": 2,
+                "cacheCreation": 3,
+                "cacheRead": 4,
+                "total": 10
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "days": 2,
+    "rows": 2,
+    "backfilled_days": 0,
+    "frozen_days": 0,
+    "scanned_days": 2
+  },
+  "claude_stats": {
+    "available": false,
+    "path": "~/.claude/stats-cache.json",
+    "importable_days": 0,
+    "last_computed": null
+  },
+  "warnings": []
+}

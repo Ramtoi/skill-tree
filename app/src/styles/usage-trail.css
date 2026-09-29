@@ -1,0 +1,42 @@
+/* Skill metadata stays in normal flow so descriptions, usage, and provenance
+   each reserve their own space at every card width. */
+.skill-card:has(.resource-footer) { padding-bottom: 12px; }
+.skill-card .resource-footer {
+  position: static;
+  height: auto;
+  margin: 8px 0 0;
+  padding-top: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  pointer-events: auto;
+}
+.skill-card .resource-footer > * {
+  background: none;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  white-space: normal;
+}
+.skill-card .resource-footer > :first-child,
+.skill-card .resource-footer > :last-child:not(:first-child) { margin: 0; }
+
+.skill-card .skill-card-source-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.usage-trail {
+  display: block;
+  width: 100%;
+  color: var(--fg-mute);
+}
+
+.skill-card .skill-card-source-row > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.skill-card .skill-card-source-row > :last-child:not(:first-child) {
+  flex-shrink: 0;
+}

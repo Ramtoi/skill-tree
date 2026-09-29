@@ -1,0 +1,552 @@
+/* Agent Docs ──────────────────────────────────────────────────────────── */
+.agent-docs-grid {
+  flex: 1;
+  min-height: 0;
+}
+.agent-docs-review { outline: 1px solid var(--border-strong); outline-offset: -1px; }
+
+/* ── File map ── */
+.agent-docs-map {
+  border-right: 1px solid var(--border);
+  background: var(--bg-1);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+}
+.agent-docs-map-head {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.agent-docs-eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--fg-mid);
+  white-space: nowrap;
+}
+.agent-docs-eyebrow .ad-count {
+  margin-left: auto;
+  color: var(--fg-dim);
+  letter-spacing: .04em;
+}
+/* In overlay mode the split's absolutely-positioned close button sits over the
+   top-right corner, which is exactly where the count lives. Give it room
+   rather than letting the row count hide under an X. */
+.resizable-split-overlay .agent-docs-eyebrow {
+  padding-right: 26px;
+}
+.agent-docs-md-toggle {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-5);
+  color: var(--fg-mid);
+  cursor: pointer;
+  user-select: none;
+}
+.agent-docs-md-toggle .toggle-label {
+  font-size: var(--fs-5);
+}
+.agent-docs-filter {
+  margin-top: 10px;
+  width: 100%;
+}
+.agent-docs-filter input {
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+}
+/* The map collapses to an overlay below ~744px container width; the filter
+   still has to fit the narrow pane, so the slash affordance goes. */
+.agent-docs-filter .slash {
+  display: none;
+}
+/* Imports. Violet is the brand accent and amber is provenance/severity, so an
+   import marker — a structural fact about how a file is reached — takes the
+   neutral surface treatment plus the cyan already used for link relationships
+   (see `.ad-file-unified[data-mode="symlink"]`). */
+.ad-pill-import {
+  color: var(--cyan);
+  background: color-mix(in oklab, var(--cyan) 12%, transparent);
+  border-color: color-mix(in oklab, var(--cyan) 30%, transparent);
+}
+.ad-pill-import[data-class="beyond_depth"] {
+  color: var(--fg-dim);
+  background: color-mix(in oklab, var(--fg-dim) 12%, transparent);
+  border-color: color-mix(in oklab, var(--fg-dim) 28%, transparent);
+}
+.ad-file-warn { flex: none; }
+.agent-docs-external-imports {
+  padding: 6px 0 2px;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+.ad-external-head {
+  padding: 2px 16px 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.ad-file-external .ad-file-size { font-style: italic; color: var(--fg-dim); }
+.agent-docs-withheld {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.agent-docs-withheld .btn {
+  padding: 1px 5px;
+  font-size: var(--fs-3);
+}
+.agent-docs-filter-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+.agent-docs-filter-note .btn {
+  padding: 2px 6px;
+  font-size: var(--fs-3);
+}
+.agent-docs-tagline {
+  margin-top: 6px;
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+
+/* ── Tree ── */
+.agent-docs-tree {
+  flex: 1;
+  overflow: auto;
+  padding: 6px 0 10px;
+  font-family: var(--font-mono);
+}
+
+.ad-tree-root {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px 6px;
+  font-size: var(--fs-5);
+  color: var(--fg-strong);
+  letter-spacing: 0;
+  white-space: nowrap;
+  min-width: 0;
+}
+.ad-tree-root .ad-tree-projectname { font-weight: 600; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ad-tree-root .ad-tree-slash       { color: var(--fg-dim); }
+
+/* File row (arbitrary depth via --ad-depth) */
+.ad-file {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 12px 0 calc(var(--ad-depth, 1) * 11px + 2px);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+  font: inherit;
+  min-height: 22px;
+  gap: 6px;
+}
+.ad-file:hover { background: var(--bg-2); }
+.ad-file[aria-current="true"] {
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--ctx) 22%, transparent),
+    color-mix(in oklab, var(--ctx) 5%, transparent));
+  color: var(--fg-strong);
+}
+.ad-file[aria-current="true"]::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 5px; bottom: 5px;
+  width: 2px;
+  background: var(--ctx-2);
+  border-radius: 2px;
+}
+
+.ad-file-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--green) 15%, transparent);
+  flex-shrink: 0;
+}
+.ad-file-icon { color: var(--fg-mute); flex-shrink: 0; }
+.ad-file-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+.ad-file-size {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+  white-space: nowrap;
+}
+
+.ad-file[data-state="missing"] .ad-file-dot {
+  background: transparent;
+  border: 1px dashed var(--fg-dim);
+  box-shadow: none;
+}
+.ad-file[data-state="missing"] .ad-file-name { color: var(--fg-mute); font-style: italic; }
+
+/* Agent-instruction basenames (CLAUDE.md / AGENTS.md / AGENT.md) read as a
+   distinct kind of file in the flat all-Markdown tree, not just another doc. */
+.ad-file[data-agent-doc="true"] .ad-file-name {
+  color: var(--fg-strong);
+  font-weight: 600;
+}
+.ad-file[data-state="missing"] .ad-file-size { color: var(--fg-dim); font-style: italic; }
+/* Pending is not absent: dim like a placeholder, but never italicized the way
+   an `absent` row is, and never rendered for a file that is not on disk. */
+.ad-file-size.ad-file-size--pending { color: var(--fg-dim); letter-spacing: .08em; }
+.ad-file[data-state="missing"] .ad-file-icon { opacity: 0.4; }
+.ad-file[data-state="dirty"] .ad-file-dot,
+.ad-file[data-state="changed"] .ad-file-dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--amber) 18%, transparent);
+}
+.ad-file[data-state="changed"] .ad-file-dot { outline: 1px dashed var(--amber); outline-offset: 2px; }
+.ad-file[data-state="error"] .ad-file-dot {
+  background: var(--red);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--red) 22%, transparent);
+}
+
+.ad-instruction-set {
+  min-height: 26px;
+  align-items: center;
+}
+.ad-instruction-set-list { padding-bottom: 6px; }
+.ad-set-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.ad-set-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-strong);
+  font-weight: 600;
+}
+.ad-set-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fg-dim);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+}
+.ad-banner-instruction-set { border-color: color-mix(in oklab, var(--blue) 30%, var(--border)); }
+
+.ad-file-unified .ad-file-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ad-unified-glyph {
+  font-family: var(--font-mono);
+  font-size: var(--fs-7);
+  line-height: 1;
+  color: var(--anchor-2);
+}
+.ad-file-unified[data-mode="symlink"] .ad-unified-glyph { color: var(--cyan); }
+.ad-unified-secondary { color: var(--fg-mute); }
+.ad-pill-binding[data-mode="mirror"] {
+  color: var(--anchor-2);
+  background: color-mix(in oklab, var(--anchor) 14%, transparent);
+  border-color: color-mix(in oklab, var(--anchor) 40%, transparent);
+}
+.ad-pill-binding[data-mode="symlink"] {
+  color: var(--cyan);
+  background: color-mix(in oklab, var(--cyan) 14%, transparent);
+  border-color: color-mix(in oklab, var(--cyan) 40%, transparent);
+}
+
+.ad-folder {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 12px 0 calc(var(--ad-depth, 1) * 11px - 6px);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg-mid);
+  font: inherit;
+  min-height: 22px;
+  gap: 4px;
+}
+.ad-folder:hover { background: var(--bg-2); color: var(--fg); }
+.ad-folder-chevron { color: var(--fg-dim); flex-shrink: 0; transition: transform var(--dur-4); }
+.ad-folder-icon { color: var(--fg-mute); flex-shrink: 0; }
+.ad-folder-name {
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  color: var(--fg-mid);
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ad-folder[data-empty="true"] .ad-folder-icon { opacity: 0.4; }
+.ad-folder[data-empty="true"] .ad-folder-name { color: var(--fg-mute); }
+.ad-folder-agent-doc-hint { flex-shrink: 0; }
+.ad-folder .ad-pill { margin-left: auto; }
+
+.ad-pill {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3);
+  letter-spacing: .08em;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ad-pill-missing {
+  color: var(--fg-dim);
+  border-color: var(--border-strong);
+  background: transparent;
+  margin-left: auto;
+}
+
+/* ── Status footer ── */
+.agent-docs-status {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px 12px;
+  background: var(--bg-0);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.ad-status-title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3);
+  letter-spacing: .16em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ad-status-row {
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+.ad-status-row > span:first-child {
+  color: var(--fg-dim);
+  width: 84px;
+  flex-shrink: 0;
+}
+.ad-status-row > span:last-child {
+  color: var(--fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Context (token estimate) sub-group inside the STATUS panel */
+.ad-status-sub {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3);
+  letter-spacing: .16em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  cursor: help;
+}
+.ad-status-row--context > span:first-child {
+  width: 92px;
+}
+.ad-ctx-val {
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-9) ease-out, color var(--dur-9) ease-out;
+}
+.ad-ctx-val--upfront { color: color-mix(in oklab, var(--amber) 70%, var(--fg-strong)); }
+.ad-ctx-val--disc    { color: var(--anchor-2); }
+
+@keyframes ad-ctx-pulse-amber {
+  0%   { background: color-mix(in oklab, var(--amber) 45%, transparent); color: var(--fg-strong); }
+  60%  { background: color-mix(in oklab, var(--amber) 20%, transparent); }
+  100% { background: transparent; }
+}
+@keyframes ad-ctx-pulse-violet {
+  0%   { background: color-mix(in oklab, var(--anchor) 45%, transparent); color: var(--fg-strong); }
+  60%  { background: color-mix(in oklab, var(--anchor) 20%, transparent); }
+  100% { background: transparent; }
+}
+.ad-ctx-val--upfront.is-pulsing { animation: ad-ctx-pulse-amber 1.05s ease-out; }
+.ad-ctx-val--disc.is-pulsing    { animation: ad-ctx-pulse-violet 1.05s ease-out; }
+
+/* ── Editor pane ── */
+.agent-docs-editor {
+  /* Must fill the .resizable-split-pane flex column — without flex: 1 the
+     section content-sizes and the body (whose .code-area min-height is
+     zeroed below) collapses to nothing. */
+  flex: 1;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-1);
+  min-width: 0;
+  min-height: 0;
+}
+.agent-docs-editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  /* Pure flex container — the nested .code-area is the sole scroll owner.
+     Giving this `overflow: auto` too produces a second, competing scrollbar. */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.agent-docs-editor-body .code-area {
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-active) transparent;
+}
+.agent-docs-editor-body .code-area::-webkit-scrollbar { width: 8px; height: 8px; }
+.agent-docs-editor-body .code-area::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 4px; }
+.agent-docs-editor-body .code-area::-webkit-scrollbar-track { background: transparent; }
+.agent-docs-doc-head {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  display: flex; flex-direction: column; gap: 4px;
+  min-width: 0;
+}
+.ad-doc-title {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--fg-strong);
+  font-family: var(--font-mono);
+  font-size: var(--fs-7);
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.ad-doc-mode { margin-left: auto; }
+.ad-doc-name { font-weight: 600; }
+.ad-doc-path {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+  min-width: 0;
+}
+.ad-doc-path > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1;
+}
+
+.agent-docs-banner {
+  display: flex; align-items: center; gap: 8px;
+  margin: 12px 24px 0;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in oklab, var(--amber) 35%, transparent);
+  background: color-mix(in oklab, var(--amber) 8%, transparent);
+  color: var(--amber);
+  border-radius: var(--radius);
+  font-size: var(--fs-4);
+}
+.agent-docs-banner.ad-banner-error {
+  border-color: color-mix(in oklab, var(--red) 42%, transparent);
+  background: color-mix(in oklab, var(--red) 7%, var(--bg-1));
+  color: var(--fg-mid);
+}
+.ad-banner-error > .icon { color: var(--red); flex-shrink: 0; }
+.ad-banner-copy {
+  display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0;
+  line-height: 1.45;
+}
+.ad-banner-copy strong { color: var(--red); }
+
+.agent-docs-empty-create {
+  display: flex; flex-direction: column; gap: 0;
+  flex: 1; min-height: 0;
+}
+.ad-empty-row {
+  display: flex; gap: 14px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background:
+    repeating-linear-gradient(135deg,
+      transparent 0 8px,
+      color-mix(in oklab, var(--anchor) 4%, transparent) 8px 9px);
+}
+.ad-empty-row h4 { margin: 0 0 4px; font-size: var(--fs-7); color: var(--fg-strong); }
+.ad-empty-row p { margin: 0; font-size: var(--fs-5); color: var(--fg-mute); line-height: 1.5; }
+.ad-empty-icon {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: grid; place-items: center;
+  background: var(--bg-2);
+  border: 1px dashed var(--border-strong);
+  color: var(--fg-mute);
+  flex-shrink: 0;
+}
+
+.editor-foot {
+  display: flex; align-items: center; gap: 16px;
+  flex-shrink: 0;
+  min-width: 0; overflow: hidden;
+  border-top: 1px solid var(--border);
+  /* B4a-06: the fixed theme/tweaks FAB (bottom-right, see `.tweaks-toggle`)
+     sits over this footer's right edge; reserve room so the token count never
+     reads through the button. */
+  padding: 8px 16px;
+  padding-right: 56px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+  background: var(--bg-0);
+}
+.editor-foot .editor-foot-spacer { flex: 1 1 0; min-width: 0; }
+.editor-foot span {
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap; flex-shrink: 0;
+}
+/* Stats must never push the footer onto a second line: the token estimate is
+   the lowest-priority item — it shrinks and ellipsizes before anything wraps. */
+.editor-foot span:last-child {
+  flex-shrink: 1; min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; display: block; line-height: 1.7;
+}
+/* C5, --bp-compact (560): at this width the trailing item can only render as a
+   stub ("desc ~9 · …", "Restart the Claude Code session to load disk ed:").
+   The pure-stat readout sheds (the collapse ladder drops counts before prose);
+   an advisory hint instead wraps onto its own line, keeping its ⚠ and its
+   sentence intact. */
+@container appmain (max-width: 560px) {
+  .editor-foot { flex-wrap: wrap; row-gap: 2px; }
+  .editor-foot .editor-foot-spacer { display: none; }
+  .editor-foot span:last-child {
+    white-space: normal; overflow: visible; text-overflow: clip;
+    flex-basis: 100%;
+  }
+}
+
+.perm-loading {
+  padding: 24px 0;
+  color: var(--fg-mute);
+  font-size: var(--fs-6);
+}

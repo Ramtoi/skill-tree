@@ -1,0 +1,221 @@
+/* ─── Usage drill-downs (design D14) ────────────────────────────────────────
+   `UsageProjectArea`'s five bands, the Projects card's navigable label, and
+   the Unregistered bucket's hint line. Every band is a Guild container,
+   matching `usage.css`'s `.usage-card` doctrine — no gradients/glows here,
+   only flat fills + the shared `--engrave` frame. Interactive text reaches
+   for `--anchor` (the one interactive channel), never a raw accent token. */
+
+.main-body.project-usage-body {
+  min-height: 0;
+  min-width: 0;
+  padding-bottom: var(--fab-safe);
+  scroll-padding-bottom: var(--fab-safe);
+}
+.project-usage-body > .usage-project-area,
+.main-body > .usage-project-area { min-width: 0; }
+.usage-project-area { display: grid; gap: 18px; max-width: 1180px; }
+.usage-project-area > * { min-width: 0; }
+.usage-project-controls {
+  top: calc(-1 * var(--pad-screen-y));
+  margin-inline: calc(-1 * var(--pad-screen-x));
+}
+
+.usage-project-band + .usage-project-band { margin-top: 0; }
+.usage-scope-note { margin-left: 8px; color: var(--fg-dim); font: var(--fs-3) var(--font-mono); }
+.usage-outcomes-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.usage-outcomes-summary > * { min-width: 0; }
+.usage-project-crosslink { margin: -8px 0 0; color: var(--fg-dim); font-size: var(--fs-4); }
+.usage-project-crosslink a { color: var(--anchor); text-decoration: underline; text-underline-offset: 2px; }
+.usage-project-activity { display: grid; gap: 10px; }
+.usage-project-activity-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.usage-project-activity-head h3 { margin: 0; }
+.usage-project-activity-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.usage-project-activity-main { display: grid; gap: 16px; min-width: 0; }
+.usage-project-activity-grid > * { min-width: 0; }
+.usage-project-picker { display: grid; gap: 12px; max-height: min(70vh, 520px); overflow: auto; padding: 14px; }
+.usage-project-picker-search { display: grid; gap: 5px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-project-picker-search input { width: 100%; padding: 7px 8px; color: var(--fg); background: var(--surface-well); border: 1px solid var(--border); border-radius: var(--radius-sm); font: var(--fs-4) var(--font-mono); }
+.usage-project-picker-list { display: grid; gap: 4px; }
+.usage-project-picker-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; padding: 9px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--fg); text-align: left; cursor: pointer; }
+.usage-project-picker-row:hover, .usage-project-picker-row:focus-visible { background: var(--surface-well); outline: 2px solid var(--anchor); outline-offset: -2px; }
+.usage-project-picker-name { min-width: 0; overflow-wrap: anywhere; font: var(--fs-4) var(--font-mono); }
+.usage-project-picker-cost { color: var(--fg-strong); font-size: var(--fs-4); }
+.usage-project-picker-meta { grid-column: 1 / -1; color: var(--fg-dim); font-size: var(--fs-3); }
+
+/* Projects keep the shared chart, with aligned columns and quieter navigation. */
+.usage-projects-card .usage-section-head { margin-bottom: 12px; }
+.usage-projects-card .hbar-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(80px, 1fr) auto;
+  gap: 0 20px;
+}
+.usage-projects-card .hbar-row {
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  gap: 20px;
+  padding-block: 12px;
+  border-top: 1px solid var(--border);
+}
+.usage-projects-card .hbar-label-col { gap: 4px; }
+.usage-projects-card .hbar-label { font-family: var(--font-mono); }
+.usage-projects-card .hbar-sub {
+  color: var(--fg-mute);
+  font-family: var(--font-sans);
+  font-size: var(--fs-3);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.usage-projects-card .hbar-track { height: 4px; }
+.usage-projects-card .hbar-value {
+  color: var(--fg-strong);
+  font-variant-numeric: tabular-nums;
+}
+.usage-projects-card .hbar-label:has(.usage-project-link) { overflow: visible; }
+.usage-project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 3px 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--fg-strong);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.usage-project-link > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-project-link > svg { flex: 0 0 auto; color: var(--fg-mute); }
+.usage-project-link:hover, .usage-project-link:hover > svg { color: var(--anchor); }
+.usage-project-link:hover > span { text-decoration: underline; text-underline-offset: 3px; }
+.usage-project-link:focus-visible { outline: 2px solid var(--anchor); outline-offset: 3px; }
+.usage-projects-card .usage-unregistered-hint {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-3);
+}
+@media (max-width: 900px) {
+  .usage-projects-card .hbar-list { grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; }
+  .usage-projects-card .hbar-row { gap: 8px 16px; }
+  .usage-projects-card .hbar-value { grid-column: 2; grid-row: 1; align-self: start; padding-top: 3px; }
+  .usage-projects-card .hbar-track { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* ── Footprint band ───────────────────────────────────────────────────── */
+
+.usage-footprint-harness { margin-top: 12px; }
+.usage-footprint-harness:first-of-type { margin-top: 0; }
+.usage-footprint-harness-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.usage-footprint-harness-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  color: var(--fg-strong);
+  font-size: var(--fs-5);
+}
+.usage-footprint-harness-observed { color: var(--fg-dim); font-size: var(--fs-4); }
+.usage-footprint-calculated { color: var(--fg-strong); }
+.usage-footprint-unknown-list { min-width: 0; }
+.usage-footprint-unknown { overflow-wrap: anywhere; }
+.usage-footprint-unknown code {
+  font-family: var(--font-mono);
+  color: var(--fg-mid);
+  background: var(--surface-well);
+  border-radius: var(--radius-sm);
+  padding: 0 4px;
+  overflow-wrap: anywhere;
+}
+
+/* ── Findings band ────────────────────────────────────────────────────── */
+
+.usage-finding-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  padding: var(--pad-y) var(--pad-x);
+  margin-top: 12px;
+}
+.usage-finding-card:first-of-type { margin-top: 12px; }
+.usage-finding-observation { margin: 0 0 8px; color: var(--fg-strong); font-size: var(--fs-5); }
+.usage-finding-moves { margin: 8px 0 0; padding-left: 18px; color: var(--fg-mute); font-size: var(--fs-5); }
+.usage-finding-moves li { margin-bottom: 2px; }
+.disclosure { margin-top: 8px; }
+.disclosure summary {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  color: var(--anchor); font-size: var(--fs-5); text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.disclosure summary:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.disclosure-content { margin-top: 8px; }
+.usage-finding-evidence { display: grid; gap: 8px; }
+.usage-finding-idle-evidence { margin: 0; padding-left: 18px; color: var(--fg-mute); font-size: var(--fs-5); }
+.usage-finding-review {
+  margin-top: 10px; padding: 0; border: 0; background: none; color: var(--anchor);
+  font: inherit; font-size: var(--fs-5); cursor: pointer; text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.usage-finding-review:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+
+/* ── Sessions band ─────────────────────────────────────────────────────── */
+
+.usage-project-sessions { display: grid; gap: 8px; }
+.usage-project-session-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.usage-project-session-row:last-child { border-bottom: none; padding-bottom: 0; }
+.usage-project-session-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--anchor);
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.usage-project-session-link:hover { color: var(--fg); }
+.usage-project-session-meta { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; color: var(--fg-mute); font-size: var(--fs-4); }
+
+/* ── Sessions card's Timeline action (an existing expanded-detail sibling) ─ */
+
+.usage-timeline-action { margin-top: 8px; }
+
+/* ── Failed-scan banner ───────────────────────────────────────────────── */
+
+.usage-project-scan-failed-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .usage-project-link,
+  .usage-project-session-link { transition: none; animation: none; }
+}
+
+@media (max-width: 520px) {
+  .usage-outcomes-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .usage-project-activity-grid { grid-template-columns: 1fr; }
+  .usage-finding-card { padding: 12px; }
+}

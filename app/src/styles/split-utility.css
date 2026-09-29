@@ -1,0 +1,240 @@
+/* ─── Misc / utility ───────────────────────────────────────────────────── */
+.hr { height: 1px; background: var(--border); margin: 18px 0; }
+.text-mute { color: var(--fg-mute); }
+.text-dim  { color: var(--fg-dim); }
+.text-mono { font-family: var(--font-mono); }
+
+/* unsaved pill, used in editors */
+
+/* legend used in tree view */
+.tree-legend {
+  position: absolute; top: 16px; left: 16px; z-index: var(--z-float);
+  background: var(--bg-glass); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 12px; font-family: var(--font-mono); font-size: var(--fs-2);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.tree-legend .legend-label { color: var(--fg-mute); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 4px; }
+.tree-legend .legend-row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tree-legend .legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+.tree-hint {
+  /* B4a-08: clear of the fixed theme/tweaks FAB (bottom-right, `.tweaks-toggle`
+     at right:18/bottom:36, ~32px) so the helper caption isn't clipped by it. */
+  position: absolute; bottom: 16px; right: 60px; z-index: var(--z-float);
+  background: var(--bg-glass); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px 12px; font-family: var(--font-mono); font-size: var(--fs-2);
+  color: var(--fg-mute); white-space: nowrap;
+  max-width: calc(100% - 76px);
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Resizable Split ──────────────────────────────────────────────────────── */
+.resizable-split {
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+}
+.resizable-split-pane {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.resizable-split-handle {
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+}
+.resizable-split-handle::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 2px; width: 2px;
+  background: var(--border);
+  transition: background var(--dur-4) ease-out;
+}
+.resizable-split-handle:hover::after,
+.resizable-split-handle:focus-visible::after,
+.resizable-split-handle.is-dragging::after {
+  background: var(--anchor-2);
+}
+.resizable-split-handle:focus-visible {
+  outline: none;
+}
+
+/* ── Collapse / overlay ── */
+/* The container must establish a positioning context for the overlay + tabs. */
+.resizable-split { position: relative; }
+
+/* Collapse button — unobtrusive, pinned to the fixed pane's top-outer corner. */
+.resizable-split-fixed { position: relative; }
+.resizable-split-collapse {
+  position: absolute;
+  top: 6px;
+  z-index: var(--z-raised);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  color: var(--fg-mid);
+  cursor: pointer;
+  transition: background var(--dur-4) ease-out, color var(--dur-4) ease-out, border-color var(--dur-4) ease-out;
+}
+.resizable-split-collapse.rs-right { right: 6px; }
+.resizable-split-collapse.rs-left { left: 6px; }
+/* Collapse points toward the outer edge: left-fixed flips the right-chevron. */
+.resizable-split-collapse.rs-left svg { transform: rotate(180deg); }
+.resizable-split-collapse:hover {
+  background: var(--bg-3);
+  color: var(--fg-strong);
+  border-color: var(--anchor-2);
+}
+.resizable-split-collapse:focus-visible {
+  outline: 2px solid var(--anchor);
+  outline-offset: 1px;
+}
+
+/* Reopen tab — slim vertical button pinned to the fixed pane's edge. */
+.resizable-split-reopen {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-raised-2);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 5px;
+  border: 1px solid var(--border);
+  background: var(--bg-1);
+  color: var(--fg-mid);
+  cursor: pointer;
+  transition: background var(--dur-4) ease-out, color var(--dur-4) ease-out, border-color var(--dur-4) ease-out;
+}
+.resizable-split-reopen.rs-right {
+  right: 0;
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+.resizable-split-reopen.rs-left {
+  left: 0;
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+/* Reopen points inward toward main: right-edge tab flips the right-chevron. */
+.resizable-split-reopen.rs-right svg { transform: rotate(180deg); }
+.resizable-split-reopen:hover {
+  background: var(--bg-2);
+  color: var(--fg-strong);
+  border-color: var(--anchor-2);
+}
+.resizable-split-reopen:focus-visible {
+  outline: 2px solid var(--anchor);
+  outline-offset: 1px;
+}
+.resizable-split-reopen-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* B4b-02: when the editor's Details panel is collapsed to its reopen tab and it
+   holds a blocking/attention state, DocumentEditorShell stamps
+   `data-details-attention` on `.doc-editor-shell` — render a dot on the tab so
+   the state isn't hidden. Semantics: error=red, warning=amber (never mixed with
+   the brand violet the reopen tab already uses on hover/focus). */
+.doc-editor-shell[data-details-attention] .resizable-split-reopen {
+  border-color: color-mix(in oklab, var(--amber) 45%, var(--border));
+}
+.doc-editor-shell[data-details-attention="error"] .resizable-split-reopen {
+  border-color: color-mix(in oklab, var(--red) 50%, var(--border));
+}
+.doc-editor-shell[data-details-attention] .resizable-split-reopen::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 2px var(--bg-1);
+}
+.doc-editor-shell[data-details-attention="error"] .resizable-split-reopen::after {
+  background: var(--red);
+}
+
+/* Overlay pane — floats above main without crushing it. */
+.resizable-split-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: var(--z-float);
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-split-r);
+}
+.resizable-split-overlay.rs-right {
+  right: 0;
+  border-right: none;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+.resizable-split-overlay.rs-left {
+  left: 0;
+  border-left: none;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  box-shadow: var(--shadow-split-l);
+}
+.resizable-split-overlay-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: var(--z-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  color: var(--fg-mid);
+  cursor: pointer;
+}
+.resizable-split-overlay-close:hover {
+  background: var(--bg-3);
+  color: var(--fg-strong);
+  border-color: var(--anchor-2);
+}
+.resizable-split-overlay-close:focus-visible {
+  outline: 2px solid var(--anchor);
+  outline-offset: 1px;
+}
+.resizable-split-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scrim-local);
+  background: var(--scrim-split);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resizable-split-collapse,
+  .resizable-split-reopen,
+  .resizable-split-overlay-close,
+  .resizable-split-handle::after {
+    transition: none;
+  }
+}
+

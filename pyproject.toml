@@ -1,0 +1,102 @@
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+# Match .gitignore when linting an exported archive without Git metadata.
+extend-exclude = ["vendor"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E402", "E741", "F841", "F405"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+markers = [
+  "live_codex: live codex CLI gates — opt-in via RUN_LIVE_CODEX=1 (slow, needs auth)",
+  "slow: tests that make a real (bounded) network dial — safe but not instant",
+  "real_harness_paths: opt out of the harness agent/global-doc isolation guard (only for tests asserting the harness registry's declared literals)",
+  "real_execution_supervisor: opt out of the fixture_launch patch in tests/harness_supervision_helpers.py (only for the non-darwin positive boundary test that must reach the production _launch/lock-path wiring)",
+]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+follow_imports = "silent"
+files = [
+  "skill_hub/infrastructure/filesystem/cloud_targets.py",
+  "skill_hub/domain/harnesses/harness_adapter_api.py",
+  "skill_hub/domain/harnesses/harness_usage_api.py",
+  "skill_hub/infrastructure/harnesses/harness_usage_package_manifest.py",
+  "skill_hub/infrastructure/harnesses/harness_usage_package_loader.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_usage.py",
+  "skill_hub/domain/harnesses/harness_catalog.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_mcp.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_hooks.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_invocation.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_layouts.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_subagents.py",
+  "skill_hub/infrastructure/harnesses/harness_bundled_permissions.py",
+  "skill_hub/domain/harnesses/harness_resolution.py",
+  "skill_hub/application/harnesses/harness_runtime.py",
+  "skill_hub/infrastructure/harnesses/harness_native_executor.py",
+  "skill_hub/infrastructure/harnesses/harness_execution_supervisor.py",
+  "skill_hub/application/harnesses/harness_operation_context.py",
+  "skill_hub/application/harnesses/harness_layout_context.py",
+  "skill_hub/infrastructure/harnesses/harness_validation.py",
+  "skill_hub/entrypoints/cli/integration.py",
+  "skill_hub/infrastructure/harnesses/harness_probe.py",
+  "skill_hub/application/skills/skill_invocation.py",
+  "skill_hub/infrastructure/harnesses/opencode_invocation.py",
+  "skill_hub/application/sync/lsp_report_sync.py",
+  "skill_hub/infrastructure/mcp/mcp_adapters.py",
+  "skill_hub/infrastructure/mcp/mcp_delivery.py",
+  "skill_hub/infrastructure/mcp/mcp_probe.py",
+  "skill_hub/infrastructure/mcp/mcp_reconcile.py",
+  "skill_hub/domain/mcp/mcp_spec.py",
+  "skill_hub/domain/permissions/permissions.py",
+  "skill_hub/infrastructure/remotes/remotes.py",
+  "skill_hub/infrastructure/registry/project_repository.py",
+  "skill_hub/infrastructure/registry/loadout_bindings.py",
+  "skill_hub/domain/loadout/loadout_profiles.py",
+  "skill_hub/application/loadout/loadout_transaction.py",
+  "skill_hub/application/loadout/loadout_control.py",
+  "skill_hub/infrastructure/loadout/loadout_timer.py",
+  "skill_hub/application/loadout/loadout_receive.py",
+  "skill_hub/application/loadout/loadout_publish.py",
+  "skill_hub/domain/loadout/loadout_projection.py",
+    "skill_hub/infrastructure/loadout/loadout_native.py",
+    "skill_hub/domain/loadout/loadout_native_codec.py",
+  "skill_hub/infrastructure/registry/loadout_machine.py",
+  "skill_hub/application/loadout/loadout_install.py",
+  "skill_hub/infrastructure/loadout/loadout_feed.py",
+  "skill_hub/domain/diagnostics/risks.py",
+  "scripts/integration_validation.py",
+  "skill_hub/domain/skills/ships_with.py",
+  "skill_hub/application/skills/ships_with_reconcile.py",
+  "skill_hub/entrypoints/mcp/skill_hub_mcp_server.py",
+  "skill_hub/domain/skills/skill_refs.py",
+  "skill_hub/application/skills/starter_skills.py",
+  "skill_hub/infrastructure/harnesses/subagent_codex.py",
+  "skill_hub/domain/diagnostics/tool_catalog.py",
+  "skill_hub/domain/usage/usage_classify.py",
+  "skill_hub/application/usage/usage_footprint.py",
+  "skill_hub/infrastructure/usage/usage_loadouts.py",
+  "skill_hub/infrastructure/usage/usage_scan.py",
+  "skill_hub/domain/usage/usage_identity.py",
+  "skill_hub/application/usage/usage_inspection.py",
+  "skill_hub/domain/usage/usage_inspection_capture.py",
+  "skill_hub/infrastructure/usage/usage_capture_io.py",
+  "skill_hub/infrastructure/usage/usage_capture_summary.py",
+  "skill_hub/infrastructure/usage/usage_inspection_claude.py",
+  "skill_hub/infrastructure/usage/usage_inspection_codex.py",
+  "skill_hub/infrastructure/usage/usage_inspection_store.py",
+  "skill_hub/application/usage/usage_inspection_scan.py",
+  "skill_hub/infrastructure/usage/usage_reader_context.py",
+  "skill_hub/infrastructure/usage/usage_jsonl.py",
+  "skill_hub/domain/usage/usage_reader_resolution.py",
+  "skill_hub/application/usage/usage_source_layout.py",
+  "testing/scripts/test_scope.py",
+  "testing/scripts/local_test_runner.py",
+  "testing/scripts/ci_scope.py",
+  "testing/scripts/verify_breaks.py",
+]

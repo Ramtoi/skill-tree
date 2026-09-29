@@ -1,0 +1,190 @@
+/* ─── CompanionsEditSheet — the SHIPS WITH rare-path editor ──────────────────
+   Wave 2's D10/Approach 9: three staged pickers (agents/hooks as
+   `MultiSelectList`s, rules as a typed add row) inside one `Sheet`. Reuses
+   `.equip-group*` (styles/side-panel.css) for the AGENTS/HOOKS/RULES labels
+   so this sheet reads as the same family as the section it edits
+   (styles/companions.css) — this file adds only what's specific to editing. */
+
+.companions-edit-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 18px;
+}
+.companions-edit-group:last-of-type { margin-bottom: 0; }
+
+.companions-edit-harnesses {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* R18: an inline hook's row meta — the "inline" `Tag` distinguishes it from
+   the library-reference rows beneath it (both share one MultiSelectList, so
+   the tag is the only visual seam). */
+.companions-edit-inline-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Rule list — a typed value the user adds/removes, not a toggleable set,
+   so it is a plain row list rather than a MultiSelectList. */
+.companions-edit-rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.companions-edit-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: max(22px, calc(var(--row-h) - 10px));
+  padding: 0 6px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-well);
+}
+.companions-edit-rule-pattern {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: var(--fg);
+}
+
+/* ── Add-a-rule row: a pattern `Field` + `ChipRadios` kind + `Add` button,
+   all on one line at wide widths, wrapping at narrow ones. */
+.companions-edit-rule-add {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.companions-edit-rule-field { flex: 1; min-width: 220px; margin: 0; }
+.companions-edit-rule-input {
+  width: 100%;
+  font-family: var(--font-mono);
+}
+
+/* ── Removal consequences (W12) — read before Save, so a deselect never
+   surprises the user about what the next reconcile will do. Neutral text,
+   never amber (a de-provision here is expected behavior, not a risk). */
+.companions-edit-consequences {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: var(--radius-frame);
+  background: var(--surface-well);
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+}
+.companions-edit-consequences p { margin: 0; }
+
+.companions-edit-error {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in oklab, var(--red) 45%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--red) 10%, transparent);
+  color: var(--red);
+  font-size: var(--fs-4);
+}
+
+/* ── New-hook disclosure (wave 4c unit 2, plans/3.md §2.1/§3.1/grill #18) —
+   a RARE action pinned to the bottom of the HOOKS group. The toggle is a
+   ghost text-link row (no chrome added to the common toggle-existing-hooks
+   path); the region below it is a Guild recessed well — the same
+   `--surface-well`/`--shadow-well` combo `.equip-inline` uses — collapsed
+   ([hidden]) by default on every open. */
+.companions-edit-newhook-toggle {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.companions-edit-newhook {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border-radius: var(--radius-frame);
+}
+
+.companions-edit-newhook-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.companions-edit-newhook-path {
+  margin: 0;
+  font-size: var(--fs-4);
+}
+
+.companions-edit-newhook-error {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in oklab, var(--red) 45%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--red) 10%, transparent);
+  color: var(--red);
+  font-size: var(--fs-4);
+}
+
+/* ── "Ship this with a skill…" host (wave 4c unit 3, plans/3.md §2.3/§3.3) ──
+   `.companions-edit-seeded-note` announces what a seed staged, next to (not
+   replacing) the row it selected. `[data-seeded="true"]` marks that exact
+   row — a MultiSelectList option (agent/hook) or a rule span — with one
+   hairline ring in the CONTENT register (`--slot-ring`, body content ⇒
+   `--ctx`, never the raw brand-accent triad tokens.css declares it from):
+   no new motion beyond the sheet's own open transition (COMPONENTS.md
+   §Hover-reveal — a second animation on top of it is the glitch that
+   section names). */
+.companions-edit-seeded-note {
+  margin: 0 0 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-well);
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+}
+
+.multiselect-row[data-seeded="true"],
+.companions-edit-rule[data-seeded="true"] {
+  box-shadow: inset 0 0 0 1px var(--slot-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Skill picker (wave 4c unit 3, §2.3) — a `Modal`, not a Sheet: a pick is
+   a decision, not an editing surface. Reuses the search/list primitives
+   verbatim; this file only adds the footer's dim explanation line. */
+.ship-with-picker-blocked {
+  margin: 10px 0 0;
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+}
+
+/* ── Interactive `CompanionTag` (wave 4c unit 4, plans/3.md §5) — the literal
+   reverse of the read-only tag: a `<button>` wrapping the exact same `Tag`,
+   so there is no new visual register, only the UA <button> chrome stripped
+   so the box stays identical to the plain `<span>` variant (`Tag` sets its
+   own inline `color`, so a hover color shift here would be inert — the
+   pointer cursor + focus ring alone carry the affordance, matching
+   `.companion-name[data-routable="true"]`'s focus treatment in
+   companions.css). */
+.companion-tag[data-interactive="true"] {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.companion-tag[data-interactive="true"]:focus-visible {
+  outline: 2px solid var(--anchor-2);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

@@ -1,0 +1,2705 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "harness.identity",
+      "description": "The registry exposes exactly the supported harness IDs.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "inventory",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harnesses.py::test_registry_has_expected_ids"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.sdk-codecs",
+      "description": "Native MCP encoding and decoding preserve supported shapes, refusal reasons and immutable boundaries",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_mcp_codec.py",
+        "tests/test_harness_mcp_decode.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "id": "adapters.resolution",
+      "description": "Immutable bindings reject unknown versions, inactive releases, invalid catalogs and incompatible pins.",
+      "feature": "inventory",
+      "selectors": [
+        "tests/test_harness_resolution.py"
+      ],
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "id": "runtime.inventory",
+      "description": "Synthetic inventory records versions, marker-only gaps, bounds and cache invalidation without real harness probes.",
+      "feature": "inventory",
+      "selectors": [
+        "tests/test_harness_runtime.py::test_inventory_uses_allowlisted_runner_and_deduplicates_aliases",
+        "tests/test_harness_runtime.py::test_inventory_bounds_output_and_records_unknown_or_failed_probes",
+        "tests/test_harness_runtime.py::test_inventory_rejects_non_finite_timeout",
+        "tests/test_harness_runtime.py::test_truncated_successful_output_cannot_claim_a_version",
+        "tests/test_harness_runtime.py::test_known_claude_version_suffix_is_parsed",
+        "tests/test_harness_runtime.py::test_marker_is_config_evidence_and_never_a_version",
+        "tests/test_harness_runtime.py::test_marker_with_executable_enriches_config_fingerprint_without_ambiguity",
+        "tests/test_harness_runtime.py::test_cache_reads_never_probe_and_changed_fingerprint_invalidates",
+        "tests/test_harness_runtime.py::test_observed_at_uses_injected_utc_clock_and_round_trips_cache",
+        "tests/test_harness_runtime.py::test_cache_invalidates_when_a_new_candidate_appears_without_probing",
+        "tests/test_harness_runtime.py::test_inventory_normalizes_os_names_for_catalog_dimensions"
+      ],
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "id": "runtime.posix-cleanup",
+      "description": "Synthetic POSIX probes reap descendants including a child that ignores SIGTERM.",
+      "feature": "inventory",
+      "selectors": [
+        "tests/test_harness_runtime.py::test_default_runner_reaps_synthetic_descendant",
+        "tests/test_harness_runtime.py::test_default_runner_kills_descendant_ignoring_sigterm",
+        "tests/test_harness_runtime.py::test_non_executable_candidate_is_ignored",
+        "tests/test_harness_runtime.py::test_unsupported_shell_wrapper_is_reported_without_runner_invocation"
+      ],
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "windows"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "id": "runtime.windows-cleanup",
+      "description": "A synthetic Windows command wrapper proves descendant cleanup through a nonmutating process check.",
+      "feature": "inventory",
+      "selectors": [
+        "tests/test_harness_runtime.py::test_windows_runner_reaps_synthetic_descendant"
+      ],
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "skills.destinations",
+      "description": "Claude and shared skill roots receive the intended links.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_sync.py::test_sync_claude_only_writes_claude_skills_dir",
+        "tests/test_harness_sync.py::test_sync_codex_pi_opencode_produce_single_agents_link"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "skills.ownership",
+      "description": "Affinity narrows delivery and shared links are cleaned only after the last consumer.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_sync.py::test_sync_skill_affinity_filters_target",
+        "tests/test_harness_sync.py::test_sync_disabling_last_consumer_cleans_shared_dir",
+        "tests/test_cleanup_ownership.py::test_windows_extended_prefix_normalization",
+        "tests/test_cleanup_ownership.py::test_is_hub_owned_link_classifies_by_target"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "skills.windows-ownership",
+      "description": "Native Windows link ownership accepts equivalent extended paths and preserves foreign data homes.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_cleanup_ownership.py::test_windows_extended_target_preserves_foreign_home_boundary"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "invocation.canonical",
+      "description": "Host invocation metadata remains canonical before native harness translation.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "invocation",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_invocation.py::test_invocation_from_frontmatter_modes",
+        "tests/test_invocation.py::test_sync_mirrors_invocation_modes"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "invocation.capabilities",
+      "description": "Codex limitations and opencode capability profiles are explicit.",
+      "harnesses": [
+        "codex",
+        "opencode"
+      ],
+      "feature": "invocation",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_skill_invocation.py::test_resolver_distinguishes_codex_limits_and_delivery",
+        "tests/test_skill_invocation.py::test_opencode_profiles_are_capability_gated"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "invocation.opencode-command",
+      "description": "Command-only projection preserves literal skill content and applies idempotently.",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "invocation",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_opencode_invocation.py::test_eligible_plan_is_read_only_and_loader_does_not_inline_skill",
+        "tests/test_opencode_invocation.py::test_apply_is_atomic_and_idempotent"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "docs.roots",
+      "description": "Instruction paths honor configured harness homes.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "docs",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_global_docs.py::test_doc_path_claude_and_codex_honor_their_env_override",
+        "tests/test_global_docs.py::test_doc_path_pi_and_opencode_follow_home",
+        "tests/test_global_docs.py::test_doc_path_env_override_accepts_both_template_path_flavors"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "docs.lifecycle",
+      "description": "Canonical documents and sharing preserve content through link and unlink.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi"
+      ],
+      "feature": "docs",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_agent_docs_policy.py::test_canonical_claude_plus_other",
+        "tests/test_agent_docs_policy.py::test_canonical_non_claude_only",
+        "tests/test_global_docs.py::test_link_merge_appends_once_and_is_idempotent",
+        "tests/test_global_docs.py::test_unlink_follows_writes_a_real_copy"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.shared",
+      "description": "Claude and Pi share project MCP dispatch without writing a competing Pi file.",
+      "harnesses": [
+        "claude-code",
+        "pi"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_mcp_adapters.py::test_dispatch_claude_plus_pi_writes_mcp_json_once_no_pi_file",
+        "tests/test_mcp_adapters.py::test_dispatch_pi_only_still_writes_mcp_json",
+        "tests/test_mcp_adapters.py::test_dispatch_never_touches_pi_mcp_json"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.codex-malformed",
+      "description": "Malformed Codex configuration is preserved while independent work continues.",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_mcp_adapters.py::test_dispatch_malformed_codex_toml_skips_and_continues"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.opencode",
+      "description": "OpenCode native shape and neighboring settings survive writes and cleanup.",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_opencode_harness.py::test_mcp_entry_uses_opencode_shape",
+        "tests/test_opencode_harness.py::test_mcp_preserves_unrelated_config",
+        "tests/test_opencode_harness.py::test_cleanup_removes_only_managed_keys"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.discovery",
+      "description": "Configured MCP entries are discovered in all supported native project formats.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_mcp_reconcile.py::test_discovers_project_scope_from_all_three_files"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.reconcile",
+      "description": "Equivalent rules merge and conflicting rules remain explicit.",
+      "harnesses": [
+        "claude-code",
+        "pi"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_permissions_reconcile.py::test_same_rule_across_harnesses_collapses",
+        "tests/test_permissions_reconcile.py::test_divergent_decisions_are_a_conflict_not_auto_picked"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.codex-gap",
+      "description": "Unrepresentable Codex rules remain untouched.",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_permissions_reconcile.py::test_un_representable_codex_rule_flagged_and_left_in_place"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.lifecycle",
+      "description": "Detach preserves native bytes and disabled scopes are skipped.",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_permissions_disable_lifecycle.py::test_detach_leaves_native_files_byte_identical",
+        "tests/test_permissions_disable_lifecycle.py::test_disabled_scope_skipped_on_subsequent_sync"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.opencode",
+      "description": "OpenCode permission writes preserve user keys and record managed ownership.",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_opencode_harness.py::test_bash_allow_rule_becomes_prefix",
+        "tests/test_opencode_harness.py::test_permission_preserves_user_keys_and_tracks_sidecar"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "hooks.native-shapes",
+      "description": "Claude and Codex hook writers preserve native user entries and trust state.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "hooks",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_hook_adapters.py::test_claude_nested_schema_pinned",
+        "tests/test_hook_adapters.py::test_codex_toml_shape_pinned",
+        "tests/test_hook_adapters.py::test_claude_cleanup_only_removes_sidecar_owned",
+        "tests/test_hook_adapters.py::test_codex_cleanup_preserves_user_entries_and_state"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "hooks.feature-off",
+      "description": "Feature-off keeps ownership and re-enable does not duplicate hooks.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "hooks",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_hook_adapters.py::test_claude_feature_off_preserves_sidecar_and_re_enable_does_not_duplicate",
+        "tests/test_hook_adapters.py::test_codex_feature_off_preserves_sidecar_and_re_enable_does_not_duplicate"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "subagents.claude-roundtrip",
+      "description": "Claude agent fixtures survive parse/render and repeated saves.",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "subagents",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_subagents_roundtrip.py::test_fixture_roundtrip",
+        "tests/test_subagents_roundtrip.py::test_fixture_roundtrip_idempotent_second_pass"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "subagents.codex-roundtrip",
+      "description": "Codex agents retain unknown fields and byte identity after re-enable.",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "subagents",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_subagents_codex.py::test_roundtrip_fixed_point_with_unknown_keys",
+        "tests/test_subagents_codex.py::test_disable_reenable_byte_equal",
+        "tests/test_subagents_codex.py::test_codex_project_scope_clean_error"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "subagents.unsupported",
+      "description": "Companion provisioning reports a harness without agent support.",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "subagents",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_ships_with_cli.py::test_provision_with_an_effective_harness_that_has_no_agents_skips_it",
+        "tests/test_ships_with_cli.py::test_provision_with_only_agentless_harnesses_claims_no_agent"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.claude",
+      "description": "Synthetic Claude transcripts preserve summary, incremental behavior and redaction.",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_scan.py::test_scan_builds_a_rich_session_row",
+        "tests/test_usage_scan.py::test_frozen_row_is_byte_identical_after_a_second_scan_and_detects_growth",
+        "tests/test_usage_scan.py::test_bad_transcript_never_blocks_a_later_file_or_a_later_scan",
+        "tests/test_usage_scan.py::test_privacy_walk_no_absolute_paths_no_home_and_idempotent_excerpts"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.codex",
+      "description": "Synthetic Codex transcripts retain identity, root/child attribution and privacy.",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_scan_codex.py::test_codex_rollout_emits_contract_fields_and_redacts_transient_text",
+        "tests/test_usage_scan_codex.py::test_codex_identity_mismatch_does_not_publish_source",
+        "tests/test_usage_scan_codex.py::test_codex_child_row_is_retained_and_parent_aggregate_is_idempotent"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.source-retention",
+      "description": "Replacing a source retains its prior timeline and PR evidence.",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_inspection_acceptance.py::test_source_replacement_retains_prior_timeline_and_pr"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.static-coverage",
+      "description": "Static footprint composition retains requested harness blocks and resolves Pi agent docs.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_footprint.py::test_compose_returns_a_block_for_every_requested_harness_including_a_scanner_less_one",
+        "tests/test_usage_footprint.py::test_agent_docs_part_a_pi_only_project_resolves_to_agents_md"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "claude-code.skills.native-gap",
+      "description": "claude-code skills runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "skills",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.invocation.native-gap",
+      "description": "claude-code invocation runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "invocation",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.docs.native-gap",
+      "description": "claude-code docs runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "docs",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.mcp.native-gap",
+      "description": "claude-code mcp runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "mcp",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.permissions.native-gap",
+      "description": "claude-code permissions runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "permissions",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.hooks.native-gap",
+      "description": "claude-code hooks runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "hooks",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.subagents.native-gap",
+      "description": "claude-code subagents runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "subagents",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.usage.native-gap",
+      "description": "claude-code usage runtime evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "usage",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "claude-code.package-gap",
+      "description": "claude-code installed application evidence",
+      "harnesses": [
+        "claude-code"
+      ],
+      "feature": "packaging",
+      "layer": "packaged",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No installed-application certification is registered in this source-checkout corpus.",
+      "revision": "1",
+      "required_evidence": [
+        "packaged"
+      ]
+    },
+    {
+      "id": "codex.skills.native-gap",
+      "description": "codex skills runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "skills",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.invocation.native-gap",
+      "description": "codex invocation runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "invocation",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.docs.native-gap",
+      "description": "codex docs runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "docs",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.mcp.native-gap",
+      "description": "codex mcp runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "mcp",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.permissions.native-gap",
+      "description": "codex permissions runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "permissions",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.hooks.native-gap",
+      "description": "codex hooks runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "hooks",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.subagents.native-gap",
+      "description": "codex subagents runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "subagents",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.usage.native-gap",
+      "description": "codex usage runtime evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "codex.package-gap",
+      "description": "codex installed application evidence",
+      "harnesses": [
+        "codex"
+      ],
+      "feature": "packaging",
+      "layer": "packaged",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No installed-application certification is registered in this source-checkout corpus.",
+      "revision": "1",
+      "required_evidence": [
+        "packaged"
+      ]
+    },
+    {
+      "id": "pi.skills.native-gap",
+      "description": "pi skills runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "skills",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.invocation.native-gap",
+      "description": "pi invocation runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "invocation",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.docs.native-gap",
+      "description": "pi docs runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "docs",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.mcp.native-gap",
+      "description": "pi mcp runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "mcp",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.permissions.native-gap",
+      "description": "pi permissions runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "permissions",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.hooks.native-gap",
+      "description": "pi hooks runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "hooks",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No supported native integration is registered for this feature. Keep the limitation explicit until implemented and verified.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.subagents.native-gap",
+      "description": "pi subagents runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "subagents",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No supported native integration is registered for this feature. Keep the limitation explicit until implemented and verified.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.usage.native-gap",
+      "description": "pi usage runtime evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "usage",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No native transcript reader is registered for this harness. Static footprint tests do not prove observed usage.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "pi.package-gap",
+      "description": "pi installed application evidence",
+      "harnesses": [
+        "pi"
+      ],
+      "feature": "packaging",
+      "layer": "packaged",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No installed-application certification is registered in this source-checkout corpus.",
+      "revision": "1",
+      "required_evidence": [
+        "packaged"
+      ]
+    },
+    {
+      "id": "opencode.skills.native-gap",
+      "description": "opencode skills runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.invocation.native-gap",
+      "description": "opencode invocation runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "invocation",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.docs.native-gap",
+      "description": "opencode docs runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "docs",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.mcp.native-gap",
+      "description": "opencode mcp runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.permissions.native-gap",
+      "description": "opencode permissions runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "permissions",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No version-pinned native runtime certification is registered for this feature; offline fixtures do not establish it.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.hooks.native-gap",
+      "description": "opencode hooks runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "hooks",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No supported native integration is registered for this feature. Keep the limitation explicit until implemented and verified.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.subagents.native-gap",
+      "description": "opencode subagents runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "subagents",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No supported native integration is registered for this feature. Keep the limitation explicit until implemented and verified.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.usage.native-gap",
+      "description": "opencode usage runtime evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "usage",
+      "layer": "runtime",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No native transcript reader is registered for this harness. Static footprint tests do not prove observed usage.",
+      "revision": "1",
+      "required_evidence": [
+        "runtime"
+      ]
+    },
+    {
+      "id": "opencode.package-gap",
+      "description": "opencode installed application evidence",
+      "harnesses": [
+        "opencode"
+      ],
+      "feature": "packaging",
+      "layer": "packaged",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [],
+      "timeout_seconds": 120,
+      "gap": "No installed-application certification is registered in this source-checkout corpus.",
+      "revision": "1",
+      "required_evidence": [
+        "packaged"
+      ]
+    },
+    {
+      "id": "integration.cli",
+      "description": "CLI entry points preserve offline validation reports, failures and cache-only inventory behavior",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "validation",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_integration_cli.py"
+      ],
+      "timeout_seconds": 90,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.sdk-codecs",
+      "description": "Native permission grammars preserve pattern arrays, literal metadata, ordering and immutable boundaries",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_permission_codec.py",
+        "tests/test_permission_adapters.py::test_claude_family_reapply_discover_cleanup_preserves_foreign_entries"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "2",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "hooks.sdk-codecs",
+      "description": "Native hook codecs preserve event/tool mapping, nested commands and immutable boundaries",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "hooks",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_hook_codec.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "layouts.sdk-codecs",
+      "description": "Native layout declarations preserve paths, capabilities and host schema output",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_layout_codec.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "invocation.sdk-codecs",
+      "description": "Native invocation capabilities retain unsupported and unknown profile boundaries",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "invocation",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_invocation_codec.py",
+        "tests/test_skill_invocation.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "subagents.sdk-codecs",
+      "description": "Native agent formats preserve mapping keys, foreign skills and round-trip comments with declared SDK dependencies",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "subagents",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_subagent_codec.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.shadow-context",
+      "description": "MCP shadow comparisons share one cached binding and preserve authoritative writes",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_operation_context.py",
+        "tests/test_mcp_shadow_context.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "native.executor-fixture",
+      "description": "The explicit native executor retains bounded fixture transport without certifying native evidence",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "native-executor",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_native_executor.py::test_fixture_recipe_runs_in_redirected_roots_and_requires_closed_proof"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ],
+      "recipe": {
+        "executor": "fixture transport only",
+        "disposable_home": "sandbox/home",
+        "workspace": "sandbox/workspace",
+        "expected_positive_proof": "bounded artifact token",
+        "retention_redaction": "bounded redacted logs",
+        "authorization": {
+          "wall_time_seconds": 2,
+          "turns": 1,
+          "spend": 1
+        }
+      }
+    },
+    {
+      "id": "layouts.operation-context",
+      "description": "Immutable host layout capture preserves home overrides and directory boundaries",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_layout_context.py"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "workflows.fixed-context",
+      "description": "Sync and skill delivery keep captured layouts and preserve unavailable shared consumers",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "skills",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_sync_operation_binding.py",
+        "tests/test_skill_variants_operation_context.py",
+        "tests/test_project_operation_context.py",
+        "tests/test_invocation_read.py",
+        "tests/test_hub_split_guard.py::test_cli_modules_reference_monolith_through_hub[project]"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "2",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "permissions.operation-context",
+      "description": "Permission and hook selection uses one captured route and inventory observation",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "permissions",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_policy_operation_binding.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "mcp.operation-context",
+      "description": "MCP reads writes and ownership claims retain captured targets and state homes",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_mcp_operation_routing.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "docs.operation-context",
+      "description": "Documents subagents and companions retain fixed routes and native targets",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "agent_docs",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_docs_operation_context.py",
+        "tests/test_subagent_operation_context.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "backup.operation-context",
+      "description": "Unavailable harness snapshots and restore ownership survive while stale plans are refused",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "backup",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_backup_operation_context.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "desktop.operation-projection",
+      "description": "The desktop consumes cache-only Python identity layout and policy projections",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "inventory",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_rust_projection.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "context.captured-cleanup",
+      "description": "Captured ownership survives ambient-home changes and rollback.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "mcp",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_harness_captured_cleanup_regressions.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "docs.captured-policy",
+      "description": "Document policy uses canonical projects and captured installed participants.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "agent-docs",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_agent_docs_captured_policy.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "packaging.receiver-startup",
+      "description": "The isolated receiver package starts with every required host module.",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "packaging",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux"
+      ],
+      "selectors": [
+        "tests/test_loadout_install.py::test_prepared_bundle_starts_in_isolated_receiver_home"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "workflows.mcp-inspect-context",
+      "description": "One MCP inspect response keeps captured participants and routes across inventory, risks and agent documents",
+      "harnesses": [
+        "claude-code",
+        "codex",
+        "pi",
+        "opencode"
+      ],
+      "feature": "workflows",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_skill_hub_mcp.py::test_inspect_keeps_one_native_snapshot_when_detection_changes",
+        "tests/test_skill_hub_mcp.py::test_inspect_unavailable_routes_preserve_risk_findings_without_fallback",
+        "tests/test_skill_hub_mcp.py::test_inspect_documents_respect_configured_participation",
+        "tests/test_skill_hub_mcp.py::test_inspect_permissions_only_does_not_detect_harnesses"
+      ],
+      "timeout_seconds": 60,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.native-parity",
+      "description": "Captured native facts retain root and child scope, availability, reader backfill and shared session identity.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_identity.py",
+        "tests/test_usage_native_parity.py",
+        "tests/test_usage_native_child_parity.py",
+        "tests/test_usage_native_scope_status.py",
+        "tests/test_usage_native_backfill.py",
+        "tests/test_usage_native_run_refs.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.identity-retention",
+      "description": "Historical physical aliases, logical pins and exact mirrored-part retention survive reader replacement.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_identity_pin_aliases.py",
+        "tests/test_usage_identity_public_contract.py",
+        "tests/test_usage_identity_store.py",
+        "tests/test_usage_native_identity_history.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.source-probe",
+      "description": "Bounded synthetic source probes preserve framing, deadlines, snapshot validation and decoded-prefix reuse.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_source_probe.py",
+        "tests/test_usage_reader_context.py",
+        "tests/test_harness_bundled_usage.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.source-layout",
+      "description": "Captured synthetic Usage roots preserve override precedence, lexical paths, inventory and source presence.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_source_layout.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.reader-sdk",
+      "description": "Reader SDK closure, host capabilities, summary redaction and record identities remain compatible.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_sdk_isolation.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.reader-packages",
+      "description": "Fixture reader packages reject malformed identities, manifests and altered member bytes before loading.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_package_manifest.py::test_verifies_independent_digest_oracle_and_immutable_result",
+        "tests/test_usage_package_manifest.py::test_reader_order_and_manifest_key_order_do_not_change_digest",
+        "tests/test_usage_package_manifest.py::test_expected_digest_blocks_self_consistent_replacement_before_import",
+        "tests/test_usage_package_manifest.py::test_rejects_strict_schema_and_capability_changes",
+        "tests/test_usage_package_manifest.py::test_rejects_non_ascii_identity_and_member_tokens",
+        "tests/test_usage_package_manifest.py::test_rejects_unsorted_and_duplicate_token_or_file_arrays",
+        "tests/test_usage_package_manifest.py::test_rejects_unknown_nested_manifest_keys",
+        "tests/test_usage_package_manifest.py::test_rejects_unsupported_sdk_and_reader_policy_versions",
+        "tests/test_usage_package_manifest.py::test_rejects_duplicate_float_and_nonfinite_json",
+        "tests/test_usage_package_manifest.py::test_rejects_utf8_bom_before_json_parsing",
+        "tests/test_usage_package_manifest.py::test_rejects_manifest_byte_cap",
+        "tests/test_usage_package_manifest.py::test_accepts_manifest_at_the_byte_cap",
+        "tests/test_usage_package_manifest.py::test_manifest_read_is_bounded_before_oversized_content_is_allocated",
+        "tests/test_usage_package_manifest.py::test_rejects_declared_member_byte_cap",
+        "tests/test_usage_package_manifest.py::test_rejects_declared_total_member_byte_cap",
+        "tests/test_usage_package_manifest.py::test_rejects_declared_member_count_cap",
+        "tests/test_usage_package_manifest.py::test_accepts_actual_member_count_at_the_cap",
+        "tests/test_usage_package_manifest.py::test_rejects_actual_member_count_cap",
+        "tests/test_usage_package_manifest.py::test_rejects_member_digest_mismatch",
+        "tests/test_usage_package_manifest.py::test_rejects_member_length_mismatch_before_hashing",
+        "tests/test_usage_package_manifest.py::test_member_read_is_bounded_before_oversized_content_is_allocated",
+        "tests/test_usage_package_manifest.py::test_rejects_symlink_and_extra_cache_content",
+        "tests/test_usage_package_manifest.py::test_rejects_manifest_symlink",
+        "tests/test_usage_package_manifest.py::test_rejects_pyc_outside_cache",
+        "tests/test_usage_package_manifest.py::test_rejects_listed_cache_bytecode",
+        "tests/test_usage_package_manifest.py::test_rejects_unsafe_and_ambiguous_members",
+        "tests/test_usage_package_manifest.py::test_rejects_fully_declared_intermediate_module_ambiguity",
+        "tests/test_usage_package_manifest.py::test_rejects_declared_module_and_package_ambiguity_for_init_modules",
+        "tests/test_usage_package_manifest.py::test_accepts_nested_module_with_declared_parent_initializer",
+        "tests/test_usage_package_manifest.py::test_rejects_missing_entrypoint_module",
+        "tests/test_usage_package_manifest.py::test_rejects_missing_entrypoint_parent_initializer",
+        "tests/test_usage_package_manifest.py::test_rejects_declared_non_pyc_cache_member",
+        "tests/test_usage_package_manifest.py::test_traversal_budget_stops_consuming_an_oversized_ignored_cache",
+        "tests/test_usage_package_manifest.py::test_accepts_and_rejects_the_visited_entry_boundary",
+        "tests/test_usage_package_manifest.py::test_accepts_directory_depth_at_the_limit",
+        "tests/test_usage_package_manifest.py::test_rejects_directory_depth_above_the_limit",
+        "tests/test_usage_package_manifest.py::test_rejects_symlinked_package_root",
+        "tests/test_usage_package_manifest.py::test_rejects_symlink_inside_ignored_cache",
+        "tests/test_usage_package_manifest.py::test_verification_errors_do_not_expose_paths_or_os_messages",
+        "tests/test_usage_package_manifest.py::test_missing_declared_member_is_unavailable",
+        "tests/test_usage_package_manifest.py::test_identity_records_are_strict_but_reader_ref_compatibility_is_unchanged"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.reader-packages.special-files",
+      "description": "Reader packages reject FIFO members on POSIX filesystems.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "linux",
+        "macos"
+      ],
+      "selectors": [
+        "tests/test_usage_package_manifest.py::test_rejects_special_files_when_supported"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.reader-packages.case-sensitive-files",
+      "description": "Reader packages reject case-colliding members on a case-sensitive filesystem.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "selectors": [
+        "tests/test_usage_package_manifest.py::test_rejects_casefold_colliding_members_when_filesystem_supports_them"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    },
+    {
+      "id": "usage.reader-package-loader",
+      "description": "Fixture packages load retained verified bytes with exact exports and separate owned namespaces.",
+      "harnesses": [
+        "claude-code",
+        "codex"
+      ],
+      "feature": "usage",
+      "layer": "offline",
+      "profiles": [
+        "quick",
+        "offline"
+      ],
+      "platforms": [
+        "macos",
+        "linux",
+        "windows"
+      ],
+      "selectors": [
+        "tests/test_usage_package_loader.py"
+      ],
+      "timeout_seconds": 120,
+      "gap": null,
+      "revision": "1",
+      "required_evidence": [
+        "offline_pytest"
+      ]
+    }
+  ]
+}

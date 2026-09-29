@@ -1,0 +1,251 @@
+/* ─── EquipPicker (ux-equip-connections) ─────────────────────────────────── */
+.equip-picker {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.equip-popover {
+  width: 100%;
+  box-shadow: var(--shadow-popover);
+  overflow: hidden;
+}
+/* Inline in a side panel the picker is a Guild RECESSED WELL — the
+   compartment the rows sit in — not a second raised card inside the section. */
+.equip-inline {
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border-radius: var(--radius-frame);
+}
+.equip-popover-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-below);
+  background: transparent;
+}
+.equip-anchor-layer .equip-popover { position: relative; }
+.equip-picker-search { padding: 8px; border-bottom: 1px solid var(--border); }
+.equip-picker-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.equip-picker-empty {
+  padding: 16px 12px;
+  text-align: center;
+  color: var(--fg-mute);
+  font-size: var(--fs-5);
+}
+/* One dim line for a list-wide `lockedReason` — never repeated per row. */
+.equip-picker-lock {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 8px 2px;
+  color: var(--fg-mute); font-size: var(--fs-3);
+}
+.equip-option {
+  position: relative;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.equip-option[aria-disabled="true"] { cursor: default; }
+.equip-option[data-active="true"] {
+  background: color-mix(in oklab, var(--ctx) 10%, var(--bg-1));
+}
+/* In flight = the shared rune trace on ::after (primitives.css §is-loading),
+   not a dimmed row — see COMPONENTS.md §In-flight and settled state. */
+.equip-option .resource-row { padding: 5px 8px; min-height: 30px; border-bottom: 0; }
+.equip-option .resource-row:hover { background: transparent; }
+.equip-badges { display: inline-flex; align-items: center; gap: 8px; }
+/* In the narrow picker, the project name (identity) keeps room; the path meta
+   shrinks + ellipsizes first. */
+.equip-option .resource-line > .resource-name { flex: 1 1 auto; min-width: 48px; }
+.equip-option .resource-line > .equip-path {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 46%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-2);
+}
+.equip-emoji { font-size: var(--fs-d-2); line-height: 1; }
+/* One line per row: name, then the meta (dim, ellipsized first). Only a
+   disabled-reason still takes a full-width second line — it is a warning,
+   not idle information. */
+.equip-option .resource-line { flex-wrap: wrap; row-gap: 2px; }
+/* One-line row: the name is RIGID at its own content width (`flex-grow: 0`) —
+   it never competes for space — up to the row's edge; the meta is the one
+   elastic item (`flex: 1 1 0`, from the rule below, untouched), so it always
+   absorbs exactly what's left and ellipsises inside that box when there
+   isn't enough. The old `max-width: 62%` capped the name at a FIXED
+   fraction even when meta had nothing to render (e.g. the bundle editor's
+   SKILLS picker, which carries no meta at all) — that is the truncation
+   with free space beside it. Dropping the cap (grow stays 0, so a long name
+   still can't starve a real meta line — "via android" is proof) is the
+   entire fix; do not also give the name `flex-grow: 1` (it would then compete
+   with meta for the same space and starve it back down to a few characters)
+   and do not give meta `flex-grow: 0` (its basis stops being 0, so the
+   un-shrunk WRAP decision — which flexbox makes before any shrinking runs —
+   sees its full content width and wraps it to a second line the moment the
+   row doesn't have room, which is the skill-editor USED BY → BUNDLES
+   regression this replaced). */
+.equip-inline .equip-option .resource-line > .resource-name {
+  flex: 0 1 auto; font-size: var(--fs-6);
+}
+.equip-inline .equip-option .resource-line > .equip-meta { text-align: right; }
+.equip-option .resource-line > .equip-meta,
+.equip-option .resource-line > .resource-desc:not(:has(.equip-disabled-reason)) {
+  flex: 1 1 0; min-width: 0;
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.equip-option .resource-line > .resource-desc:has(.equip-disabled-reason) {
+  flex: 1 0 100%;
+  order: 9;
+  white-space: normal;
+}
+.equip-option .equip-meta.equip-provider { color: var(--fg-dim); }
+.equip-option .equip-meta .equip-provider-link { color: var(--fg-mute); }
+.equip-option .equip-meta .equip-provider-link:hover { color: var(--anchor-2); }
+/* Settled: the word fades in over --dur-slow, replacing the row's meta for
+   the ~2.4s hold (EquipPicker owns the timer); removal is a plain unmount —
+   no fade out. Reduced motion: appear at full opacity, no transition. */
+.equip-settled {
+  animation: equip-settled-in var(--dur-slow) ease-out;
+}
+@keyframes equip-settled-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .equip-settled { animation: none; }
+}
+/* Holds the checkbox column on a via-bundle row so names line up across rows. */
+.equip-via-glyph { color: var(--fg-dim); width: 16px; display: inline-flex; justify-content: center; }
+.equip-blast {
+  color: var(--fg-mute);
+  font-size: var(--fs-3);
+}
+.equip-disabled-reason {
+  color: var(--fg-mute);
+  font-size: var(--fs-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.equip-provider { color: var(--fg-mute); font-size: var(--fs-3); }
+.equip-provider-link {
+  color: var(--fg-mid);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.equip-provider-link:hover { color: var(--anchor-2); }
+.equip-picker-foot {
+  padding: 8px;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+
+/* ─── ConnectionsPanel ───────────────────────────────────────────────────── */
+/* The disclosure shell itself moved to `styles/editor.css`
+   (`.side-panel-section*`) — one grammar for every editor side panel, so the
+   connections blocks and the skill editor's FILES/DETAILS/TRIGGERING blocks
+   are literally the same component. */
+.connections-panel { display: flex; flex-direction: column; }
+
+
+/* ─── Library filter popover + candidate banner ──────────────────────────── */
+/* Clearance for the bottom-docked floating search bar — one rule so the list,
+   the grid, the bundle/snippet body-hit rows AND every empty state keep their
+   last row above it. */
+/* G4: `scrollIntoView({block:"nearest"})` (the arrow-cursor's clearance,
+   FloatingSearch.tsx `onMove`) respects `scroll-padding`, not `padding` — the
+   padding alone only kept the LAST row visible on load; without this the
+   cursor could still land half-hidden under the dock after an ArrowDown to
+   the bottom. */
+.library-body[data-dock] {
+  padding-bottom: var(--dock-safe);
+  scroll-padding-bottom: var(--dock-safe);
+}
+.lib-grid { padding: 20px var(--pad-screen-x) 0; }
+/* The bundle/snippet body-hit rows (kind != all) — the SectionHeader above
+   them already carries its own top gap (it is the SAME component GLOBAL/
+   PORTABLE use), so this is deliberately minimal: a plain vertical list,
+   matching `.lib-list`'s own un-styled block flow (review M6). */
+.library-body-hits { display: flex; flex-direction: column; }
+.library-facet-hint { margin: 12px var(--pad-screen-x) 0; }
+.library-candidate-banner { padding: 12px 24px 0; }
+.library-filter-popover { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+/* Dropdowns share one row; segmented options share each well evenly. */
+.library-filter-selects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.library-filter-selects .filter-group { min-width: 0; }
+.library-filter-selects .select,
+.library-filter-selects .select-trigger { width: 100%; }
+.library-filter-selects .select-value { flex: 1; text-align: left; }
+.library-filter-selects > :last-child .select-menu { left: auto; right: 0; }
+.library-filter-popover .chips { display: flex; flex-wrap: wrap; max-width: 100%; }
+.library-filter-popover .chip { flex: 1 1 0; min-width: max-content; justify-content: center; }
+.library-filter-popover .chips:has(> .chip:nth-child(5)) .chip { flex-basis: 26%; }
+.library-filter-foot { display: flex; justify-content: flex-end; margin-top: 4px; }
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+}
+
+/* The SOURCE/TRIGGER facet groups, measured inline against the left cluster's
+   available width (`useFitsInline`): `nowrap` + `flex-shrink: 0` so
+   `scrollWidth` is always their natural single-line width. When they do not
+   fit, the row parks them off-flow (still measurable, never visible) and a
+   `Filter` chip stands in — `[data-collapsed]` is the parked state. */
+.library-facets { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; white-space: nowrap; }
+/* The Library's left cluster never scrolls — its facets collapse into the
+   Filter chip instead — so the shared edge-fade scroll cue (`primitives.css`,
+   `.main-subheader-left`) has nothing to signal here. Left on, its
+   `scroll`-attached cue layer peeks out from under the `local` cover by the
+   cluster's fractional sub-pixel (835.56px wide at 1440), painting a 1px
+   hairline at the cluster's right edge on every width where the row fits. */
+.main-subheader-left:has(> .library-facets) { background: none; }
+/* Parked: `width`/`height: 0` + `overflow: hidden` so the twin contributes
+   NOTHING to `.main-subheader-left`'s own box (an unbounded absolute box was
+   still stretching that scroller's content size, painting its scroll-edge
+   fade as a permanent dark bar even with nothing visibly overflowing). Its
+   children stay `flex-shrink: 0` + nowrap, so `scrollWidth` still reports
+   their natural width — `overflow: hidden` clips the paint, never the
+   scrollWidth measurement. */
+.library-facets[data-collapsed] {
+  position: absolute; visibility: hidden; pointer-events: none; left: 0; top: 0;
+  width: 0; height: 0; overflow: hidden;
+}
+/* ─── Remote equip panel ─────────────────────────────────────────────────── */
+.remote-equip-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 8px 0;
+  overflow: hidden;
+}
+.remote-equip-tabs { display: flex; gap: 2px; padding: 6px; border-bottom: 1px solid var(--border); }
+.remote-equip-tabs button {
+  padding: 4px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--fg-mute);
+  font-size: var(--fs-5);
+  cursor: pointer;
+}
+.remote-equip-tabs button[data-active="true"] {
+  background: color-mix(in oklab, var(--ctx) 12%, var(--bg-1));
+  color: var(--fg-strong);
+}
+.remote-equip-panel .equip-picker { border: 0; }
+/* The cloud detail reuses the equip chrome verbatim (same control, same job). */
+.cloud-equip-panel { margin-bottom: 4px; }
+

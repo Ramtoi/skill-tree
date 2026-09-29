@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "aliases": [
+    {"input": "claude", "expect": "claude-code"},
+    {"input": "Claude", "expect": "claude-code"},
+    {"input": "claude-code", "expect": "claude-code"},
+    {"input": "codex", "expect": "codex"},
+    {"input": "pi", "expect": "pi"},
+    {"input": "opencode", "expect": "opencode"},
+    {"input": "claude code", "expect": null},
+    {"input": "unknown", "expect": null}
+  ],
+  "keys": [
+    {"harness": "claude", "raw_id": "019fd809-2012-7ef2-8cfb-91696cccd6f4", "expect": "claude-code:019fd809-2012-7ef2-8cfb-91696cccd6f4"},
+    {"harness": "codex", "raw_id": "2026/02/19/rollout-2026-02-19T18-55-10-019FD809-2012-7EF2-8CFB-91696CCCD6F4", "expect": "codex:019fd809-2012-7ef2-8cfb-91696cccd6f4"},
+    {"harness": "pi", "raw_id": "019FD809-2012-7EF2-8CFB-91696CCCD6F4", "expect": "pi:019fd809-2012-7ef2-8cfb-91696cccd6f4"},
+    {"harness": "codex", "raw_id": "019fd809-2012-7ef2-8cfb-91696cccd6f4", "expect": "codex:019fd809-2012-7ef2-8cfb-91696cccd6f4"},
+    {"harness": "unknown", "raw_id": "019fd809-2012-7ef2-8cfb-91696cccd6f4", "expect": null},
+    {"harness": "codex", "raw_id": "rollout-not-a-uuid", "expect": null}
+  ]
+}

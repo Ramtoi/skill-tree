@@ -1,0 +1,493 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_usage_classify.py"}
+  ],
+  "tool_class": [
+    {
+      "name": "read-Read",
+      "tool": "Read",
+      "expect": "read"
+    },
+    {
+      "name": "read-Grep",
+      "tool": "Grep",
+      "expect": "read"
+    },
+    {
+      "name": "read-Glob",
+      "tool": "Glob",
+      "expect": "read"
+    },
+    {
+      "name": "read-LS",
+      "tool": "LS",
+      "expect": "read"
+    },
+    {
+      "name": "read-NotebookRead",
+      "tool": "NotebookRead",
+      "expect": "read"
+    },
+    {
+      "name": "read-WebFetch",
+      "tool": "WebFetch",
+      "expect": "read"
+    },
+    {
+      "name": "read-WebSearch",
+      "tool": "WebSearch",
+      "expect": "read"
+    },
+    {
+      "name": "read-ToolSearch",
+      "tool": "ToolSearch",
+      "expect": "read"
+    },
+    {
+      "name": "edit-Edit",
+      "tool": "Edit",
+      "expect": "edit"
+    },
+    {
+      "name": "edit-Write",
+      "tool": "Write",
+      "expect": "edit"
+    },
+    {
+      "name": "edit-MultiEdit",
+      "tool": "MultiEdit",
+      "expect": "edit"
+    },
+    {
+      "name": "edit-NotebookEdit",
+      "tool": "NotebookEdit",
+      "expect": "edit"
+    },
+    {
+      "name": "delegate-Agent",
+      "tool": "Agent",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-SendMessage",
+      "tool": "SendMessage",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TaskCreate",
+      "tool": "TaskCreate",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TaskUpdate",
+      "tool": "TaskUpdate",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TaskGet",
+      "tool": "TaskGet",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TaskList",
+      "tool": "TaskList",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TeamCreate",
+      "tool": "TeamCreate",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TeamDelete",
+      "tool": "TeamDelete",
+      "expect": "delegate"
+    },
+    {
+      "name": "delegate-TaskStop",
+      "tool": "TaskStop",
+      "expect": "delegate"
+    },
+    {
+      "name": "skill-Skill",
+      "tool": "Skill",
+      "input": {
+        "skill": "unslop"
+      },
+      "expect": "skill"
+    },
+    {
+      "name": "skill-SlashCommand",
+      "tool": "SlashCommand",
+      "expect": "skill"
+    },
+    {
+      "name": "external-mcp-prefix-github",
+      "tool": "mcp__github__search_issues",
+      "expect": "external"
+    },
+    {
+      "name": "external-mcp-prefix-touchpoint",
+      "tool": "mcp__touchpoint__post_ticker",
+      "expect": "external"
+    },
+    {
+      "name": "operate-unknown-tool",
+      "tool": "SomeFutureTool",
+      "expect": "operate"
+    }
+  ],
+  "bash_class": [
+    {
+      "name": "pytest-is-verify",
+      "command": "pytest -q tests/",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "cargo-check-is-verify-before-readonly",
+      "command": "cargo check",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "git-ls-files-is-readonly",
+      "command": "git ls-files",
+      "extra_verify": [],
+      "expect": "read"
+    },
+    {
+      "name": "sudo-is-stripped-before-matching",
+      "command": "sudo npm run test:bundle",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "pipeline-classified-by-first-command",
+      "command": "cat x.txt | tee y.txt",
+      "extra_verify": [],
+      "expect": "read"
+    },
+    {
+      "name": "unmatched-command-is-operate",
+      "command": "rm -rf build",
+      "extra_verify": [],
+      "expect": "operate"
+    },
+    {
+      "name": "extra-verify-prefix-checked-first",
+      "command": "hub app build --install",
+      "extra_verify": [
+        "hub app build --install"
+      ],
+      "expect": "verify"
+    },
+    {
+      "name": "extra-verify-absent-falls-through-to-operate",
+      "command": "hub app build --install",
+      "extra_verify": [],
+      "expect": "operate"
+    },
+    {
+      "name": "multi-word-readonly-sed-n",
+      "command": "sed -n '1,5p' file.txt",
+      "extra_verify": [],
+      "expect": "read"
+    },
+    {
+      "name": "internal-whitespace-normalized-before-matching",
+      "command": "  git   status   -s",
+      "extra_verify": [],
+      "expect": "read"
+    },
+    {
+      "name": "leading-whitespace-stripped",
+      "command": "   pytest -k foo",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "sudo-with-no-command-is-operate",
+      "command": "sudo",
+      "extra_verify": [],
+      "expect": "operate"
+    },
+    {
+      "name": "longer-prefix-with-trailing-flag-matches",
+      "command": "npm run test:bundle --watch",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "prefix-must-end-on-a-word-boundary",
+      "command": "npm run testing",
+      "extra_verify": [],
+      "expect": "operate"
+    },
+    {
+      "name": "npx-playwright-test-is-verify",
+      "command": "npx playwright test e2e/foo.spec.ts",
+      "extra_verify": [],
+      "expect": "verify"
+    },
+    {
+      "name": "gh-pr-checks-is-readonly",
+      "command": "gh pr checks 123 --watch",
+      "extra_verify": [],
+      "expect": "read"
+    },
+    {
+      "name": "openspec-validate-is-readonly",
+      "command": "openspec validate my-change --json",
+      "extra_verify": [],
+      "expect": "read"
+    }
+  ],
+  "script_path_to_key": [
+    {
+      "name": "harness-project-symlink-direct",
+      "root_kind": "project_skills_dir",
+      "link_name": "unslop",
+      "link_target_kind": "data_home_skills",
+      "link_target_name": "unslop",
+      "rest": "",
+      "registry": {
+        "unslop": {
+          "source_kind": "data_home_skills",
+          "source_name": "unslop"
+        }
+      },
+      "command_template": "bash {token} --fix",
+      "expect": "unslop"
+    },
+    {
+      "name": "harness-global-symlink-with-rest",
+      "root_kind": "global_skills_dir",
+      "link_name": "deliver-it",
+      "link_target_kind": "data_home_skills",
+      "link_target_name": "deliver-it",
+      "rest": "scripts/build.py",
+      "registry": {
+        "deliver-it": {
+          "source_kind": "data_home_skills",
+          "source_name": "deliver-it"
+        }
+      },
+      "command_template": "python3 {token} --release",
+      "expect": "deliver-it"
+    },
+    {
+      "name": "data-home-skills-real-dir-no-symlink",
+      "root_kind": "data_home_skills",
+      "link_name": "proof-it",
+      "link_target_kind": null,
+      "rest": "scripts/shoot.mjs",
+      "registry": {
+        "proof-it": {
+          "source_kind": "data_home_skills",
+          "source_name": "proof-it"
+        }
+      },
+      "command_template": "node {token}",
+      "expect": "proof-it"
+    },
+    {
+      "name": "data-home-mcp-servers-real-dir",
+      "root_kind": "data_home_mcp_servers",
+      "link_name": "skill-tree",
+      "link_target_kind": null,
+      "rest": "server.py",
+      "registry": {
+        "skill-tree": {
+          "source_kind": "data_home_mcp_servers",
+          "source_name": "skill-tree"
+        }
+      },
+      "command_template": "python3 {token}",
+      "expect": "skill-tree"
+    },
+    {
+      "name": "renamed-variant-resolved-by-rsplit",
+      "root_kind": "project_skills_dir",
+      "link_name": "unslop",
+      "link_target_kind": "variant",
+      "link_target_name": "unslop@user-only",
+      "rest": "SKILL.md",
+      "registry": {
+        "unslop": {
+          "source_kind": "data_home_skills",
+          "source_name": "unslop-real"
+        }
+      },
+      "command_template": "cat {token}",
+      "expect": "unslop"
+    },
+    {
+      "name": "variant-key-absent-from-registry-is-null",
+      "root_kind": "project_skills_dir",
+      "link_name": "ghost",
+      "link_target_kind": "variant",
+      "link_target_name": "ghost@auto",
+      "rest": "",
+      "registry": {},
+      "command_template": "cat {token}",
+      "expect": null
+    },
+    {
+      "name": "path-outside-every-root-is-null",
+      "root_kind": null,
+      "rest": "",
+      "registry": {},
+      "command_literal": "cat /var/log/system.log",
+      "expect": null
+    },
+    {
+      "name": "longest-registry-source-prefix-wins",
+      "root_kind": "data_home_skills",
+      "link_name": "outer",
+      "link_target_kind": null,
+      "rest": "inner/deep/file.py",
+      "registry": {
+        "outer": {
+          "source_kind": "data_home_skills",
+          "source_name": "outer"
+        },
+        "inner": {
+          "source_kind": "data_home_skills",
+          "source_name": "outer/inner"
+        }
+      },
+      "command_template": "python3 {token}",
+      "expect": "inner"
+    }
+  ],
+  "redaction": [
+    {
+      "name": "bearer-token-value-redacted",
+      "text": "set Bearer abc12345 now",
+      "home": "/Users/example",
+      "expect": "set Bearer [redacted] now"
+    },
+    {
+      "name": "password-key-value-redacted",
+      "text": "config password: hunter2x saved",
+      "home": "/Users/example",
+      "expect": "config password: [redacted] saved"
+    },
+    {
+      "name": "token-equals-value-redacted",
+      "text": "export TOKEN=xyz done",
+      "home": "/Users/example",
+      "expect": "export [redacted] done"
+    },
+    {
+      "name": "bare-40-hex-sha-over-redacted",
+      "text": "commit 1234567890abcdef1234567890abcdef12345678 fixed it",
+      "home": "/Users/example",
+      "expect": "commit [redacted] fixed it"
+    },
+    {
+      "name": "github-url-untouched",
+      "text": "see https://github.com/org/repo for source",
+      "home": "/Users/example",
+      "expect": "see https://github.com/org/repo for source"
+    },
+    {
+      "name": "bare-tmp-untouched",
+      "text": "check /tmp for leftovers",
+      "home": "/Users/example",
+      "expect": "check /tmp for leftovers"
+    },
+    {
+      "name": "bare-home-collapses-to-tilde",
+      "text": "cd /Users/example now",
+      "home": "/Users/example",
+      "expect": "cd ~ now"
+    },
+    {
+      "name": "home-subpath-collapses-to-tilde-slash-last-segment",
+      "text": "read /Users/example/notes/todo.md quickly",
+      "home": "/Users/example",
+      "expect": "read ~/todo.md quickly"
+    },
+    {
+      "name": "already-tilde-path-keeps-slash-before-last-segment",
+      "text": "open ~/Dev/x/y.md please",
+      "home": "/Users/nonmatching-example",
+      "expect": "open ~/y.md please"
+    },
+    {
+      "name": "non-home-absolute-path-collapses-to-last-segment",
+      "text": "wrote /var/data/build/output.log now",
+      "home": "/Users/example",
+      "expect": "wrote output.log now"
+    },
+    {
+      "name": "windows-drive-path-collapses",
+      "text": "read C:\\Users\\alice\\private\\report.txt now",
+      "home": "C:\\Users\\example",
+      "expect": "read report.txt now"
+    },
+    {
+      "name": "windows-home-mixed-separators-keeps-tilde-slash-last-segment",
+      "text": "read C:/Users/example\\notes/todo.md now",
+      "home": "C:\\Users\\example",
+      "expect": "read ~/todo.md now"
+    },
+    {
+      "name": "windows-home-one-segment-keeps-tilde-slash",
+      "text": "read C:\\Users\\example\\todo.md now",
+      "home": "C:\\Users\\example",
+      "expect": "read ~/todo.md now"
+    },
+    {
+      "name": "windows-home-mixed-case-keeps-tilde-slash",
+      "text": "read c:/users/ALICE\\notes/todo.md now",
+      "home": "C:\\Users\\Alice",
+      "expect": "read ~/todo.md now"
+    },
+    {
+      "name": "windows-unc-path-collapses",
+      "text": "read \\\\server\\share\\private\\report.txt now",
+      "home": "C:\\Users\\example",
+      "expect": "read report.txt now"
+    },
+    {
+      "name": "windows-unc-forward-slash-path-collapses",
+      "text": "read //server/share/private/report.txt now",
+      "home": "C:\\Users\\example",
+      "expect": "read report.txt now"
+    },
+    {
+      "name": "windows-unc-mixed-separator-path-collapses",
+      "text": "read \\\\server/share\\private/report.txt now",
+      "home": "C:\\Users\\example",
+      "expect": "read report.txt now"
+    },
+    {
+      "name": "windows-unc-home-mixed-separators-keeps-tilde-slash-last-segment",
+      "text": "read //server/share\\example\\notes/todo.md now",
+      "home": "\\\\server\\share\\example",
+      "expect": "read ~/todo.md now"
+    },
+    {
+      "name": "windows-unc-home-prefix-needs-component-boundary",
+      "text": "read //server/share/example-else/notes/todo.md now",
+      "home": "\\\\server\\share\\example",
+      "expect": "read todo.md now"
+    },
+    {
+      "name": "windows-unc-home-mixed-case-keeps-tilde-slash",
+      "text": "read //SERVER/share\\ALICE\\notes/todo.md now",
+      "home": "\\\\server\\Share\\Alice",
+      "expect": "read ~/todo.md now"
+    },
+    {
+      "name": "truncation-runs-last",
+      "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "home": "/Users/example",
+      "expect": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  ]
+}

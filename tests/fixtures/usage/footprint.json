@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "project": "alpha",
+  "harnesses": {
+    "claude-code": {
+      "parts": [
+        {
+          "part": "skills",
+          "label": "Skill descriptions (1)",
+          "text": "brainstorm: brainstorm ideas (.claude/skills/brainstorm)",
+          "bytes": 56
+        },
+        {
+          "part": "agent_docs",
+          "label": "CLAUDE.md + 0 imports",
+          "text": "",
+          "bytes": 0
+        },
+        {
+          "part": "mcp_schemas",
+          "label": "MCP tool schemas (0 servers)",
+          "text": "",
+          "bytes": 0
+        }
+      ],
+      "unknown": [],
+      "bytes_total": 56,
+      "approx_tokens": 14,
+      "skill_lines": [
+        {
+          "key": "brainstorm",
+          "text": "brainstorm: brainstorm ideas (.claude/skills/brainstorm)",
+          "bytes": 56
+        }
+      ],
+      "discoverable": [],
+      "discoverable_bytes": 0,
+      "discoverable_truncated": false
+    }
+  },
+  "window": null,
+  "last_scan_at": "2026-09-07T12:00:00.000Z"
+}

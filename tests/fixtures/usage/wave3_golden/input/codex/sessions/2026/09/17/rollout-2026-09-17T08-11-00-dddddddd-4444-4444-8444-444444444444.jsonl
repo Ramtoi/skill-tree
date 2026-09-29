@@ -1,0 +1,4 @@
+{"timestamp":"2026-09-17T08:11:00.000Z","type":"session_meta","payload":{"id":"dddddddd-4444-4444-8444-444444444444","parent_thread_id":"cccccccc-3333-4333-8333-333333333333","agent_role":"researcher","cwd":"/tmp/skill-hub-wave3-fixture/alpha"}}
+{"timestamp":"2026-09-17T08:11:01.000Z","type":"turn_context","payload":{"turn_id":"codex-child-turn","model":"gpt-5.6","cwd":"/tmp/skill-hub-wave3-fixture/alpha"}}
+{"timestamp":"2026-09-17T08:11:02.000Z","type":"event_msg","payload":{"type":"item_completed","turn_id":"codex-child-turn","item":{"type":"FileChange","changes":{"/tmp/skill-hub-wave3-fixture/alpha/docs/baseline.md":{"diff":"+baseline"}}}}}
+{"timestamp":"2026-09-17T08:11:03.000Z","type":"token_usage_record","payload":{"response_id":"codex-child-response","thread_id":"dddddddd-4444-4444-8444-444444444444","turn_id":"codex-child-turn","usage":{"input_tokens":70,"output_tokens":7,"total_tokens":77}}}

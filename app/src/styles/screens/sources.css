@@ -1,0 +1,299 @@
+.source-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+  letter-spacing: .02em;
+}
+.source-status .status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px color-mix(in oklab, currentColor 12%, transparent);
+}
+
+.sources-body { padding: 0 0 var(--fab-safe); }
+.source-list {
+  display: flex; flex-direction: column;
+  gap: 12px;
+  padding: 6px 24px 18px;
+}
+/* Identity is carried by a subtle gradient WASH of the source's --id-* ramp
+   token, NOT by a colored left rail: the rail read as a status stripe and so
+   fought the badges that actually mean status. Status now lives exclusively in
+   badges / chips / the .source-error banner. */
+.source-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--src-accent, var(--fg-mute)) 9%, var(--bg-2)) 0%,
+      var(--bg-1) 60%
+    );
+  /* NO `overflow: hidden` here: the per-card overflow (kebab) menu is an
+     absolutely-positioned panel inside the card, and clipping it made
+     Disable/Remove unreachable on any short card (collapsed detail, built-in,
+     0-skill). The two children that actually needed clipping round themselves
+     locally instead — see .source-card-detail and .source-card .lds-row-progress. */
+  transition: border-color var(--dur-4), background var(--dur-4), opacity var(--dur-4);
+  position: relative;
+}
+.source-card:hover { border-color: var(--border-strong); }
+/* Roving-keyboard active row / focus: a ring on the card itself, since there is
+   no longer a rail to thicken. The active row is marked by useListNav's
+   `data-listnav-active`, so the ring must not depend on DOM focus. */
+.source-card[data-listnav-active="true"],
+.source-card:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--src-accent, var(--anchor)) 55%, var(--border-strong));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--src-accent, var(--anchor)) 40%, transparent);
+}
+/* Transient ring when the navigator's `?focus=<id>` deep-link lands here —
+   same treatment as the roving-keyboard active ring, self-clearing. */
+.source-card[data-nav-focus="true"] {
+  outline: none;
+  border-color: color-mix(in oklab, var(--src-accent, var(--anchor)) 55%, var(--border-strong));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--src-accent, var(--anchor)) 40%, transparent);
+  transition: border-color var(--dur-6), box-shadow var(--dur-6);
+}
+.source-card[data-disabled="true"] {
+  opacity: 0.55;
+  cursor: default;
+}
+/* User-disabled source: still fully readable (its skills stay registered), but
+   visibly out of the sync loop — identity wash dropped, ink dimmed. */
+.source-card[data-off="true"] {
+  background: var(--bg-1);
+  opacity: 0.72;
+}
+.source-card[data-off="true"] .source-glyph {
+  background: var(--bg-3);
+  color: var(--fg-mute);
+  border-color: var(--border);
+}
+.source-off-note {
+  margin-top: 8px;
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+}
+
+.source-card-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+}
+.source-glyph {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--src-accent, var(--anchor)) 12%, var(--bg-3));
+  color: var(--src-accent, var(--anchor-2));
+  border: 1px solid color-mix(in oklab, var(--src-accent, var(--anchor)) 30%, transparent);
+}
+.source-card-id { min-width: 0; }
+.source-card-name {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display);
+  font-size: var(--fs-d-4);
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -.01em;
+}
+.source-card-meta {
+  display: flex; gap: 6px; align-items: center;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.source-card-meta .sep { color: var(--fg-dim); flex: 0 0 auto; }
+/* C5: `text-overflow` on a FLEX container never reaches its items — the URL and
+   description tokens shrank and then clipped mid-character. Ellipsize per token
+   instead (the full URL stays available via the element's title).
+   W1: shrinking every token EQUALLY turned a 4-char branch into "m…" and
+   "/skills" into "/sk…" while the 40-char URL still hogged the row. The short
+   identifiers hold their full width; only the URL (and the built-in blurb,
+   which is prose) gives ground. */
+.source-card-meta > span {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  flex: 0 0 auto;
+}
+.source-card-meta > .src-url,
+.source-card-meta > .text-mute { flex: 0 1 auto; min-width: 8ch; }
+
+.source-card-stat {
+  text-align: right;
+  font-family: var(--font-mono);
+}
+.source-card-stat .value {
+  font-family: var(--font-display);
+  font-size: var(--fs-d-12);
+  font-weight: 600;
+  color: var(--fg-strong);
+  line-height: 1;
+}
+.source-card-stat .label {
+  font-size: var(--fs-micro-3);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-top: 4px;
+}
+.source-card-actions {
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* F9: at ≤640 stack the card head — glyph + title + stat(s) on the first row,
+   action buttons on their own row (no overlap / clipped buttons). A card with
+   dropped-upstream skills renders TWO `.source-card-stat` blocks (skills +
+   dropped) — `:not(.source-card-stat-dropped)` keeps them in distinct grid
+   areas instead of both landing on "stat" and overlapping illegibly. */
+@container appmain (max-width: 640px) {
+  .source-card-head {
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      "glyph id stat dropped"
+      "actions actions actions actions";
+    row-gap: 10px;
+  }
+  .source-card-head > .source-glyph { grid-area: glyph; }
+  .source-card-head > .source-card-id { grid-area: id; }
+  .source-card-head > .source-card-stat:not(.source-card-stat-dropped) { grid-area: stat; }
+  .source-card-head > .source-card-stat-dropped { grid-area: dropped; }
+  .source-card-head > .source-card-actions {
+    grid-area: actions;
+    justify-self: end;
+  }
+}
+
+/* Last child of the card and the only one with its own background, so it owns
+   the card's bottom corners now that .source-card no longer clips. */
+.source-card-detail {
+  border-top: 1px solid var(--border);
+  padding: 12px 18px 14px;
+  background: color-mix(in oklab, var(--bg-0) 50%, transparent);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.source-detail-row {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+.source-detail-row .k { color: var(--fg-mute); }
+.source-detail-row .v { color: var(--fg); }
+.source-detail-row .dot-sep {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--fg-dim);
+}
+
+.source-error {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in oklab, var(--red) 35%, transparent);
+  background: color-mix(in oklab, var(--red) 8%, transparent);
+  border-radius: var(--radius);
+  font-size: var(--fs-4);
+  color: var(--red);
+}
+.source-error .btn { margin-left: auto; }
+
+.source-imported {
+  margin-top: 12px;
+}
+.source-imported-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3);
+  letter-spacing: .14em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.source-imported-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center;
+}
+/* Skill/bundle chips ride the shared `Chip` atom (Chips.tsx) and `BundleChip`
+   — bordered here (unlike `.chip`'s transparent filter-row default), since
+   this is a wrap-list of many named items, not a single toggle row. Retires
+   the bespoke `.source-imported-chip` (R6). */
+.source-imported-list .chip {
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  border-radius: 3px;
+  transition: background var(--dur-4), border-color var(--dur-4);
+}
+.source-imported-list .chip:hover {
+  background: var(--bg-3);
+  border-color: var(--border-strong);
+}
+.source-imported-list .chip .name {
+  font-family: var(--font-mono);
+  color: var(--fg-strong);
+}
+.source-imported-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-dim);
+  padding: 4px 8px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color var(--dur-4), background var(--dur-4), border-color var(--dur-4);
+}
+.source-imported-toggle:hover {
+  color: var(--fg-strong);
+  background: var(--bg-2);
+  border-color: var(--border-strong);
+}
+
+/* Dropped-upstream block (spec: batch resolution lives on the Sources card,
+   not a new screen) — one bordered item per skill, error-toned. */
+.source-dropped-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.source-dropped-item {
+  border: 1px solid color-mix(in oklab, var(--red) 22%, var(--border));
+  border-radius: var(--radius-frame, 6px);
+  background: color-mix(in oklab, var(--red) 4%, transparent);
+  padding: 6px 8px;
+}
+.source-dropped-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-3);
+}
+.source-dropped-row .name {
+  color: var(--fg-strong);
+}
+.source-dropped-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.source-dropped-hedge {
+  margin-top: 6px;
+  color: var(--fg-mute);
+  font-size: var(--fs-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+

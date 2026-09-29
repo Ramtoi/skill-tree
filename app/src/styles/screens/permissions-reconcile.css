@@ -1,0 +1,251 @@
+/* ─── Reconcile dialog ("Review native rules") ───────────────────────────
+   Groups discovered native rules by source-harness set with bulk actions per
+   group; the action column (ChipRadios) never moves, patterns wrap. See
+   COMPONENTS.md §Overlays / §Chips. */
+
+.reconcile-dialog .modal-body { padding-top: 12px; }
+
+.reconcile-intro {
+  margin: 0 0 3px;
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+  line-height: 1.45;
+}
+.reconcile-intro-note {
+  margin: 0 0 14px;
+  font-size: var(--fs-3);
+  color: var(--fg-dim);
+  line-height: 1.45;
+}
+
+.reconcile-status {
+  padding: 20px 0;
+  text-align: center;
+  color: var(--fg-mute);
+  font-size: var(--fs-5);
+}
+
+.reconcile-error {
+  padding: 10px;
+  border-radius: var(--radius-frame);
+  border: 1px solid var(--red);
+  color: var(--red);
+  margin-bottom: 16px;
+  font-size: var(--fs-5);
+}
+
+.reconcile-section + .reconcile-section { margin-top: 18px; }
+.reconcile-group + .reconcile-group { margin-top: 14px; }
+
+.reconcile-group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.reconcile-group-name { color: var(--fg-mid); }
+.reconcile-group-files {
+  color: var(--fg-dim);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.reconcile-bulk { margin-left: auto; display: inline-flex; gap: 2px; }
+
+/* Rows share one recessed well per group/section — the Guild "inventory
+   slot" register (tokens.css §well). */
+.reconcile-rows {
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border-radius: var(--radius-frame);
+  padding: 2px 8px;
+}
+
+.reconcile-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-4);
+}
+.reconcile-row:first-child { border-top: 0; }
+.reconcile-conflict { grid-template-columns: 14px minmax(0, 1fr) auto; }
+
+.reconcile-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  color: var(--fg-mid);
+  padding-top: 3px;
+}
+.reconcile-kind::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--kind-accent, var(--fg-dim));
+}
+
+.reconcile-rule-copy { min-width: 0; }
+.reconcile-rule-copy > .tag { margin-left: 8px; }
+.reconcile-triage-reason {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-3);
+  color: var(--fg-dim);
+}
+
+.reconcile-pattern {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.reconcile-pattern .tool { color: var(--fg-mute); }
+.reconcile-pattern .inner { color: var(--fg-strong); }
+
+.reconcile-choice.chips {
+  width: auto;
+  min-width: max-content;
+  max-width: 100%;
+  padding: 2px;
+}
+.reconcile-choice .chip {
+  flex: 0 0 auto;
+  min-width: max-content;
+  padding: 3px 8px;
+  font-size: var(--fs-3);
+}
+.reconcile-choice .chip-label-text { overflow: visible; text-overflow: clip; }
+
+.reconcile-votes {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+}
+.reconcile-votes [data-kind="allow"] { color: var(--green); }
+.reconcile-votes [data-kind="deny"] { color: var(--red); }
+.reconcile-votes [data-kind="ask"] { color: var(--amber); }
+
+.reconcile-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+  background: var(--fg-dim);
+}
+.reconcile-row[data-unresolved] .reconcile-dot { background: var(--amber); }
+
+/* Dim registers, in CSS rather than an inline style per row: a previously-kept
+   row lights up once the user opts to un-keep it; every un-importable row
+   stays dim (it can't be acted on at all). */
+[data-section="kept"] .reconcile-row { opacity: .65; }
+[data-section="kept"] .reconcile-row[data-unkeep] { opacity: 1; }
+[data-section="unimportable"] .reconcile-row { opacity: .7; }
+
+.reconcile-disclosure,
+.reconcile-kept-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.reconcile-disclosure {
+  width: 100%;
+  padding: 8px var(--pad-screen-x);
+  text-align: left;
+}
+.reconcile-disclosure-label { color: var(--fg-mid); }
+.reconcile-disclosure-count { color: var(--fg-dim); }
+.reconcile-disclosure-detail {
+  margin-left: auto;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--fg-mute);
+}
+.reconcile-guidance {
+  margin: 0 0 8px;
+  padding: 0 var(--pad-screen-x);
+  color: var(--fg-mute);
+  font-size: var(--fs-4);
+  line-height: 1.45;
+}
+.reconcile-disclosure:hover,
+.reconcile-kept-toggle:hover { color: var(--fg-mute); }
+.reconcile-disclosure:focus-visible,
+.reconcile-kept-toggle:focus-visible {
+  outline: 2px solid var(--anchor-2);
+  outline-offset: 2px;
+}
+.reconcile-disclosure svg,
+.reconcile-kept-toggle svg { transition: transform var(--dur-4); }
+.reconcile-disclosure[aria-expanded="true"] svg,
+.reconcile-kept-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) {
+  .reconcile-disclosure svg,
+  .reconcile-kept-toggle svg { transition: none; }
+}
+
+.reconcile-reason { color: var(--fg-mute); }
+.reconcile-file {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  color: var(--fg-dim);
+}
+.reconcile-readonly {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+}
+
+.reconcile-summary {
+  margin-right: auto;
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+.reconcile-summary [data-tone="warn"] { color: var(--amber); }
+
+@media (max-width: 720px) {
+  .reconcile-section > .section-header .section-detail { display: none; }
+  .reconcile-row { grid-template-columns: minmax(0, 1fr); }
+  .reconcile-kind { grid-column: 1 / -1; }
+  .reconcile-choice { grid-column: 1 / -1; justify-self: start; }
+  /* The 2-col collapse above (same specificity, later in source) would
+     otherwise win over `.reconcile-conflict`'s 3-col template and strand the
+     amber dot alone in the 1fr column with the chips wrapping under it. */
+  .reconcile-conflict { grid-template-columns: 14px minmax(0, 1fr); }
+  .reconcile-conflict .reconcile-choice { grid-column: 1 / -1; }
+  /* Same fold as `.reconcile-kind`, for the un-importable row's leading glyph. */
+  [data-section="unimportable"] .reconcile-row > .harness-glyph {
+    grid-column: 1 / -1;
+  }
+  .reconcile-disclosure { flex-wrap: wrap; }
+  .reconcile-disclosure-detail { width: 100%; margin-left: 17px; }
+}
+
+@media (max-width: 420px) {
+  .reconcile-group-head { flex-wrap: wrap; }
+  .reconcile-bulk { flex-basis: 100%; margin-left: 0; }
+}

@@ -1,0 +1,213 @@
+{
+  "session_id": "root-session",
+  "records": [
+    {
+      "type": "cost-state",
+      "totalLinesAdded": 10,
+      "totalLinesRemoved": 0,
+      "totalDuration": 100
+    },
+    {
+      "type": "assistant",
+      "uuid": "root-read",
+      "timestamp": "2026-09-17T08:00:00Z",
+      "message": {
+        "id": "root-message",
+        "model": "claude-sonnet-4",
+        "usage": {
+          "input_tokens": 60,
+          "output_tokens": 50
+        },
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "root-read-call",
+            "name": "Read",
+            "input": {
+              "file_path": "README.md"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "uuid": "root-read-result",
+      "timestamp": "2026-09-17T08:00:01Z",
+      "message": {
+        "content": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "root-read-call",
+            "content": "read"
+          }
+        ]
+      }
+    },
+    {
+      "type": "assistant",
+      "uuid": "inline-child-bash",
+      "timestamp": "2026-09-17T08:00:02Z",
+      "isSidechain": true,
+      "agentId": "shortagent",
+      "message": {
+        "id": "child-message",
+        "model": "claude-sonnet-4",
+        "usage": {
+          "input_tokens": 400,
+          "output_tokens": 310
+        },
+        "content": [
+          {
+            "type": "tool_use",
+            "id": "child-bash-call",
+            "name": "Bash",
+            "input": {
+              "command": "gh pr create --repo acme/repo"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "user",
+      "uuid": "inline-child-result",
+      "timestamp": "2026-09-17T08:00:03Z",
+      "isSidechain": true,
+      "agentId": "shortagent",
+      "message": {
+        "content": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "child-bash-call",
+            "content": "https://github.com/acme/repo/pull/12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cost-state",
+      "totalLinesAdded": 4,
+      "totalLinesRemoved": 0,
+      "totalDuration": 40,
+      "isSidechain": true,
+      "agentId": "shortagent"
+    }
+  ],
+  "expected": {
+    "root": {
+      "lines_added": 10,
+      "tool_calls": 1,
+      "tokens_total": 110,
+      "native": {
+        "lines_added": 10,
+        "lines_removed": 0,
+        "duration_ms": 100,
+        "branch": null,
+        "tool_calls": 1,
+        "tool_breakdown": [
+          {
+            "name": "Read",
+            "count": 1
+          }
+        ],
+        "status": "observed",
+        "field_status": {
+          "lines_added": "observed",
+          "lines_removed": "observed",
+          "duration_ms": "observed",
+          "branch": "unavailable",
+          "tool_calls": "observed",
+          "tool_breakdown": "observed"
+        }
+      }
+    },
+    "child": {
+      "agent_id": "shortagent",
+      "lines_added": 4,
+      "tool_calls": 1,
+      "tokens_total": 710,
+      "pr_number": 12,
+      "native": {
+        "lines_added": 4,
+        "lines_removed": 0,
+        "duration_ms": 40,
+        "branch": null,
+        "tool_calls": 1,
+        "tool_breakdown": [
+          {
+            "name": "Bash",
+            "count": 1
+          }
+        ],
+        "status": "observed",
+        "field_status": {
+          "lines_added": "observed",
+          "lines_removed": "observed",
+          "duration_ms": "observed",
+          "branch": "unavailable",
+          "tool_calls": "observed",
+          "tool_breakdown": "observed"
+        }
+      }
+    },
+    "children": {
+      "lines_added": 4,
+      "tool_calls": 1,
+      "tokens_total": 710,
+      "native": {
+        "lines_added": 4,
+        "lines_removed": 0,
+        "duration_ms": 40,
+        "branch": null,
+        "tool_calls": 1,
+        "tool_breakdown": [
+          {
+            "name": "Bash",
+            "count": 1
+          }
+        ],
+        "status": "observed",
+        "field_status": {
+          "lines_added": "observed",
+          "lines_removed": "observed",
+          "duration_ms": "observed",
+          "branch": "unavailable",
+          "tool_calls": "observed",
+          "tool_breakdown": "observed"
+        }
+      }
+    },
+    "subtree": {
+      "lines_added": 14,
+      "tool_calls": 2,
+      "tokens_total": 820,
+      "native": {
+        "lines_added": 14,
+        "lines_removed": 0,
+        "duration_ms": 140,
+        "branch": null,
+        "tool_calls": 2,
+        "tool_breakdown": [
+          {
+            "name": "Bash",
+            "count": 1
+          },
+          {
+            "name": "Read",
+            "count": 1
+          }
+        ],
+        "status": "observed",
+        "field_status": {
+          "lines_added": "observed",
+          "lines_removed": "observed",
+          "duration_ms": "observed",
+          "branch": "unavailable",
+          "tool_calls": "observed",
+          "tool_breakdown": "observed"
+        }
+      }
+    }
+  }
+}

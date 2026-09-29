@@ -1,0 +1,638 @@
+/* ─── MCP editor panel (plans/E1.md §4) ────────────────────────────────────
+   Replaces the markdown buffer for `type: mcp-server` inside the document
+   column's `.doc-editor-body` (DocumentEditorShell's `bodyOverride` seam).
+   Tokens only — every colour/radius/shadow traces to tokens.css; a selected
+   row is a lit slot (`--slot-*`), never a filled chip; motion is gated on
+   prefers-reduced-motion. */
+
+.mcp-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+	overflow-y: auto;
+	height: 100%;
+	/* Same values `.screen-pad` uses (shell-main.css) — borrowed as this
+	   panel's OWN padding, not the class itself (see the component's note). */
+	padding: var(--pad-screen-y) var(--pad-screen-x);
+}
+
+/* `.section-header` (primitives.css) is a SCREEN-LIST primitive: it carries its
+   own `--pad-screen-x` gutter and sticks to the top of a scrolling screen behind
+   a `--bg-0` gradient. That is right where it was designed for — the Library and
+   `RemoteDetail`, whose `.remote-section` wrapper sets no padding of its own and
+   lets the header supply the gutter.
+
+   `.mcp-panel` already pads itself by `--pad-screen-x`, so inside it the same
+   rule indented every label a SECOND gutter past its own fields, and painted an
+   opaque `--bg-0` band across a panel that is not `--bg-0`. The result read as a
+   floating box around each label rather than a heading (user report,
+   2026-09-07). Reset the screen-list behaviour here; in this panel `.mcp-block`'s
+   own hairline is what separates one section from the next. */
+.mcp-panel .section-header {
+	padding: 0;
+	position: static;
+	background: none;
+}
+
+.mcp-block {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding-top: 18px;
+	border-top: 1px solid var(--border);
+}
+
+.mcp-block:first-child {
+	padding-top: 0;
+	border-top: none;
+}
+
+.mcp-block-note {
+	font-size: var(--fs-2);
+	color: var(--fg-mute);
+}
+
+.mcp-block-note[data-tone="warn"] {
+	color: var(--amber);
+}
+
+.mcp-block-note[data-tone="error"] {
+	color: var(--red);
+}
+
+/* ── CONNECTION ─────────────────────────────────────────────────────────── */
+
+/* S3: was an inline style — same token, moved into the stylesheet. */
+.mcp-transport-deprecated {
+	color: var(--fg-dim);
+}
+
+.mcp-arg-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.mcp-arg-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.mcp-arg-row input {
+	flex: 1 1 auto;
+	font-family: var(--font-mono);
+}
+
+/* ── CREDENTIALS ─────────────────────────────────────────────────────────── */
+
+.mcp-kv-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.mcp-kv-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+}
+
+.mcp-kv-row-main {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+/* W3: the same chrome `.field input` (editor.css) gives every CONNECTION
+   field — same token values, so there is one visual source even though the
+   rule itself cannot be shared (editor.css is outside this wave's allowed
+   files). Without this a kv row read as bare text next to CONNECTION's
+   clearly-bordered inputs. */
+.mcp-kv-row input {
+	font-family: var(--font-mono);
+	background: var(--bg-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 7px 10px;
+	font-size: var(--fs-6);
+	color: var(--fg);
+	outline: none;
+}
+
+.mcp-kv-row input:focus {
+	border-color: var(--border-active);
+	background: var(--bg-3);
+}
+
+.mcp-kv-row input[readonly] {
+	color: var(--fg-mid);
+}
+
+.mcp-kv-key {
+	width: 40%;
+	min-width: 0;
+}
+
+.mcp-kv-value {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.mcp-kv-detail {
+	font-size: var(--fs-2);
+	color: var(--amber);
+	margin-left: 2px;
+}
+
+/* The `${VAR}` reference chip: a ring, never a fill — the design's "no dot,
+   no word, no solid chip for a reference" register (context, not status). */
+.mcp-ref-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 8px;
+	font-family: var(--font-mono);
+	font-size: var(--fs-2);
+	border: 1px solid color-mix(in oklab, var(--ctx) 45%, transparent);
+	border-radius: var(--radius-frame);
+	color: var(--ctx);
+	background: transparent;
+	white-space: nowrap;
+}
+
+/* ── REACH ───────────────────────────────────────────────────────────────── */
+
+.mcp-reach-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+/* A read-only affinity chip strip carries no hover affordance — the pointer
+   cursor (and the underlying button's default focus ring) is the only tell
+   an interactive chip normally offers; drop the pointer so REACH doesn't
+   promise a click DELIVERY's own "Change reach" button already owns. */
+.harness-affinity-chips[data-mode] .affinity-chip[data-readonly] {
+	cursor: default;
+}
+
+/* ── DELIVERY ────────────────────────────────────────────────────────────── */
+
+.mcp-delivery-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.mcp-delivery-head-left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mcp-check-cluster {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+}
+
+/* The cluster is `align-items: flex-end`, so this box is only as wide as its
+   longest line; without this the SHORTER of the two lines would sit ragged-left
+   inside it. */
+.mcp-check-result {
+	text-align: right;
+}
+
+.mcp-delivery-table {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-frame);
+	overflow: hidden;
+}
+
+.mcp-delivery-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1.6fr);
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--border);
+}
+
+.mcp-delivery-row:last-child {
+	border-bottom: none;
+}
+
+.mcp-delivery-harness {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+.mcp-delivery-scope {
+	font-family: var(--font-mono);
+	color: var(--fg-mid);
+	min-width: 0;
+}
+
+.mcp-delivery-target {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+.mcp-delivery-target button {
+	appearance: none;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	text-align: left;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mcp-delivery-reason {
+	grid-column: 1 / -1;
+	font-size: var(--fs-2);
+	color: var(--fg-mute);
+	padding: 0 10px 8px;
+}
+
+.mcp-probe-line {
+	font-size: var(--fs-2);
+	color: var(--fg-mid);
+}
+
+/* "Answered · 47 tools" is what the user came to the Check button for; the
+   latency and the freshness are context for it. Only the `ok` state earns the
+   larger size — the other states return a full sentence, which at `--fs-6` in
+   this right-aligned cluster would wrap into a paragraph. */
+.mcp-probe-line[data-emphasis="count"] {
+	font-size: var(--fs-6);
+}
+
+.mcp-probe-line[data-tone="ok"] {
+	color: var(--green);
+}
+
+.mcp-probe-line[data-tone="error"] {
+	color: var(--red);
+}
+
+.mcp-probe-line[data-tone="info"] {
+	color: var(--blue);
+}
+
+.mcp-probe-line[data-tone="neutral"] {
+	color: var(--fg-mute);
+}
+
+.mcp-probe-detail {
+	font-size: var(--fs-2);
+	color: var(--fg-mute);
+}
+
+/* ─── Detected MCP servers band (plans/E2.md §4.2, design D5/M9) ───────────
+   The Library's per-row candidate cards + the folded unsupported disclosure.
+   Row chrome mirrors `ProjectLocalSkills`'s `.detected-skill-row` (inline
+   there, given a real class here since this band grew a second visual state
+   — the literal-secret warning line — that .detected-skill-row never had). */
+
+.detected-mcp-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--bg-1);
+}
+
+.mcp-unsupported-fold {
+	margin-top: 4px;
+}
+
+.mcp-unsupported-list {
+	margin: 8px 0 0;
+	padding-left: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-size: var(--fs-2);
+	color: var(--fg-mute);
+}
+
+/* ── CAPABILITIES (plans/G.md §6.4/§7) ──────────────────────────────────────
+   Guild owns this block's frame the same way DELIVERY's table does: flat
+   `--surface-panel`, uniform hairline, `--radius-frame`. No new hex/rgba —
+   every value below traces to an existing token (see COMPONENTS.md §Tokens);
+   nothing here is a genuinely new pattern that needs a new one. */
+
+.mcp-capabilities-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.mcp-capabilities-line {
+	font-family: var(--font-mono);
+	font-size: var(--fs-6);
+	color: var(--fg);
+}
+
+.mcp-capabilities-actions {
+	display: flex;
+}
+
+/* ── The browse sheet (`McpCapabilitySheet`) ────────────────────────────── */
+
+.mcp-capability-sheet .modal-body {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.mcp-capability-sheet-body {
+	display: flex;
+	gap: 16px;
+	height: min(70vh, 640px);
+	min-height: 0;
+}
+
+.mcp-sheet-rail {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 260px;
+	flex-shrink: 0;
+	min-width: 0;
+	/* Guild well — a recessed compartment, same register as `.mcp-kv-row input`. */
+	background: var(--surface-well);
+	box-shadow: var(--shadow-well);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-frame);
+	padding: 8px;
+}
+
+.mcp-sheet-search {
+	font-family: var(--font-sans);
+	font-size: var(--fs-6);
+	background: var(--bg-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-frame);
+	padding: 6px 9px;
+	color: var(--fg);
+	outline: none;
+	flex-shrink: 0;
+}
+
+.mcp-sheet-search:focus {
+	border-color: var(--border-active);
+	background: var(--bg-3);
+}
+
+.mcp-sheet-rail-scroll {
+	overflow-y: auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.mcp-sheet-rail-group {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+/* Sticky, because the four kinds share ONE scroll: a server with 44 tools puts
+   RESOURCES, TEMPLATES and PROMPTS far below the fold, and without this the
+   reader loses track of which kind they are looking at entirely. The counts
+   line above advertises all four, so the rail must at least keep saying where
+   you are. Opaque background, or rows show through as it pins. */
+.mcp-sheet-rail-heading {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: var(--surface-well);
+	font-family: var(--font-mono);
+	font-size: var(--fs-2);
+	color: var(--fg-dim);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 4px 6px;
+}
+
+/* Selection is a LIT SLOT — the row brightens its own frame, never a left
+   edge stripe (skill-tree-design-language). `--slot-*` at their `:root`
+   default resolve to `--anchor` here: the sheet is a portal outside
+   `.app-main`, so this reads brand violet, exactly as the design calls for,
+   with zero new tokens. */
+.mcp-sheet-rail-row {
+	appearance: none;
+	border: 1px solid transparent;
+	border-radius: var(--radius-frame);
+	background: transparent;
+	color: var(--fg-mid);
+	font-family: var(--font-mono);
+	font-size: var(--fs-6);
+	text-align: left;
+	padding: 6px 8px;
+	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transition: background-color var(--dur-4), border-color var(--dur-4);
+}
+
+.mcp-sheet-rail-row:hover {
+	background: var(--bg-3);
+	color: var(--fg);
+}
+
+.mcp-sheet-rail-row[data-selected] {
+	background: var(--slot-fill);
+	border-color: var(--slot-ring);
+	box-shadow: var(--slot-glow);
+	color: var(--fg-strong);
+}
+
+.mcp-sheet-instructions,
+.mcp-sheet-returns {
+	font-size: var(--fs-5);
+	color: var(--fg-mute);
+}
+
+.mcp-sheet-instructions summary,
+.mcp-sheet-returns summary {
+	cursor: pointer;
+	font-family: var(--font-mono);
+	font-size: var(--fs-3);
+	color: var(--fg-dim);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 4px 6px;
+}
+
+.mcp-sheet-instructions p {
+	padding: 0 6px;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.mcp-sheet-fallback-note {
+	color: var(--fg-dim);
+	font-size: var(--fs-2);
+	margin: 0;
+	padding: 0 6px;
+}
+
+.mcp-sheet-detail {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow-y: auto;
+	padding: 4px 4px 4px 2px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.mcp-sheet-detail-title {
+	font-family: var(--font-mono);
+	font-size: var(--fs-7);
+	font-weight: 600;
+	color: var(--fg-strong);
+	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mcp-sheet-detail-subtitle {
+	font-weight: 400;
+	color: var(--fg-mute);
+}
+
+.mcp-sheet-description {
+	font-size: var(--fs-6);
+	color: var(--fg-mid);
+	line-height: 1.5;
+	margin: 0;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.mcp-sheet-uri {
+	font-family: var(--font-mono);
+	overflow-wrap: anywhere;
+}
+
+.mcp-sheet-errors {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.mcp-template-placeholder {
+	color: var(--anchor);
+	font-weight: 600;
+}
+
+/* ── PARAMETERS / ARGUMENTS / RETURNS tables ────────────────────────────── */
+
+.mcp-params-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--fs-5);
+	table-layout: fixed;
+}
+
+.mcp-params-table th {
+	text-align: left;
+	font-family: var(--font-mono);
+	font-size: var(--fs-2);
+	color: var(--fg-dim);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 4px 8px;
+	border-bottom: 1px solid var(--border);
+}
+
+.mcp-params-table td {
+	padding: 6px 8px;
+	border-bottom: 1px solid var(--border);
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.mcp-params-table tr:last-child td {
+	border-bottom: none;
+}
+
+.mcp-param-name {
+	font-family: var(--font-mono);
+	color: var(--fg-strong);
+}
+
+.mcp-param-type {
+	font-family: var(--font-mono);
+	color: var(--fg-mute);
+}
+
+/* `required` is a neutral strong-weight label, never a status colour — amber
+   is the closed warn-severity set and a required parameter is not a warning. */
+.mcp-param-required {
+	font-size: var(--fs-3);
+	color: var(--fg-mute);
+}
+
+.mcp-param-required[data-required] {
+	color: var(--fg-strong);
+	font-weight: 600;
+}
+
+.mcp-param-description {
+	color: var(--fg-mid);
+}
+
+.mcp-param-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-top: 2px;
+	font-family: var(--font-mono);
+	font-size: var(--fs-2);
+	color: var(--fg-dim);
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────────── */
+
+.mcp-delivery-row {
+	transition: background-color 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mcp-delivery-row {
+		transition: none;
+	}
+	.mcp-sheet-rail-row {
+		transition: none;
+	}
+}

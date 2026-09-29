@@ -1,0 +1,367 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SNIPPETS — Agent Docs reusable instruction blocks.
+   Two surfaces: the /snippet/:name editor (content-first — no list column
+   of its own; the NavPanel's Context group is the list), and the per-file
+   "applied snippets" strip inside Agent Docs. Self-contained, namespaced
+   .snip-*. Reuses existing tokens only — no new colors.
+
+   Status hues (semantic, never decorative):
+     applied  → --green   outdated → --amber   modified → --amber
+     orphaned → --fg-mute (+ --red dot)   damaged → --red
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Status badge — StatusBadge preset (D10): channel carries the hue, this
+   override keeps the mono/uppercase snippet look. ─────────────────────────── */
+.status-badge.snip-badge {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-3); font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 7px 2px 6px;
+}
+
+/* ── Editor body (create form + detail side panel) ──────────────────────── */
+/* .snip-create is the create form's ResizableSplit root — just a hook for the
+   visual-capture scene to wait on (ResizableSplit owns actual layout). The
+   existing snippet's DocumentEditorShell needs no wrapper of its own: it's a
+   direct sibling of ScreenHeader under `.app-main`, same as SkillEditor. */
+.snip-create { min-height: 0; }
+
+.snip-meta { grid-template-columns: 1fr; gap: 14px; padding: 16px 20px; }
+.snip-meta .field input { font-family: var(--font-sans); }
+
+.snip-code { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.snip-code .code-area { flex: 1; }
+
+/* Tag editor */
+.snip-tag-editor { display: flex; flex-direction: column; gap: 8px; }
+.snip-tag-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 7px 9px;
+}
+.snip-tag-row:focus-within { border-color: var(--border-active); background: var(--bg-3); }
+.snip-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--anchor-2);
+  background: color-mix(in oklab, var(--anchor) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--anchor) 28%, transparent);
+  border-radius: 4px; padding: 2px 4px 2px 8px;
+}
+.snip-tag button { display: inline-flex; padding: 1px; border: 0; background: transparent; color: var(--anchor-2); cursor: pointer; opacity: .7; }
+.snip-tag button:hover { opacity: 1; }
+.snip-tag-row input { flex: 1; min-width: 90px; border: 0; outline: 0; background: transparent; font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg); }
+
+/* Compact variant — the identity tier's TAGS `.kv-row` value: a 76px label
+   leaves little room, so the row must stay tight. Small chips keep three
+   typical tags plus the `+` add-slot on one line; the add slot is a `+`
+   glyph at rest (never an ellipsised "add tag…" — a truncated word reads as
+   dead), not a hard-cut text field. On focus it grows to fit what's typed,
+   wrapping onto a second line if it must — typing is transient, so that's
+   fine. Removing a tag is rare (good-ux: a rare action does not hold
+   permanent space) — each chip's `×` stays in the DOM and keyboard-reachable
+   (Tab focuses it, `:focus-within` reveals it) but only occupies width at
+   rest under a pointer's hover or a keyboard's focus. */
+.snip-tag-editor-compact .snip-tag-row { gap: 2px; padding: 3px 5px; }
+.snip-tag-editor-compact .snip-tag { gap: 0; font-size: var(--fs-1); padding: 1px 3px; }
+.snip-tag-editor-compact .snip-tag button {
+  width: 0; padding: 0; opacity: 0; overflow: hidden;
+  transition: width .12s, opacity .12s;
+}
+.snip-tag-editor-compact .snip-tag:hover button,
+.snip-tag-editor-compact .snip-tag:focus-within button {
+  width: 12px; opacity: 1;
+}
+.snip-tag-editor-compact .snip-tag-row input { font-size: var(--fs-1); min-width: 22px; }
+.snip-tag-editor-compact .snip-tag-row input:focus { min-width: 70px; }
+
+/* Header usage pip — placeholder while the applied-locations scan is still
+   running. Sized like the `Tag size="sm"` pills it stands in for so nothing
+   shifts when the scan resolves and swaps it for the real tags. */
+.snip-usage-skel { width: 72px; height: 18px; border-radius: 100px; }
+
+/* Applied-locations panel (`AppliedLocationsPanel` — a `SidePanelSection`).
+   "Update everywhere" is the library's propagate verb: it stays in the HEAD
+   row, replacing the plain summary text rather than sitting beside it (the
+   general button-in-summary rule that gives it room lives in
+   `side-panel.css`, shared by every section, not just this one). */
+.snip-update-all {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--fs-1); font-weight: 600;
+  letter-spacing: .04em; text-transform: none;
+  color: var(--anchor-2);
+  background: color-mix(in oklab, var(--anchor) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--anchor) 32%, transparent);
+  border-radius: 5px; padding: 3px 8px; cursor: pointer;
+}
+.snip-update-all:hover { background: color-mix(in oklab, var(--anchor) 20%, transparent); }
+.snip-applied-empty { color: var(--fg-mute); font-size: var(--fs-5); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.snip-applied-empty p { margin: 0; }
+
+/* Scanning skeleton — the only remaining user of `.snip-loc-list` (the real
+   rows now share one recessed well, `.snip-applied-stack`, with the FILES
+   navigator's group grammar). */
+.snip-loc-list { display: flex; flex-direction: column; gap: 6px; }
+.snip-applied-stack { display: flex; flex-direction: column; gap: 4px; }
+
+/* A row's identity is the path RELATIVE TO THE PROJECT ROOT (`PathText`,
+   wraps after `/`, filename stays whole) — a project with many nested
+   `AGENTS.md` files used to render as identical unreadable rows. State
+   rides on a dot ALONE, never a word beside it or a left-edge stripe (R5)
+   or a pill — the word lives on the row's own `title` and the dot's
+   `aria-label` (the section summary already carries the rollup, "7
+   outdated"). `.snip-loc-name` (the glyph + wrapping path) and
+   `.snip-loc-meta` (dot + version + actions, a fixed ≈84px: 8 dot + 24
+   version + 24 Update + 24 menu, gaps included) are the row's two flex
+   children, so a long wrapped path never pushes the meta cluster around —
+   `.snip-loc-file` itself takes the rest of `.snip-loc-name`'s width
+   (`flex:1 1 auto`) so its wrap decision is based on the real column, not
+   its own shrink-to-fit content, and breaks at most once in practice (the
+   last `/` before the filename) once that column is wide enough. */
+.snip-loc {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 7px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-2);
+}
+.snip-loc[data-busy] { border-color: var(--border-active); background: var(--bg-3); }
+.snip-loc-name { display: flex; align-items: flex-start; gap: 6px; min-width: 0; flex: 1 1 auto; }
+.snip-loc-glyph { color: var(--fg-dim); flex-shrink: 0; margin-top: 1px; }
+.snip-loc-file {
+  font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg);
+  min-width: 0; flex: 1 1 auto; line-height: 1.4;
+}
+/* Wrapping otherwise comes only from `PathText`'s `<wbr>` after each `/` — a
+   path with one long segment (a long directory, or a long filename) has no
+   break opportunity there and would overflow the column. */
+.snip-loc-file[data-wrap] { overflow-wrap: anywhere; }
+.snip-loc-meta { display: flex; align-items: center; gap: 4px; flex-shrink: 0; padding-top: 1px; }
+.snip-loc-status { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
+/* Shown only on outdated rows. `outdated` is a SHA mismatch against the
+   library's current body (`status_of_block`, snippets.py) — never a
+   version-number comparison — so this is the fact's usual proxy, not the
+   fact itself: a block edited A→B→A can carry a stale marker version while
+   its SHA still matches, and that reads (correctly) as `applied` with no
+   version shown at all. */
+.snip-loc-version {
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim);
+  white-space: nowrap;
+}
+.snip-loc-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.snip-loc-refreshing {
+  display: inline-flex; align-items: center; gap: 4px;
+  font: 500 10px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase;
+  color: var(--fg-mute); flex-shrink: 0;
+}
+
+/* The well grows without bound otherwise — a real registry can carry
+   dozens of locations, and the danger zone below must stay reachable
+   without scrolling through every one of them first. Same scroll shape as
+   `.equip-picker-list` (`equip-connections.css` — `overflow-y:auto` + a
+   cap, deliberately no `overscroll-behavior`, so a wheel gesture at this
+   list's end keeps scrolling the side panel instead of getting stuck), a
+   taller ceiling because rows here can wrap to two lines. Its own rule, not
+   a shared selector: adding so much as `overscroll-behavior` to
+   `.equip-picker-list` itself measurably shifted the skill editor's own
+   USED BY text rendering (a new scroll-containing box promotes its own
+   compositing layer, and the layer boundary re-rasterizes text a hair
+   differently) — a real, if faint, violation of "zero visual change to
+   the skill editor." The search box (above, when past `FILTER_THRESHOLD`)
+   stays outside this cap, always visible. The row menu no longer needs the
+   cap dropped to stay safe: `OverflowMenu`'s panel is portalled to
+   `document.body` (`position: fixed`), so this scroller's overflow box
+   cannot clip it regardless of how tall the well grows. */
+.snip-applied-rows {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 420px; overflow-y: auto;
+}
+
+/* Marker-format hint */
+.snip-marker-hint { font-size: var(--fs-4); color: var(--fg-mute); line-height: 1.55; }
+.snip-marker-pre {
+  margin: 10px 0 0; padding: 10px 12px;
+  background: var(--bg-0); border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--cyan);
+  white-space: pre-wrap; word-break: break-all; line-height: 1.5;
+}
+
+/* Danger zone note (was an inline `style`) */
+.snip-danger-note { font-size: var(--fs-4); color: var(--fg-mute); margin-bottom: 10px; }
+
+/* Delete-confirm file list */
+.snip-delete-files {
+  display: flex; flex-direction: column; gap: 4px; margin-top: 10px;
+  max-height: 260px; overflow-y: auto;
+}
+.snip-delete-file {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 10px; border-radius: var(--radius-frame); background: var(--bg-2); border: 1px solid var(--border);
+  font-size: var(--fs-5);
+}
+.snip-delete-file-project {
+  flex: 0 1 auto; max-width: 40%; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.snip-delete-file-path {
+  flex: 1 1 auto; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-align: right;
+}
+
+/* Create preview */
+.snip-create-preview {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-0); max-height: 280px; overflow: auto;
+}
+.snip-create-preview .code-area { background: transparent; }
+
+/* ── Apply-to dialog ──────────────────────────────────────────────────── */
+.snip-apply-grid { display: grid; grid-template-columns: 1fr 1.15fr; min-height: 320px; }
+.snip-apply-col { padding: 16px 18px; min-width: 0; }
+.snip-apply-col + .snip-apply-col { border-left: 1px solid var(--border); }
+.snip-apply-files { background: var(--bg-0); }
+.snip-apply-label { font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: 10px; }
+.snip-apply-projects { display: flex; flex-direction: column; gap: 3px; max-height: 300px; overflow: auto; }
+.snip-apply-proj {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 8px;
+  text-align: left; padding: 7px 9px; border-radius: var(--radius);
+  border: 1px solid transparent; background: transparent; color: var(--fg-mid); cursor: pointer;
+}
+.snip-apply-proj:hover { background: var(--bg-2); }
+.snip-apply-proj[aria-pressed="true"] { background: color-mix(in oklab, var(--ctx) 12%, transparent); border-color: color-mix(in oklab, var(--ctx) 35%, transparent); color: var(--fg-strong); }
+.snip-apply-proj-name { font-size: var(--fs-6); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.snip-apply-proj-path { grid-column: 2; font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.snip-apply-filelist { display: flex; flex-direction: column; gap: 5px; max-height: 300px; overflow: auto; }
+.snip-apply-file {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg-2); cursor: pointer;
+}
+.snip-apply-file:hover { border-color: var(--border-strong); }
+.snip-apply-file[aria-pressed="true"] { border-color: color-mix(in oklab, var(--ctx) 45%, transparent); background: color-mix(in oklab, var(--ctx) 10%, transparent); }
+.snip-apply-file[data-disabled] { opacity: .5; cursor: not-allowed; }
+.snip-apply-file[data-disabled]:hover { border-color: var(--border); }
+.snip-apply-file input { accent-color: var(--anchor); }
+.snip-apply-file-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.snip-apply-file-rel { font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg-strong); }
+.snip-apply-file-hint { font-size: var(--fs-2); color: var(--fg-mute); }
+.snip-apply-file-icon { color: var(--fg-dim); flex-shrink: 0; }
+
+/* ── Add-snippet picker (popover) ─────────────────────────────────────── */
+.snip-picker {
+  position: absolute; z-index: var(--z-menu);
+  width: 340px; max-width: calc(100vw - 32px);
+  background: var(--bg-glass); backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-snip-picker);
+  overflow: hidden;
+}
+/* The strip lives at the bottom of the editor pane, so its picker opens upward. */
+.snip-picker-strip { bottom: calc(100% + 6px); right: 0; }
+.snip-picker-head { padding: 10px; border-bottom: 1px solid var(--border); }
+.snip-picker-search { width: 100%; min-width: 0; }
+.snip-picker-tags { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 10px; border-bottom: 1px solid var(--border); max-height: 84px; overflow: auto; }
+.snip-picker-tags .chip { background: var(--bg-2); }
+.snip-picker-list { max-height: 280px; overflow: auto; padding: 6px; }
+.snip-picker-row {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 8px;
+  width: 100%; text-align: left; padding: 8px 9px; border-radius: var(--radius);
+  border: 1px solid transparent; background: transparent; cursor: pointer;
+}
+.snip-picker-row:hover { background: var(--bg-2); border-color: var(--border); }
+.snip-picker-name { font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.snip-picker-desc { grid-column: 1; font-size: var(--fs-3); color: var(--fg-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.snip-picker-add { grid-row: 1 / 3; grid-column: 2; color: var(--fg-dim); display: inline-flex; }
+.snip-picker-row:hover .snip-picker-add { color: var(--anchor-2); }
+.snip-picker-empty { padding: 22px 14px; text-align: center; color: var(--fg-mute); font-size: var(--fs-5); }
+
+/* ── Agent Docs applied-snippets strip ────────────────────────────────── */
+.snip-strip {
+  /* Sits at the bottom of the Agent Docs editor pane, above the foot —
+     snippets append to the end of the file the editor shows. */
+  margin: 2px 0 0;
+  border-top: 1px solid var(--border);
+  background: color-mix(in oklab, var(--anchor) 3%, var(--bg-1));
+  flex-shrink: 0;
+}
+.snip-strip-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 7px 12px 7px 14px;
+}
+.snip-strip-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--fg-mid); padding: 2px 0;
+}
+.snip-strip-toggle:hover { color: var(--fg); }
+.snip-strip-title { font-family: var(--font-mono); font-size: var(--fs-3); letter-spacing: .08em; text-transform: uppercase; }
+.snip-strip-count {
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-mute);
+  background: var(--bg-3); border-radius: 100px; padding: 1px 7px; min-width: 18px; text-align: center;
+}
+.snip-strip-damaged-count {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: var(--font-mono); font-size: var(--fs-1); color: var(--red);
+}
+.snip-strip-head-right { display: flex; align-items: center; gap: 8px; }
+.snip-strip-add-wrap { position: relative; }
+.snip-strip-blocked-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--fs-1); letter-spacing: .04em;
+  color: var(--red);
+  background: color-mix(in oklab, var(--red) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--red) 30%, transparent);
+  border-radius: 100px; padding: 3px 9px;
+}
+.snip-strip-body { padding: 0 12px 11px; }
+.snip-strip-blocked {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: var(--fs-4); line-height: 1.5; color: var(--fg-mid);
+  padding: 9px 11px; border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--red) 32%, transparent);
+  background: color-mix(in oklab, var(--red) 7%, var(--bg-1));
+}
+.snip-strip-blocked .icon, .snip-strip-blocked svg { color: var(--red); flex-shrink: 0; margin-top: 1px; }
+.snip-strip-empty { font-size: var(--fs-4); color: var(--fg-mute); padding: 4px 2px; }
+.snip-strip-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow: auto; }
+.snip-strip-row {
+  position: relative;
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 9px 7px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-1);
+}
+.snip-strip-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; border-radius: 2px 0 0 2px; }
+.snip-strip-row[data-status="applied"]::before  { background: var(--green); }
+.snip-strip-row[data-status="outdated"]::before { background: var(--fg-dim); }
+.snip-strip-row[data-status="modified"]::before { background: var(--fg-dim); }
+.snip-strip-row[data-status="orphaned"]::before { background: color-mix(in oklab, var(--red) 60%, var(--fg-dim)); }
+.snip-strip-row-name { font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg-strong); white-space: nowrap; }
+a.snip-strip-row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--anchor-2); text-decoration: underline; text-underline-offset: 2px; }
+a.snip-strip-row-name:hover { color: var(--fg-strong); }
+.snip-strip-row-spacer { flex: 1; }
+.snip-strip-row-actions { display: flex; align-items: center; gap: 4px; }
+
+.snip-strip-damaged {
+  border-color: color-mix(in oklab, var(--red) 40%, transparent);
+  background: color-mix(in oklab, var(--red) 7%, var(--bg-1));
+}
+.snip-strip-damaged::before { background: var(--red); }
+.snip-strip-damaged-icon { color: var(--red); flex-shrink: 0; }
+.snip-strip-damaged-label { font-family: var(--font-mono); font-size: var(--fs-2); color: var(--red); }
+
+/* Narrow main column: the editor's own side panel auto-collapses via the
+   ResizableSplit primitive — no manual grid-stack container query needed for
+   the editor itself. The Apply-to dialog still stacks its two columns. */
+@container appmain (max-width: 720px) {
+  .snip-apply-grid { grid-template-columns: 1fr; }
+  .snip-apply-col + .snip-apply-col { border-left: 0; border-top: 1px solid var(--border); }
+}
+
+/* Inline link-style button (snip strip empty state) */
+.link-btn {
+  background: transparent; border: 0; padding: 0; cursor: pointer;
+  color: var(--anchor-2); font-size: inherit; font-family: inherit;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.link-btn:hover { color: var(--fg-strong); }

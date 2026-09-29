@@ -1,0 +1,89 @@
+# The flaky-test ledger. Read and enforced by testing/scripts/flaky_report.py
+# (`report` warns on an unledgered flake; `check` fails the meta-test,
+# tests/test_flaky_ledger.py, on a rule violation) and by
+# docs/agents/testing.md's "Flaky tests" section.
+#
+# id shape: "<runner>:<repo-relative file>::<describe titles and test title
+# joined by ' > '>", runner in {e2e, vitest}. status is one of open,
+# quarantined, fixed. A `deadline` past first_seen+default_deadline_days
+# needs `extended_reason`; every entry below carries one because the ledger
+# started today (2026-09-27) with a shared deadline rather than each
+# entry's own first_seen+14.
+schema_version: 1
+default_deadline_days: 14
+entries:
+  - id: "e2e:app/e2e/sources.journey.spec.ts::create a bundle from a source's skills"
+    first_seen: "2026-09-20"
+    last_seen: "2026-09-26"
+    runs: ["35520080633", "36210469158"]
+    owner: Ramtoi
+    status: fixed
+    fixed_on: "2026-09-28"
+    reason: "root cause fixed by #412 (fix/flaky-root-causes), merged 2026-09-28"
+
+  - id: "e2e:app/e2e/invocation-axis.journey.spec.ts::workspace override: set → indicator → undo clears it"
+    first_seen: "2026-09-24"
+    last_seen: "2026-09-24"
+    runs: ["36032675036"]
+    owner: Ramtoi
+    status: fixed
+    fixed_on: "2026-09-28"
+    reason: "root cause fixed by #412 (fix/flaky-root-causes), merged 2026-09-28"
+
+  - id: "e2e:app/e2e/invocation-axis.journey.spec.ts::workspace override previews each requested mode and keeps global outcomes visible"
+    first_seen: "2026-09-24"
+    last_seen: "2026-09-24"
+    runs: ["36043331906"]
+    owner: Ramtoi
+    status: fixed
+    fixed_on: "2026-09-28"
+    reason: "root cause fixed by #412 (fix/flaky-root-causes), merged 2026-09-28"
+
+  - id: "e2e:app/e2e/bundle-playbook.journey.spec.ts::arranges a bundle, keeps membership, and undoes a move after another edit"
+    first_seen: "2026-09-18"
+    last_seen: "2026-09-18"
+    runs: ["35296765855"]
+    owner: Ramtoi
+    status: open
+    deadline: "2026-10-11"
+    extended_reason: "seeded when the ledger started"
+
+  - id: "vitest:app/src/test/HookEditorBuiltinReadOnly.test.tsx::HookEditor — built-in core fields are inert everywhere > exposes no matcher or timeout INPUT — both render as summary values"
+    first_seen: "2026-09-17"
+    last_seen: "2026-09-17"
+    runs: ["35269137853"]
+    owner: Ramtoi
+    status: open
+    deadline: "2026-10-11"
+    extended_reason: "seeded when the ledger started"
+
+  - id: "vitest:app/src/test/SkillClassificationSection.test.tsx::SkillClassificationSection > preserves behavior enums and returns focus to the first radio after clear"
+    first_seen: "2026-09-26"
+    last_seen: "2026-09-26"
+    runs: ["36243222661"]
+    owner: Ramtoi
+    status: fixed
+    fixed_on: "2026-09-28"
+    reason: "root cause fixed by #412 (fix/flaky-root-causes), merged 2026-09-28"
+
+  - id: "vitest:app/src/test/TipsTour.test.tsx::TipsTour auto-start > waits while Settings is open and starts after it closes"
+    first_seen: "2026-09-26"
+    last_seen: "2026-09-26"
+    runs: ["36244855433"]
+    owner: Ramtoi
+    status: open
+    deadline: "2026-10-11"
+    extended_reason: "seeded when the ledger started; the findByText after Escape timed out at 4.2 s on a loaded runner"
+
+  # Removed by #411 (test/journey-consolidation): the source-card disable
+  # journey no longer exists at HEAD. Fixed entries are exempt from the
+  # title-exists check (flaky_report.py only checks open/quarantined
+  # entries), so this stays as a closed record instead of being deleted.
+  - id: "e2e:app/e2e/sources.journey.spec.ts::disable a source: card marks itself, and undo restores it"
+    first_seen: "2026-09-24"
+    last_seen: "2026-09-24"
+    runs: ["36045847303"]
+    owner: Ramtoi
+    status: fixed
+    fixed_on: "2026-09-26"
+    reason: "journey removed by #411 (test/journey-consolidation); the behavior moved to app/src/test coverage"

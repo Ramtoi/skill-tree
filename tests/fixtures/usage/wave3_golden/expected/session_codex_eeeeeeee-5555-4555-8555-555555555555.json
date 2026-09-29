@@ -1,0 +1,29 @@
+{
+  "events": [],
+  "harness": "codex",
+  "intent_excerpt": "",
+  "ok": true,
+  "project": "alpha",
+  "session_id": "eeeeeeee-5555-4555-8555-555555555555",
+  "subagents": [],
+  "summary": {
+    "activity": {
+      "delegate": 0,
+      "edit": 0,
+      "external": 0,
+      "operate": 0,
+      "read": 0,
+      "skill": 0,
+      "verify": 0
+    },
+    "cache_hit_ratio": 0.0,
+    "duration_minutes": 0,
+    "loadout_assumed": true,
+    "steering_count": 0,
+    "subagent_token_share": 0.0,
+    "thinking_text_share": null,
+    "tokens_total": 33
+  },
+  "transcript_present": true,
+  "window": null
+}

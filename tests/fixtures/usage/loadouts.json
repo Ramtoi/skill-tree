@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "project": "alpha",
+  "rows": [
+    {
+      "at": "2026-09-05T08:00:00Z",
+      "harness": "claude-code",
+      "hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "skill_count": 1,
+      "mcp_count": 0,
+      "kind": "initial"
+    },
+    {
+      "at": "2026-09-06T08:00:00Z",
+      "harness": "claude-code",
+      "hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "skill_count": 2,
+      "mcp_count": 0,
+      "kind": "changed"
+    }
+  ]
+}

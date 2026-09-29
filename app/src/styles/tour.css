@@ -1,0 +1,131 @@
+/* Tips tour ─────────────────────────────────────────────────────────────
+   Non-modal first-run coach-mark layer. The overlay never blocks the page
+   (pointer-events: none) — only the card + its buttons are interactive.
+   Highlight uses the brand violet ring ONLY (never amber; amber is reserved
+   for provenance/risk). All colors/geometry come from existing tokens. */
+.tips-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-tour);
+  pointer-events: none;
+}
+.tips-ring {
+  position: fixed;
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 0 2px var(--anchor),
+    0 0 0 6px var(--anchor-glow);
+  pointer-events: none;
+  transition:
+    top var(--dur-5) ease,
+    left var(--dur-5) ease,
+    width var(--dur-5) ease,
+    height var(--dur-5) ease;
+}
+.tips-card {
+  position: fixed;
+  width: 320px;
+  max-width: calc(100vw - 16px);
+  pointer-events: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--font-sans);
+}
+.tips-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tips-step-count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+}
+.tips-close {
+  background: none;
+  border: none;
+  color: var(--fg-mute);
+  cursor: pointer;
+  font-size: var(--fs-5);
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+.tips-close:hover {
+  color: var(--fg-strong);
+}
+.tips-title {
+  margin: 0;
+  font-size: var(--fs-d-2);
+  font-weight: 600;
+  color: var(--fg-strong);
+}
+.tips-body {
+  margin: 0;
+  font-size: var(--fs-6);
+  line-height: 1.5;
+  color: var(--fg-mid);
+}
+.tips-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tips-hint {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.tips-dots {
+  display: flex;
+  gap: 6px;
+  padding: 2px 0;
+}
+.tips-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fg-dim);
+  transition: background var(--dur-5) ease;
+}
+.tips-dot[data-active] {
+  background: var(--ctx);
+}
+.tips-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+.tips-foot-nav {
+  display: flex;
+  gap: 6px;
+}
+
+/* Cheatsheet → tips-tour relaunch link */
+.cheatsheet-foot {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+.cheatsheet-tips-link {
+  background: none;
+  border: none;
+  color: var(--anchor-2);
+  font: inherit;
+  font-size: var(--fs-5);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.cheatsheet-tips-link:hover {
+  text-decoration: underline;
+}
+

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "delivery_states": [
+    "written",
+    "unchanged",
+    "skipped",
+    "blocked"
+  ],
+  "delivery_reasons": [
+    "affinity",
+    "no_global_target",
+    "not_hub_owned",
+    "adapter_missing",
+    "parse_aborted",
+    "claude_project_not_approved",
+    "codex_untrusted_project",
+    "codex_no_sse",
+    "codex_header_not_representable",
+    "codex_env_not_representable",
+    "opencode_default_dropped"
+  ],
+  "probe_states": [
+    "ok",
+    "unresolved_ref",
+    "unreachable",
+    "protocol_error",
+    "timeout",
+    "unsupported"
+  ],
+  "doctor_findings": [
+    "MCP_PROJECT_SERVER_NOT_APPROVED",
+    "MCP_CODEX_PROJECT_UNTRUSTED",
+    "MCP_NO_GLOBAL_TARGET",
+    "MCP_UNRESOLVED_SECRET_REF",
+    "MCP_LITERAL_SECRET",
+    "MCP_UNCLAIMED_NATIVE_ENTRY",
+    "MCP_PROBE_STALE"
+  ],
+  "unsupported_reasons": [
+    "ws_transport",
+    "oauth_block",
+    "headers_helper",
+    "unknown_shape",
+    "local_scope_unregistered_project",
+    "no_global_target",
+    "invalid_name",
+    "name_taken",
+    "unknown_transport",
+    "transport_conflict",
+    "no_endpoint",
+    "malformed_url",
+    "unsupported_url_scheme",
+    "malformed_field",
+    "duplicate_header",
+    "disabled_upstream",
+    "unreadable_file"
+  ],
+  "warning_words": [
+    "literal_secret",
+    "unclaimed_native_entry",
+    "renamed_from",
+    "transport_alias",
+    "command_has_arguments",
+    "command_list_split",
+    "env_value_coerced",
+    "env_key_unusual",
+    "unexpanded_ref",
+    "cwd_not_absolute",
+    "source_placeholder",
+    "ref_in_url",
+    "non_ascii_host",
+    "timeout_coerced",
+    "timeout_merged",
+    "name_long",
+    "dropped_field",
+    "duplicate_key"
+  ],
+  "failure_codes": [
+    "ambiguous_option",
+    "invalid_json",
+    "invalid_name",
+    "invalid_spec",
+    "literal_secret",
+    "name_collision_in_batch",
+    "name_taken",
+    "no_catalog",
+    "other",
+    "unknown_candidate"
+  ],
+  "catalog_kinds": [
+    "tools",
+    "resources",
+    "resource_templates",
+    "prompts"
+  ]
+}

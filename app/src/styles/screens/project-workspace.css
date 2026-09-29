@@ -1,0 +1,238 @@
+/* ─── Project workspace: the area strip (project navigator) ───────────────
+   One band under the header on every project screen. Expanded on the
+   dashboard it is the overview: one card per area, each carrying the number
+   and the state the user would otherwise click in for. Collapsed on an area
+   screen it is the navigator: the same cards folded to label + count, one
+   row across the full width. Both states are ONE DOM, so a screen switch
+   reads as the strip folding or unfolding in place. Built ON .stat-card so
+   the Guild frame, the corner ticks and the charged accent state are shared
+   with every other stat; loads after rows-cards.css to override its
+   padding and clipping. */
+.area-strip {
+  display: flex; align-items: stretch; gap: 12px;
+  /* The strip is its own inline-size container: on the dashboard it sits in
+     the content column beside the Available panel, so the cards must wrap
+     on the width they actually have, not on the screen's. */
+  container-type: inline-size; container-name: areastrip;
+  /* ONE top padding in both states, and one inner top padding on the card
+     (below): the cards' top edge and the label row stay anchored across a
+     screen switch, and only what is below them folds. */
+  padding: 10px var(--pad-screen-x);
+  flex-shrink: 0;
+  /* the same chrome surface the subheader row wears; the body starts below */
+  background: var(--bg-0);
+  border-bottom: 1px solid var(--border);
+}
+
+/* The frame is a div; the button is INSIDE it (.area-card-hit). A foot with
+   its own controls (the harness pills) renders as the button's sibling — a
+   button cannot be a descendant of a button — and the hit area grows to push
+   it to the bottom edge, so every card's foot lands on one line. Every card
+   takes an equal share of the width in both states, so folding changes
+   height only. */
+.area-card {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: stretch;
+  padding: 0;
+  /* .stat-card clips; the harness "+" menu opens below the foot and must
+     escape the frame. border-radius still clips the accent gradient. */
+  overflow: visible;
+  /* …and it must escape the card's PAINT ORDER too. `.stat-card` is an
+     inline-size container for its hero type; `container-type` carries layout
+     containment, which makes the card a stacking context, and the absolutely
+     positioned `.harness-add-menu` (z-index: --z-menu) would then be trapped
+     under every later sibling card. This strip sizes its cards off
+     `areastrip`, never off the card itself, so it gives the container type up
+     rather than the menu. Same override shape as `.harness-card`, which
+     renames the container instead. */
+  container-type: normal;
+  transition: border-color var(--dur-7), box-shadow var(--dur-7);
+}
+/* Narrow: two per row, then one. (After .area-card so flex-basis wins.)
+   Four across holds down to ~180px a card, which is the dashboard beside a
+   320px Available panel in a 1440px window. */
+@container areastrip (max-width: 760px) {
+  .area-strip { flex-wrap: wrap; }
+  .area-strip .area-card { flex-basis: calc(50% - 6px); }
+}
+@container areastrip (max-width: 440px) {
+  .area-strip .area-card { flex-basis: 100%; }
+}
+.area-card-hit {
+  display: flex; flex-direction: column; align-items: stretch; flex: 1;
+  padding: 10px 14px;
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+  background: none; border: 0; border-radius: inherit;
+}
+.area-card.accent .area-card-hit { cursor: default; }
+.area-card:not(.accent):hover { border-color: var(--border-strong); }
+.area-card:not(.accent):hover::after { --tick-c: var(--tick-hover); }
+.area-card-hit:focus-visible { outline: 2px solid var(--anchor); outline-offset: -4px; }
+
+/* Label row: icon · area · (attention) · count. The count is the folded
+   row's number; it fades out when the value below unfolds. */
+.area-card .label { display: flex; align-items: center; gap: 6px; margin-bottom: 0; }
+.area-card .label .count {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: var(--fs-4); letter-spacing: 0; text-transform: none;
+  color: var(--fg-mid);
+  opacity: 0; transition: opacity var(--dur-7);
+}
+.area-strip[data-expanded="false"] .area-card .label .count { opacity: 1; }
+.area-card.accent .label .count { color: var(--fg-strong); }
+.area-card .attention-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+/* The fold. max-height, not height:auto — it animates everywhere WebKit
+   ships, and 220px comfortably clears the tallest card body. */
+.area-card-body {
+  display: block; overflow: hidden;
+  max-height: 220px; opacity: 1;
+  transition: max-height var(--dur-9) ease, opacity var(--dur-7) ease;
+}
+.area-strip[data-expanded="false"] .area-card-body { max-height: 0; opacity: 0; }
+.area-card-body-in { display: flex; flex-direction: column; padding-top: 8px; flex: 1; }
+/* Both bodies grow, so a text foot's margin-top:auto lands it on the bottom
+   edge like the loadout card's pills. The sibling body (interactive foot)
+   carries the card's own side/bottom padding. */
+.area-card-hit > .area-card-body,
+.area-card > .area-card-body { flex: 1; display: flex; flex-direction: column; }
+.area-card > .area-card-body > .area-card-body-in { padding: 0 14px 10px; }
+
+.area-card .value { display: flex; align-items: baseline; gap: 6px; }
+.area-card .unit {
+  font-family: var(--font-mono); font-size: var(--fs-4); font-weight: 500;
+  letter-spacing: 0; color: var(--fg-mute);
+}
+.area-card .sub { white-space: normal; }
+.area-card .foot {
+  margin-top: auto; padding-top: 10px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mute);
+}
+/* Permission kinds as the Permissions screen draws them: icon in its hue. */
+.area-card .perm-kinds { display: inline-flex; align-items: center; gap: 12px; }
+.area-card .perm-kind { display: inline-flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums; }
+
+/* Attention = the severity register (amber), carried by the ticks and the
+   dot after the label — never the selection hue. */
+.area-card[data-attention="warn"]:not(.accent)::after {
+  --tick-c: color-mix(in oklab, var(--amber) 60%, transparent);
+}
+
+/* Mount animations. A screen switch mounts a fresh strip; it starts in the
+   state the previous screen's strip had and settles into its own. */
+@keyframes area-unfold { from { max-height: 0; opacity: 0; } to { max-height: 220px; opacity: 1; } }
+@keyframes area-fold   { from { max-height: 220px; opacity: 1; } to { max-height: 0; opacity: 0; } }
+@keyframes area-count-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes area-count-out { from { opacity: 1; } to { opacity: 0; } }
+.area-strip[data-animate="expand"] .area-card-body { animation: area-unfold var(--dur-10) ease-out; }
+.area-strip[data-animate="expand"] .area-card .label .count { animation: area-count-out var(--dur-7) ease-out; }
+.area-strip[data-animate="collapse"] .area-card-body { animation: area-fold var(--dur-9) ease-in; }
+.area-strip[data-animate="collapse"] .area-card .label .count { animation: area-count-in var(--dur-9) ease-in; }
+@media (prefers-reduced-motion: reduce) {
+  .area-strip .area-card-body, .area-strip .area-card .label .count {
+    animation: none; transition: none;
+  }
+}
+
+/* Section head: the heading and its tools side by side. The tools (sort,
+   legend) are siblings of the h3, not children — a heading's accessible name
+   should be its title, not "Equipped skills 8 sort". */
+.loadout-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.loadout-head > h3 { margin: 0; }
+.loadout-head .stretch { flex: 1; }
+.loadout-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.loadout-section.review-area-emphasis { border: 1px solid var(--border-strong); border-radius: var(--radius-frame); padding: 12px; }
+.skill-card-review { outline: 1px solid var(--border-strong); outline-offset: 2px; }
+
+/* Sync verdict in the project header subline: the dot carries the state,
+   the text stays in the subline's own voice. */
+.project-sync-line { display: inline-flex; align-items: center; gap: 6px; }
+
+/* skill-refs (PR3): banner naming equipped skills whose references this
+   project lacks — sibling of .affinity-skip-banner (styles/rows-cards.css),
+   same warn-channel grammar, plus a named-consequence sentence and one
+   action. */
+.missing-refs-banner {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 10px 14px;
+  border: 1px solid color-mix(in oklab, var(--amber) 40%, transparent);
+  background: color-mix(in oklab, var(--amber) 8%, var(--bg-1));
+  border-radius: var(--radius);
+  font-size: var(--fs-6); color: var(--fg-mid);
+}
+.missing-refs-banner > svg { color: var(--amber); flex-shrink: 0; }
+.missing-refs-banner strong { color: var(--fg-strong); }
+.missing-refs-link { margin-left: auto; flex-shrink: 0; }
+
+/* ships-with wave 2 (R16/A24): the Loadout's `COMPANIONS_PENDING` banner —
+   compact neutral notice, never amber. A
+   pending provision is neither direct-equip provenance nor a risk severity
+   (COMPONENTS.md §Accents "Amber is provenance-only, enforced in fact"), so
+   this is a neutral sibling class, not a `.missing-refs-banner` reuse — flat
+   tokens only, no chroma. */
+/* Keep the icon and action beside the wrapping copy, even in a narrow pane. */
+.companions-pending-banner {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 0 0 12px; padding: 8px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-1);
+  border-radius: var(--radius-frame);
+  font-size: var(--fs-6); color: var(--fg-mid);
+}
+.companions-pending-banner > svg { color: var(--fg-dim); flex-shrink: 0; align-self: flex-start; margin-top: 5px; }
+.companions-pending-banner strong { color: var(--fg-strong); }
+.companions-pending-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.companions-pending-banner > .btn { max-width: 40%; white-space: normal; overflow-wrap: anywhere; }
+
+/* F1/A6: "no local directory attached" (a project restored on a different
+   machine, or a moved checkout). Same neutral, flat-tokens grammar as
+   `.companions-pending-banner` above — quarantine is an expected recovery
+   state, not a risk severity, so this stays out of the amber channel too. */
+.project-unattached-banner {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-1);
+  border-radius: var(--radius);
+  font-size: var(--fs-6); color: var(--fg-mid);
+}
+.project-unattached-banner > svg { color: var(--fg-dim); flex-shrink: 0; }
+.project-unattached-banner strong { color: var(--fg-strong); }
+.project-unattached-link {
+  margin-left: auto; flex-shrink: 0;
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--anchor-2);
+}
+.project-unattached-link:hover { color: var(--anchor); text-decoration: underline; }
+
+/* Prospective cost on an Available or picker row: never shrinks, never wraps,
+   sits after the name so a long figure cannot push the name out of the row. */
+.avail-cost {
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+  color: var(--fg-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.missing-skills-review { display: grid; gap: 16px; }
+.missing-skills-review p { margin: 0; }
+.missing-skills-list { display: grid; gap: 8px; }
+.missing-skills-row {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  background: var(--surface-panel);
+}
+.missing-skills-row .toggle-field { align-items: flex-start; width: 100%; }
+.missing-skills-row .toggle { flex-shrink: 0; margin-top: 2px; }
+.missing-skills-row .toggle-label { min-width: 0; }
+.missing-skills-detail { display: grid; gap: 4px; overflow-wrap: anywhere; }
+.missing-skills-name { font-family: var(--font-mono); color: var(--fg-strong); }
+.missing-skills-sources { display: grid; gap: 8px; font-size: var(--fs-6); color: var(--fg-mid); }
+.missing-skills-source { display: grid; gap: 2px; }
+.missing-skills-source-path { font-family: var(--font-mono); }
+.missing-skills-error { color: var(--red); }

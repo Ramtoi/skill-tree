@@ -1,0 +1,269 @@
+/* ─── Status bar ───────────────────────────────────────────────────────── */
+.status-segment { display: inline-flex; align-items: center; gap: 6px; cursor: default; background: transparent; border: 0; color: inherit; font: inherit; padding: 0; }
+.status-segment .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.status-segment .dot[data-state="error"] { background: var(--red); }
+.status-segment .dot[data-state="working"] { background: var(--fg-mid); animation: pulse 1.4s infinite; }
+.status-segment.clickable { cursor: pointer; }
+.status-segment.clickable:hover { color: var(--fg); }
+/* Brand mark. It used to head the title strip, but the strip is rail-column
+   chrome now (56px wide) — and the app name is ambient, which is exactly what
+   the status bar is for. */
+.status-brand { letter-spacing: 0.06em; color: var(--fg-mid); }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+.status-spacer { flex: 1; }
+
+/* B3-07 / B4a-04: the status bar is a single nowrap, overflow:hidden flex row.
+   The StatusBar lives OUTSIDE `.app-main`, so it keys off the viewport (@media),
+   not @container. Keep the load-bearing right cluster (stats · version · ⌘K
+   palette) intact by letting the low-value left segments shrink/clip first, then
+   dropping them entirely at narrow widths — so the version never truncates to a
+   dangling "v" and the palette trigger stays visible and clickable. */
+.app-status > .status-segment { min-width: 0; }
+/* `overflow: hidden` as well as `min-width: 0`: a shrunk wrapper whose content
+   still paints would OVERLAP the segment beside it rather than losing its own
+   tail, which reads as a rendering bug rather than as truncation. */
+.app-status .sync-chip-wrap { min-width: 0; overflow: hidden; }
+/* …and the chip inside it ELLIPSIZES rather than being guillotined by the
+   wrapper's `overflow: hidden`. At 520 with the backup chip up this was cut to
+   `registry · in sy` — a fragment that reads as a rendering fault and, worse,
+   as a different word. The wrapper clips; only the chip itself can add the
+   ellipsis, because the wrapper also hosts the report drawer. */
+.app-status .sync-chip {
+  min-width: 0; overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis; display: inline-block;
+}
+/* The registry-path segment is the only direct status-segment carrying a title
+   that is safe to clip (the update-chip and the backup-chip are exempt); it
+   shrinks + clips before the right cluster — and hard (6), because it is the
+   lowest-signal thing in the bar and should give up its width first. */
+.app-status > .status-segment[title]:not(.update-chip):not(.backup-chip) {
+  flex-shrink: 6; overflow: hidden;
+  /* Ellipsize rather than guillotine. At 520 with the backup chip up, the
+     registry segment was cut to `registry · in sy` — a fragment that looks like
+     a rendering fault rather than a truncation, and reads as a different word.
+     An ellipsis at least says "there is more of this". */
+  text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+/* Stat cluster, version, and the ⌘K palette trigger never partially clip. */
+.app-status > .status-segment:not([title]):not(.status-brand),
+.app-status > .status-segment.clickable,
+.app-status > .status-segment.update-chip { flex-shrink: 0; }
+/* …except the brand, which is pure chrome and therefore the FIRST thing to
+   give ground. Pinned at shrink 0 it added ~88px of fixed width between 681px
+   and ~850px, truncating the sync chip and the registry path earlier than
+   before — the guillotine the comments above exist to prevent. */
+.app-status > .status-brand {
+  flex-shrink: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis;
+}
+/* The backup chip is the one MANDATORY-visible title-carrying segment, and it
+   also owns the longest label in the bar ("backup failing · 4 failed pushes").
+   Pinning it at flex-shrink: 0 like the update-chip pushes the ⌘K trigger off
+   the right edge at 520px — so it stays visible and ELLIPSIZES instead. The
+   full sentence is in its title and on the screen it links to. It shrinks at
+   the ordinary rate (1) so the low-signal segments above yield first. */
+.app-status > .status-segment.backup-chip { flex-shrink: 1; min-width: 0; overflow: hidden; }
+.backup-chip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+@media (max-width: 680px) {
+  /* Drop the registry path + the "tauri 2.0" runtime segment (lowest signal):
+     the path segment (the only clippable one with a title) and the one directly
+     preceding the flex spacer.
+
+     The backup chip carries a title too, but it is MANDATORY-visible (design
+     §9): it renders only when a backup is failing, paused by a pending restore,
+     or was refused outright. Hiding it at narrow widths made a fail-OPEN backup
+     pass fail-SILENT — precisely what the chip exists to prevent — so it is
+     exempted alongside the update-chip in BOTH rules. */
+  .app-status > .status-segment[title]:not(.update-chip):not(.backup-chip),
+  .app-status > .status-segment:has(+ .status-spacer),
+  /* The brand mark is the purest chrome in the bar — it yields with the other
+     low-signal segments rather than crowding the sync chip and the mandatory
+     backup alarm at 520px. */
+  .app-status > .status-brand { display: none; }
+  /* …and when the backup chip IS up, the ambient stat cluster (skills · bundles
+     · projects — the segment right after the spacer) yields to it. Counts are
+     background information; a backup that is failing, paused, or refused is an
+     alarm, and at 520px there is only room for one of them to be legible. */
+  .app-status:has(.backup-chip) > .status-spacer + .status-segment { display: none; }
+}
+
+/* ── Status dots: motion + fill, color only at the endpoints ─────────────
+   ok = filled green · error = filled red · syncing = pulsing neutral ·
+   stale = hollow neutral ring · never/idle = hollow dim ring.
+   Transitional states carry no hue — amber is reserved for direct-equip. */
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  box-sizing: border-box; background: var(--fg-mute);
+}
+.sync-dot[data-state="ok"] { background: var(--green); }
+.sync-dot[data-state="error"] { background: var(--red); }
+.sync-dot[data-state="syncing"] { background: var(--fg-mid); animation: pulse 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .sync-dot[data-state="syncing"] { animation: none; opacity: 0.6; }
+}
+.sync-chip { cursor: pointer; }
+.sync-chip:hover:not(:disabled) { color: var(--fg); }
+.sync-chip:disabled { cursor: default; opacity: 1; }
+
+/* Global in-flight indicator — same status-chip grammar as the sync chip
+   (neutral pulsing dot, motion + fill, no new hue). Shown only while a command
+   is pending and no richer named process / sync is active. */
+.ipc-busy { color: var(--fg); }
+.ipc-busy .ipc-busy-label {
+  font-size: var(--fs-4); max-width: 340px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── Freshness grammar (D4): one signal, five states, fill+motion not hue ──
+   fresh = filled green · error = filled red · stale = hollow neutral ring +
+   pulse · unknown = hollow dim ring (static) · quarantined (F1: no local
+   directory attached) shares unknown's static hollow-dim-ring shape — it is
+   a settled attachment fact, not a transient "still finding out", so it gets
+   no pulse of its own, but it must render distinctly styled text (the pip/
+   label) since it is neither a real error nor a plain unknown. Amber is
+   never used here — it is reserved for direct-equip provenance. */
+.fresh-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  box-sizing: border-box; flex-shrink: 0; background: var(--fg-mute);
+}
+.fresh-dot[data-state="fresh"]   { background: var(--green); }
+.fresh-dot[data-state="error"]   { background: var(--red); }
+.fresh-dot[data-state="stale"]   { background: transparent; border: 1.5px solid var(--fg-mid); animation: fresh-pulse 1.6s ease-in-out infinite; }
+.fresh-dot[data-state="unknown"],
+.fresh-dot[data-state="quarantined"] { background: transparent; border: 1.5px solid var(--fg-dim); }
+@keyframes fresh-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) {
+  .fresh-dot[data-state="stale"] { animation: none; }
+}
+/* Labelled freshness rides the hairline register (the state-pill's): a crisp
+   frame in the state's own hue over a faint tint; the dot keeps the fill/motion
+   grammar. A dot-only badge drops the frame. */
+.fresh-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px 2px 6px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: .04em;
+  color: var(--fg-mid);
+  border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
+  background: color-mix(in oklab, currentColor 7%, transparent);
+}
+.fresh-badge[data-state="fresh"]   { color: var(--green); }
+.fresh-badge[data-state="error"]   { color: var(--red); }
+.fresh-badge[data-state="unknown"],
+.fresh-badge[data-state="quarantined"] { color: var(--fg-mute); }
+.fresh-badge .fresh-label { color: inherit; }
+.fresh-badge:not(:has(.fresh-label)) { border: 0; background: none; padding: 0; }
+.stat-sync-badge { font-size: var(--fs-d-2); }
+.stat-card-sync .value { white-space: normal; }
+
+/* Global-bundle read-only cluster (project workspace) — distinct from the
+   removable applied chips via a quiet mono label + globe glyph, no new hue. */
+.global-bundle-cluster { margin-top: 12px; }
+.global-bundle-label {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: var(--fs-micro-3); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--fg-dim); margin-bottom: 8px;
+}
+.global-bundle-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Global-bundle chips are read-only — dim slightly so they read as ambient
+   context, not a directly-managed control. */
+.global-bundle-chips .bundle-chip { opacity: 0.82; }
+
+/* Via-bundle attribution link on an equipped skill card (F6). */
+.via-bundle-link {
+  background: none; border: 0; padding: 0; font: inherit;
+  color: var(--fg-mid); cursor: pointer; text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--fg-mid) 40%, transparent);
+  text-underline-offset: 2px;
+}
+.via-bundle-link:hover { color: var(--anchor-2); text-decoration-color: currentColor; }
+
+/* ── StatusBar sync-report drawer (popover above the registry chip) ────── */
+.sync-chip-wrap { position: relative; display: inline-flex; }
+/* Fixed, not absolute — .app-status is `overflow: hidden`, so an absolutely
+   positioned popover extending above the 28px bar would be clipped. */
+.sync-report-drawer {
+  position: fixed; bottom: 34px; left: 8px;
+  width: 380px; max-width: calc(100vw - 24px);
+  max-height: min(60vh, 460px);
+  /* .app-status sets white-space:nowrap, which inherits — reset so detail text
+     wraps (the row name re-asserts nowrap+ellipsis itself). */
+  white-space: normal;
+  display: flex; flex-direction: column;
+  background: var(--bg-1); border: 1px solid var(--border-strong);
+  border-radius: 10px; box-shadow: var(--shadow-drawer);
+  z-index: var(--z-drawer); overflow: hidden;
+  animation: sb-fade-in .14s ease;
+}
+.srd-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.srd-title { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mid); text-transform: uppercase; letter-spacing: .1em; }
+.srd-title .srd-when { color: var(--fg-dim); letter-spacing: 0; text-transform: none; }
+.srd-body { overflow-y: auto; padding: 6px; }
+.srd-empty { display: flex; gap: 10px; padding: 18px 14px; align-items: flex-start; }
+.srd-empty-title { font-size: var(--fs-6); color: var(--fg); margin-bottom: 3px; }
+.srd-empty-sub { font-size: var(--fs-4); color: var(--fg-mute); line-height: 1.45; }
+.srd-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.srd-row { border-radius: 6px; }
+.srd-row-head {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; background: transparent; border: 0; cursor: default;
+  font: inherit; color: var(--fg-mid); text-align: left; border-radius: 6px;
+}
+.srd-row-head[data-detail] { cursor: pointer; }
+.srd-row-head[data-detail]:hover { background: var(--bg-2); }
+.srd-row-head .srd-name { font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.srd-row-head .srd-when { font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim); flex-shrink: 0; }
+.srd-row-head svg { color: var(--fg-dim); flex-shrink: 0; }
+.srd-skip-pip, .srd-err-pip, .srd-quarantine-pip {
+  font-family: var(--font-mono); font-size: var(--fs-micro-3); padding: 1px 5px;
+  border-radius: 999px; flex-shrink: 0;
+}
+.srd-skip-pip { color: var(--fg-mid); border: 1px solid var(--fg-dim); }
+.srd-err-pip { color: var(--red); border: 1px solid color-mix(in oklab, var(--red) 45%, transparent); }
+/* F1: quarantined is an expected state, not a failure — neutral, same as
+   .srd-skip-pip, never the red .srd-err-pip. */
+.srd-quarantine-pip { color: var(--fg-mid); border: 1px solid var(--fg-dim); }
+.srd-quarantine-link {
+  display: block; margin-top: 4px;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--anchor-2);
+}
+.srd-quarantine-link:hover { color: var(--anchor); text-decoration: underline; }
+.srd-detail { padding: 2px 10px 10px 24px; font-size: var(--fs-4); color: var(--fg-mute); overflow-wrap: anywhere; word-break: break-word; }
+.srd-errs li { min-width: 0; }
+.srd-detail .mono { font-family: var(--font-mono); color: var(--fg-mid); }
+.srd-skips-line { margin-bottom: 6px; color: var(--fg-mid); }
+.srd-skips ul, .srd-errs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.srd-skips li { display: flex; flex-direction: column; gap: 1px; }
+.srd-skip-why { font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim); }
+.srd-errs > li { color: var(--red); line-height: 1.4; }
+/* F3: one root cause per top-level item; the raw per-stage diagnostics that
+   grouped into it (symlink, invocation…) nest underneath, same visual
+   register as `.srd-skip-why`. */
+.srd-err-stages { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.srd-err-stages li { color: var(--fg-dim); font-size: var(--fs-1); }
+.srd-err-stage { font-family: var(--font-mono); font-size: var(--fs-1); color: var(--fg-dim); text-transform: uppercase; margin-right: 6px; }
+
+/* The Library's bundle mode: Detach/Delete confirm blast radius. */
+.bundle-delete-blast { font-size: var(--fs-6); color: var(--fg-mid); line-height: 1.5; }
+.bundle-delete-blast p { margin: 0 0 10px; }
+.bundle-delete-blast .mono { font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg); }
+.bundle-delete-blast p.warn { color: var(--red); }
+.bundle-delete-blast p.ok { color: var(--green); }
+.bundle-delete-blast ul { margin: 0; padding-left: 18px; font-size: var(--fs-4); color: var(--fg-mute); display: flex; flex-direction: column; gap: 3px; }
+
+/* update-chip — brand violet = primary action (a new version is available).
+   Transitional states (downloading) carry meaning via motion/fill, not hue. */
+.update-chip { color: var(--anchor); cursor: pointer; font-weight: 500; }
+.update-chip:hover:not(:disabled) { color: var(--anchor-glow, var(--anchor)); }
+.update-chip[data-update-state="downloading"] { cursor: default; animation: pulse 1.4s infinite; }
+.update-chip[data-update-state="ready"] { cursor: default; }
+.update-chip[data-update-state="error"] { color: var(--red); }
+
+/* Kept though its only consumer (.icon-state-syncing) was removed as dead
+   (§3.3 of the S7 plan lists classes, not at-rules — out of scope to also
+   prune this @keyframes). */
+@keyframes state-syncing-rotate { to { transform: rotate(360deg); } }
+

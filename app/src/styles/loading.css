@@ -1,0 +1,322 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   LOADING DESIGN SYSTEM
+   Atoms → primitives → composites. Ported from the loading design handoff.
+   See app/src/components/loading/.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Atom: spinner ─────────────────────────────────────────────────────── */
+.lds-spinner {
+  display: inline-block;
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: color-mix(in oklab, currentColor 20%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: lds-spin 0.7s linear infinite;
+  vertical-align: -1px;
+}
+@keyframes lds-spin { to { transform: rotate(360deg); } }
+
+/* ─── Atom: progress bar ────────────────────────────────────────────────── */
+.lds-progress {
+  position: relative;
+  width: 100%;
+  background: color-mix(in oklab, var(--lds-accent, var(--anchor)) 14%, var(--bg-3));
+  border-radius: 999px;
+  overflow: hidden;
+}
+.lds-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lds-accent, var(--anchor)) 0%, color-mix(in oklab, var(--lds-accent, var(--anchor)) 70%, white 30%) 100%);
+  transition: width var(--dur-12) cubic-bezier(.4,.2,.2,1);
+  box-shadow: 0 0 8px -1px color-mix(in oklab, var(--lds-accent, var(--anchor)) 60%, transparent);
+}
+.lds-progress[data-indeterminate] .lds-progress-fill {
+  width: 38%;
+  animation: lds-indet 1.4s cubic-bezier(.5,.1,.5,.9) infinite;
+}
+@keyframes lds-indet {
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(280%); }
+}
+
+/* ─── Button: loading state ─────────────────────────────────────────────── */
+.btn.is-loading {
+  cursor: progress;
+  opacity: 0.95;
+}
+.btn.is-loading .lds-spinner { margin-right: 2px; }
+.btn.is-loading .btn-label { opacity: 0.9; }
+
+/* ─── Row progress overlay ──────────────────────────────────────────────── */
+.lds-row-progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+
+/* ─── Skeleton primitives ───────────────────────────────────────────────── */
+.lds-skel {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--bg-3) 0%,
+    color-mix(in oklab, var(--bg-3) 60%, var(--fg-mute) 12%) 50%,
+    var(--bg-3) 100%
+  );
+  background-size: 240px 100%;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  animation: lds-shimmer 1.4s linear infinite;
+  vertical-align: middle;
+}
+@keyframes lds-shimmer {
+  0%   { background-position: -240px 0; }
+  100% { background-position: 240px 0; }
+}
+.lds-skel-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border-soft, var(--border));
+}
+.lds-skel-card {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   Process tray + process card
+   ════════════════════════════════════════════════════════════════════════════ */
+.lds-tray {
+  position: fixed;
+  bottom: 44px; right: 20px;
+  width: 380px;
+  display: flex; flex-direction: column;
+  gap: 8px;
+  z-index: var(--z-modal);
+  pointer-events: none;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.lds-tray::-webkit-scrollbar { display: none; }
+.lds-tray > * { pointer-events: auto; }
+
+.lds-tray-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 4px 0;
+  font-size: var(--fs-2);
+  letter-spacing: 0.06em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+
+.lds-proc {
+  position: relative;
+  background: #20202c;
+  border: 1px solid color-mix(in oklab, var(--lds-accent) 45%, #353548);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-proc);
+  overflow: hidden;
+  animation: lds-proc-in 280ms cubic-bezier(.2,.7,.2,1);
+}
+.lds-proc[data-status="success"] {
+  background: color-mix(in oklab, var(--bg-2) 88%, var(--green) 7%);
+  animation: lds-proc-in 280ms cubic-bezier(.2,.7,.2,1), lds-proc-success-glow 1.6s ease-out;
+}
+.lds-proc[data-status="error"] {
+  background: color-mix(in oklab, var(--bg-2) 88%, var(--red) 8%);
+}
+@keyframes lds-proc-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes lds-proc-success-glow {
+  0%   { box-shadow: var(--shadow-proc-glow), 0 0 0 0 color-mix(in oklab, var(--green) 60%, transparent); }
+  40%  { box-shadow: var(--shadow-proc-glow), 0 0 0 6px color-mix(in oklab, var(--green) 20%, transparent); }
+  100% { box-shadow: var(--shadow-proc-glow), 0 0 0 0 transparent; }
+}
+
+.lds-proc-strip {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--lds-accent);
+  box-shadow: 0 0 12px 0 color-mix(in oklab, var(--lds-accent) 60%, transparent);
+}
+
+.lds-proc-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 11px 9px 14px;
+}
+.lds-proc-icon {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 5px;
+  background: color-mix(in oklab, var(--lds-accent) 16%, transparent);
+  color: var(--lds-accent);
+}
+.lds-proc[data-status="success"] .lds-proc-icon { background: color-mix(in oklab, var(--green) 20%, transparent); color: var(--green); }
+.lds-proc[data-status="error"]   .lds-proc-icon { background: color-mix(in oklab, var(--red)   20%, transparent); color: var(--red); }
+
+.lds-proc-text { min-width: 0; }
+.lds-proc-title {
+  font-size: var(--fs-6);
+  color: var(--fg-strong);
+  font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lds-proc-stepcount {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--lds-accent) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--lds-accent) 24%, transparent);
+}
+.lds-proc-body {
+  font-size: var(--fs-3);
+  color: var(--fg-mute);
+  margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lds-proc-meta {
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+  text-align: right;
+  padding-right: 2px;
+  min-width: 32px;
+}
+.lds-proc-dismiss {
+  background: transparent;
+  border: 0;
+  color: var(--fg-dim);
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  display: grid; place-items: center;
+  cursor: pointer;
+}
+.lds-proc-dismiss:hover { color: var(--fg-strong); background: var(--bg-3); }
+
+.lds-proc[data-status="running"] .lds-progress {
+  border-radius: 0;
+}
+
+.lds-proc-finalbar {
+  height: 2px;
+  background: var(--lds-accent);
+  opacity: 0.6;
+}
+
+.lds-proc-actions {
+  display: flex; gap: 8px; align-items: center;
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.lds-proc-expander {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--border);
+  padding: 6px 14px;
+  color: var(--fg-dim);
+  font-size: var(--fs-2);
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+}
+.lds-proc-expander:hover { color: var(--fg-strong); background: color-mix(in oklab, var(--bg-3) 60%, transparent); }
+
+.lds-proc-log {
+  padding: 4px 14px 10px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg-1) 70%, transparent);
+  max-height: 132px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.lds-proc-log-line {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 8px;
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+  padding: 2px 0;
+}
+.lds-proc-log-ts { color: var(--fg-dim); text-align: right; }
+.lds-proc-log-body { color: var(--fg); }
+/* Command output vs the app's own phase breadcrumbs: one list, two registers.
+   CLI lines keep their indentation (detail lines read as a block), wrap instead
+   of clipping, and get a neutral gutter mark where a breadcrumb shows elapsed. */
+.lds-proc-log-line[data-source="cli"] .lds-proc-log-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--fg-mid);
+}
+.lds-proc-log-line[data-source="cli"] .lds-proc-log-ts::after {
+  content: "·";
+  color: var(--fg-dim);
+  opacity: 0.55;
+}
+
+.lds-proc-link {
+  background: transparent;
+  border: 0;
+  color: var(--lds-accent);
+  font-size: var(--fs-3);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Status bar — working state ─────────────────────────────────────────── */
+.lds-status-working {
+  cursor: default;
+  color: var(--fg);
+}
+.lds-status-working .lds-status-label {
+  font-size: var(--fs-4);
+  max-width: 320px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lds-status-working .lds-status-bar {
+  display: inline-block;
+  width: 64px;
+}
+
+/* ─── Inline source-card progress overlay ───────────────────────────────── */
+/* Running reads as a border + inset ring + the RowProgress bar; the card keeps
+   its identity gradient so "syncing" never repaints the identity channel. */
+.source-card[data-running="true"] {
+  border-color: color-mix(in oklab, var(--lds-accent, var(--cyan)) 24%, var(--border));
+}
+/* The progress bar is pinned to the card's bottom edge. The card no longer
+   clips (the kebab panel must escape it), so the bar rounds its own corners
+   rather than squaring off the card. */
+.source-card > .lds-row-progress {
+  border-radius: 0 0 var(--radius) var(--radius);
+  overflow: hidden;
+}
+.source-card[data-running="true"] .source-status .status-dot {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.source-card[data-running="true"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--lds-accent, var(--cyan)) 30%, transparent);
+}
+

@@ -1,0 +1,120 @@
+{
+  "ok": true,
+  "session_id": "aaaaaaaa-1111-4111-8111-111111111111",
+  "harness": "claude-code",
+  "project": "alpha",
+  "window": null,
+  "last_scan_at": "2026-09-17T12:00:00.000Z",
+  "transcript_present": true,
+  "summary": {
+    "tokens_total": 110,
+    "cache_hit_ratio": 0.0,
+    "steering_count": 0,
+    "duration_minutes": 5,
+    "activity": {
+      "delegate": 1,
+      "edit": 0,
+      "external": 1,
+      "operate": 0,
+      "read": 0,
+      "skill": 1,
+      "verify": 2
+    },
+    "thinking_text_share": 0.0,
+    "subagent_token_share": 0.8658536585365854,
+    "loadout_assumed": false
+  },
+  "intent_excerpt": "Prepare the Usage baseline and keep the PR facts.",
+  "events": [
+    {
+      "activity": {
+        "delegate": 1,
+        "edit": 0,
+        "external": 1,
+        "operate": 0,
+        "read": 0,
+        "skill": 1,
+        "verify": 1
+      },
+      "at": "2026-09-17T08:00:00.000Z",
+      "edited_without_verify": false,
+      "excerpt": "Prepare the Usage baseline and keep the PR facts.",
+      "invoker": "you",
+      "kind": "human_turn",
+      "model": null,
+      "name": null,
+      "output_text_len": 23,
+      "thinking_len": 0,
+      "token_delta": 10,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 100,
+        "output": 10
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-17T08:00:00.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "skill",
+      "model": null,
+      "name": "brainstorm",
+      "output_text_len": 33,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "additive": true,
+      "at": "2026-09-17T08:00:00.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "tool",
+      "model": null,
+      "name": "touchpoint/list_goals",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    }
+  ],
+  "subagents": [
+    {
+      "count": 1,
+      "model": "claude-sonnet-4-20250514",
+      "subagent_type": "unknown",
+      "tokens": 710
+    }
+  ]
+}

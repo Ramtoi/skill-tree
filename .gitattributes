@@ -1,0 +1,69 @@
+# Paths omitted from `git archive` (the public publish snapshot).
+#
+# Private connector plugins no longer live in this tree at all — they are
+# drop-ins under `data_home()/connectors/` (see docs/remote-connectors.md), and
+# their test suites moved with them. Nothing about them needs excluding.
+#
+# The guard's own input: the private-identifier list names the very strings
+# that must never be published, so publishing it would defeat its purpose.
+# `scripts/guard-bundle-privacy.sh` treats an absent list as "identifier check
+# not applicable" (a mirror-sourced tree has nothing private to find) and
+# keeps its other checks fail-closed.
+scripts/private-identifiers.txt export-ignore
+
+# The landing page deploys straight from this repo via Vercel; the public
+# mirror is a source snapshot of the tool, not the website's home. Keeping it
+# out also keeps its design sources (website/design/) private.
+website/ export-ignore
+
+# Development internals stay in the private upstream. Nothing under
+# docs/changes ships (design plans, evidence, probes), and neither do the
+# agent instructions, test ledgers, mutation ledger, audits, or the release
+# tooling. `mutation/targets.yaml` is NOT listed: testing/scripts/test_scope.py
+# (which the public ci.yml runs) fails closed without it.
+docs/changes/ export-ignore
+docs/agents/ export-ignore
+docs/design-ledgers/ export-ignore
+docs/design-polish/ export-ignore
+docs/MUTATION.md export-ignore
+AGENTS.md export-ignore
+CLAUDE.md export-ignore
+TESTS.md export-ignore
+COMPONENTS.md export-ignore
+SHAPE.md export-ignore
+AUDIT.md export-ignore
+DESIGN-LEDGER.md export-ignore
+DEFERRED-OBSERVATIONS.md export-ignore
+mutation/ledger.yaml export-ignore
+mutation/reports/ export-ignore
+scripts/mutation/ export-ignore
+tests/test_mutation_runner.py export-ignore
+docs/INTEGRATION-VALIDATION.md export-ignore
+docs/MACHINE-REPLAY.md export-ignore
+scripts/snapshot_machine.py export-ignore
+tests/test_snapshot_machine.py export-ignore
+tests/test_machine_replay.py export-ignore
+tests/machine_replay.py export-ignore
+scripts/bump-version.sh export-ignore
+integration-validation/ export-ignore
+testing/skills/ export-ignore
+testing/audits/ export-ignore
+openspec/ export-ignore
+.github/workflows/integration-validation.yml export-ignore
+.github/release-notes-footer.md export-ignore
+# publish.yml also rm's these four; both channels must agree.
+.github/workflows/publish.yml export-ignore
+RELEASING.md export-ignore
+scripts/preflight-publish.sh export-ignore
+scripts/release-macos-local.sh export-ignore
+
+# Machine-replay snapshots (see docs/MACHINE-REPLAY.md) are captured from a
+# real developer machine and must NEVER be committed at all — they are
+# written under the data home by default, and
+# `tests/test_snapshot_machine.py` guards against one landing here (asserts
+# `git ls-files tests/fixtures/machines` is empty). This line is a belt, not
+# the primary defense: it only limits the damage if one is committed anyway.
+tests/fixtures/machines/** export-ignore
+
+# Golden evidence hashes describe exact fixture bytes on every checkout.
+tests/fixtures/usage/wave3_golden/** text eol=lf

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build:preview",
+  "outputDirectory": "dist",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
+  "git": {
+    "deploymentEnabled": {
+      "pr-assets/**": false,
+      "backup/**": false,
+      "main": false
+    }
+  }
+}

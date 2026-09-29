@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Skill Tree",
+  "version": "1.0.0",
+  "identifier": "com.skilltree.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bash ../scripts/vendor-deps.sh && bash ../scripts/fetch-python-runtime.sh && bash ../scripts/stage-ccusage.sh && npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Skill Tree",
+        "width": 1200,
+        "height": 800,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "../../hub.py": "hub/hub.py",
+      "../../skill_hub": "hub/skill_hub",
+      "../../skill_hub_mcp_server.py": "hub/skill_hub_mcp_server.py",
+      "../../ccusage-pricing.json": "hub/ccusage-pricing.json",
+      "../../connectors": "hub/connectors",
+      "../../hooks": "hub/hooks",
+    "../../skills": "hub/skills",
+      "../../requirements.txt": "hub/requirements.txt",
+      "../../vendor": "hub/vendor",
+      "../../VERSION": "hub/VERSION",
+      "../../python-runtime/python": "python",
+      "ccusage-runtime/bin/ccusage": "ccusage/bin/ccusage",
+      "ccusage-runtime/LICENSE": "ccusage/LICENSE"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM4NzVGMDIyMzczREYwOTMKUldTVDhEMDNJdkIxT0RWZ2FnVzhocklOclJqV2ptNkxCd0dpME9Ca0hDaDVyV21kTXFqWUNtVnUK",
+      "endpoints": [
+        "https://github.com/Ramtoi/skill-tree/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

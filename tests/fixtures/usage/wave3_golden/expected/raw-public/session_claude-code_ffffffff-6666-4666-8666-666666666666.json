@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "session_id": "ffffffff-6666-4666-8666-666666666666",
+  "harness": "claude-code",
+  "project": "alpha",
+  "window": null,
+  "last_scan_at": "2026-09-17T12:00:00.000Z",
+  "transcript_present": false,
+  "summary": {
+    "tokens_total": 10,
+    "cache_hit_ratio": null,
+    "steering_count": null,
+    "duration_minutes": 15,
+    "activity": null,
+    "thinking_text_share": null,
+    "subagent_token_share": 0.0,
+    "loadout_assumed": null
+  },
+  "intent_excerpt": "Sanitized legacy-only summary.",
+  "events": [
+    {
+      "at": "2026-09-16T09:00:00.000Z",
+      "excerpt": "Sanitized legacy-only summary.",
+      "kind": "human_turn",
+      "name": null
+    }
+  ],
+  "subagents": null
+}

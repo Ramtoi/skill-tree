@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "consumers": [
+    {"side": "python", "path": "tests/test_mcp_catalog.py"}
+  ],
+  "flatten_parameters_cases": [
+    {
+      "id": "empty_properties",
+      "input_schema": {"type": "object", "properties": {}},
+      "expect": {"params": [], "unreadable": false, "truncated": false}
+    },
+    {
+      "id": "required_names_missing_property",
+      "input_schema": {
+        "type": "object",
+        "properties": {"a": {"type": "string"}},
+        "required": ["b"]
+      },
+      "expect": {
+        "params": [
+          {"name": "a", "type": "string", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "non_dict_properties_entry",
+      "input_schema": {"type": "object", "properties": {"a": "not an object"}},
+      "expect": {
+        "params": [
+          {"name": "a", "type": null, "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "default_false_kept",
+      "input_schema": {"type": "object", "properties": {"flag": {"type": "boolean", "default": false}}},
+      "expect": {
+        "params": [
+          {"name": "flag", "type": "boolean", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": false, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "default_zero_kept",
+      "input_schema": {
+        "type": "object",
+        "properties": {"count": {"type": "integer", "default": 0}},
+        "required": ["count"]
+      },
+      "expect": {
+        "params": [
+          {"name": "count", "type": "integer", "required": true, "description": null,
+           "enum": null, "enum_truncated": false, "default": 0, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "type_list_union",
+      "input_schema": {"type": "object", "properties": {"p": {"type": ["string", "null"]}}},
+      "expect": {
+        "params": [
+          {"name": "p", "type": "string|null", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "anyof_union",
+      "input_schema": {
+        "type": "object",
+        "properties": {"p": {"anyOf": [{"type": "string"}, {"type": "number"}]}}
+      },
+      "expect": {
+        "params": [
+          {"name": "p", "type": "string|number", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "array_with_items_type",
+      "input_schema": {
+        "type": "object",
+        "properties": {"p": {"type": "array", "items": {"type": "object"}}}
+      },
+      "expect": {
+        "params": [
+          {"name": "p", "type": "array", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": "object"}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "no_type_no_union",
+      "input_schema": {"type": "object", "properties": {"p": {"description": "x"}}},
+      "expect": {
+        "params": [
+          {"name": "p", "type": null, "required": false, "description": "x",
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "enum_truncated_past_limit",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "p": {
+            "type": "string",
+            "enum": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"]
+          }
+        }
+      },
+      "expect": {
+        "params": [
+          {"name": "p", "type": "string", "required": false, "description": null,
+           "enum": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"],
+           "enum_truncated": true, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "default_object_dropped",
+      "input_schema": {"type": "object", "properties": {"p": {"type": "object", "default": {"a": 1}}}},
+      "expect": {
+        "params": [
+          {"name": "p", "type": "object", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "default_array_dropped",
+      "input_schema": {"type": "object", "properties": {"p": {"type": "array", "default": [1, 2]}}},
+      "expect": {
+        "params": [
+          {"name": "p", "type": "array", "required": false, "description": null,
+           "enum": null, "enum_truncated": false, "default": null, "items_type": null}
+        ],
+        "unreadable": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "missing_input_schema_is_unreadable",
+      "input_schema": null,
+      "expect": {"params": [], "unreadable": true, "truncated": false}
+    },
+    {
+      "id": "properties_not_a_dict_is_unreadable",
+      "input_schema": {"type": "object", "properties": "not a dict"},
+      "expect": {"params": [], "unreadable": true, "truncated": false}
+    }
+  ],
+  "sanitize_text_cases": [
+    {"id": "nul_byte", "input": "a\u0000b", "expect": "ab"},
+    {"id": "other_c0_bell", "input": "a\u0007b", "expect": "ab"},
+    {"id": "c1_range", "input": "a\u009bb", "expect": "ab"},
+    {"id": "del_byte", "input": "a\u007fb", "expect": "ab"},
+    {"id": "crlf_collapsed", "input": "a\r\nb", "expect": "a b"},
+    {"id": "cr_alone_collapsed", "input": "a\rb", "expect": "a b"},
+    {"id": "lf_alone_collapsed", "input": "a\nb", "expect": "a b"},
+    {"id": "ansi_escape_stripped", "input": "\u001b[31mRed\u001b[0m", "expect": "[31mRed[0m"},
+    {"id": "pure_control_reads_as_none", "input": "\u0000\u0001\u0002", "expect": null}
+  ],
+  "catalog_path_cases": [
+    {"id": "traversal_dotdot", "name": "../etc/passwd", "expect": "refused"},
+    {"id": "traversal_slash", "name": "a/b", "expect": "refused"},
+    {"id": "absolute_path", "name": "/etc/passwd", "expect": "refused"},
+    {"id": "case_collision_upper_refused", "name": "Foo", "expect": "refused"},
+    {"id": "case_collision_lower_ok", "name": "foo", "expect": "ok"}
+  ]
+}

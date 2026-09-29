@@ -1,0 +1,213 @@
+/* ─── Skill cross-references — .cm-skill-ref / .md-skill-ref / .skill-ref-card ───
+   A reference (a backtick or slash mention of a registered skill name) is an
+   "is this interactive?" affordance, so it lives in the ANCHOR register, not
+   the content-section hue and not the raw brand token. Edit mode decorates
+   every reference CodeMirror finds (components/skillRefs/refDecorations.ts);
+   Preview links only a resolvable one outside a fenced block or an inline
+   code span (lib/skillRefs.ts::previewHits, lib/renderMarkdown.tsx). One
+   shared hover card (components/skillRefs/SkillRefCard.tsx) dresses both
+   hosts, and the side-panel REFERENCES rows below reuse the ConnectionsPanel
+   well grammar (`.equip-stack`/`.equip-group*`, styles/side-panel.css). Edit
+   mode also carries the slash-reference COMPLETION overlay
+   (components/skillRefs/refCompletion.ts) — same container recipe as the
+   hover card, themed on top of CodeMirror's own `@codemirror/autocomplete`
+   tooltip. */
+
+/* ── Edit mode: the CodeMirror decoration ─────────────────────────────────── */
+.cm-skill-ref {
+  color: var(--anchor);
+  border-bottom: 1px dotted var(--anchor);
+  font-family: var(--font-mono);
+}
+.cm-skill-ref:hover { border-bottom-style: solid; }
+/* The modifier-held class toggles on `.cm-editor` from WINDOW-level listeners
+   (refDecorations.ts) — editor-scoped listeners never fire while the editor
+   is unfocused, so hovering with the modifier held while it lost focus would
+   otherwise leave a text cursor instead of a pointer. */
+.cm-editor.cm-skill-ref-mod .cm-skill-ref { cursor: pointer; }
+
+/* ── Preview mode: the rendered link ──────────────────────────────────────── */
+.md-skill-ref-anchor { position: relative; display: inline; }
+.md-skill-ref {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: var(--anchor);
+  border-bottom: 1px dotted var(--anchor);
+  font-family: var(--font-mono);
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+.md-skill-ref:hover { border-bottom-style: solid; }
+.md-skill-ref-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: var(--z-tooltip);
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cm-skill-ref,
+  .md-skill-ref {
+    transition: border-bottom-color .12s ease;
+  }
+}
+
+/* ── The shared hover card — one host on each side (CM tooltip DOM + React) ── */
+.skill-ref-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+  max-width: 320px;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  box-shadow: var(--shadow-popover);
+}
+.skill-ref-card-name {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  color: var(--fg-strong);
+}
+button.skill-ref-card-name { cursor: pointer; }
+button.skill-ref-card-name:hover { color: var(--anchor); }
+.skill-ref-card-desc {
+  font-family: var(--font-sans);
+  font-size: var(--fs-4);
+  color: var(--fg-mid);
+  line-height: 1.4;
+}
+.skill-ref-card-hint {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-mute);
+}
+
+/* ── Side panel — REFERENCES (SkillRefsSection.tsx) ───────────────────────────
+   One recessed well (`.equip-stack` tokens) holding MENTIONS / MENTIONED BY;
+   sub-group labels reuse the shared `.equip-group`/`.equip-group-name` rule
+   (styles/screens/skill-files.css) — REFERENCES cannot drift from USED BY. */
+.skill-refs-stack {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border-radius: var(--radius-frame);
+  padding: 0 6px 6px;
+}
+.skill-refs-stack .equip-group:first-child { padding-top: 8px; }
+
+.skill-ref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: max(22px, calc(var(--row-h) - 10px));
+  padding: 0 6px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  color: var(--fg);
+  font: inherit;
+}
+button.skill-ref-row { cursor: pointer; }
+button.skill-ref-row:hover {
+  background: color-mix(in oklab, var(--ctx) 4%, var(--bg-1));
+}
+button.skill-ref-row:focus-visible {
+  outline: 2px solid var(--anchor-2);
+  outline-offset: -2px;
+}
+
+.skill-ref-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--fs-4);
+}
+.skill-ref-count {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  color: var(--fg-mute);
+}
+
+/* A `refs_ignore` target the body still mentions: struck, dim, never itself
+   navigable — there is no in-app editing of `refs_ignore` in this wave. */
+.skill-ref-row-ignored { color: var(--fg-dim); }
+.skill-ref-row-ignored .skill-ref-name { text-decoration: line-through; }
+
+/* ── Edit mode: the slash-reference completion overlay ───────────────────── */
+/* Every selector carries the `.cm-editor .cm-tooltip` prefix on purpose.
+   CodeMirror's own `buildTheme` prefixes every base-theme selector with a
+   generated theme-id class (`.ͼN .cm-tooltip-autocomplete ul li[aria-selected]`,
+   specificity (0,3,2)) — a plain two-class selector here would tie or lose
+   against it, and the selected row would paint CM's solid `#347` chip
+   instead of the app's lit slot. `.cm-editor .cm-tooltip.cm-tooltip-
+   autocomplete > ul > li[aria-selected]` reaches (0,4,2), which wins
+   outright regardless of stylesheet insertion order. The tooltip's DOM
+   container IS `.cm-editor` itself (CodeMirror's default tooltip `position`
+   is "fixed" with no `parent` configured), so the prefix is sound, not
+   hopeful. Pinned by a test: src/test/refCompletion.test.tsx (T-8). */
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete {
+  min-width: 240px;
+  max-width: 380px;
+  padding: 4px;
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  box-shadow: var(--shadow-popover);
+  z-index: var(--z-tooltip);
+}
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
+  max-height: 216px;
+  overflow-y: auto;
+}
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+/* The lit slot — never a stripe, never CM's solid blue chip. */
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  background: var(--slot-fill);
+  box-shadow: inset 0 0 0 1px var(--slot-ring);
+}
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li:hover:not([aria-selected]) {
+  background: var(--slot-fill-soft);
+}
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete .cm-completionLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-5);
+  color: var(--fg-strong);
+}
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete .cm-completionDetail {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--fs-4);
+  font-style: normal; /* CM's base theme italicises `detail` by default */
+  color: var(--fg-mid);
+}

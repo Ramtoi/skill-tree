@@ -1,0 +1,11 @@
+{
+  "$schema": "https://ccusage.com/config-schema.json",
+  "defaults": {
+    "pricingOverrides": {
+      "claude-fable-5-1": { "inputCostPerToken": 0.00001, "outputCostPerToken": 0.00005, "cacheCreationInputTokenCost": 0.0000125, "cacheReadInputTokenCost": 0.00000025 },
+      "claude-opus-5":    { "inputCostPerToken": 0.000005, "outputCostPerToken": 0.000025, "cacheCreationInputTokenCost": 0.00000625, "cacheReadInputTokenCost": 0.0000005 },
+      "claude-sonnet-5":  { "inputCostPerToken": 0.000002, "outputCostPerToken": 0.00001, "cacheCreationInputTokenCost": 0.0000025, "cacheReadInputTokenCost": 0.0000002 },
+      "gpt-6-astra":      { "inputCostPerToken": 0.00001, "outputCostPerToken": 0.00005, "cacheCreationInputTokenCost": 0.0000125, "cacheReadInputTokenCost": 0.000001 }
+    }
+  }
+}

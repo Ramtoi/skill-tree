@@ -1,0 +1,572 @@
+{
+  "changes": [],
+  "evidence": {
+    "notices": [],
+    "status": "complete"
+  },
+  "ok": true,
+  "pins": [],
+  "prs": [],
+  "runs": [
+    {
+      "activity_intervals": [
+        {
+          "end": "2026-09-17T08:01:00.000Z",
+          "start": "2026-09-17T08:00:00.000Z",
+          "status": "observed"
+        }
+      ],
+      "depth": 0,
+      "edits": 0,
+      "evidence": [],
+      "id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+      "label": "Main session",
+      "lifespan": {
+        "end": "2026-09-17T08:05:00.000Z",
+        "start": "2026-09-17T08:00:00.000Z",
+        "status": "observed"
+      },
+      "models": [
+        "claude-sonnet-4-20250514"
+      ],
+      "parent_id": null,
+      "role": {
+        "status": "unavailable",
+        "value": null
+      },
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:00:30.000Z",
+            "last_at": "2026-09-17T08:00:30.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 700,
+            "output": 10,
+            "status": "available",
+            "total": 710
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 60000,
+            "first_at": "2026-09-17T08:00:00.000Z",
+            "last_at": "2026-09-17T08:05:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 100,
+            "output": 10,
+            "status": "available",
+            "total": 110
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 60000,
+            "first_at": "2026-09-17T08:00:00.000Z",
+            "last_at": "2026-09-17T08:05:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 800,
+            "output": 20,
+            "status": "available",
+            "total": 820
+          }
+        }
+      },
+      "start": {
+        "at": "2026-09-17T08:00:00.000Z",
+        "status": "observed"
+      },
+      "tool_calls": 5,
+      "worktree": {
+        "label": null,
+        "locations": [],
+        "status": "unknown"
+      }
+    },
+    {
+      "activity_intervals": [],
+      "depth": 1,
+      "edits": 0,
+      "evidence": [],
+      "id": "identity:ae16e125fc236c0edde1e019a1a7bc24",
+      "label": "agent",
+      "lifespan": {
+        "end": "2026-09-17T08:00:30.000Z",
+        "start": "2026-09-17T08:00:30.000Z",
+        "status": "observed"
+      },
+      "models": [
+        "claude-sonnet-4-20250514"
+      ],
+      "parent_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+      "role": {
+        "status": "observed",
+        "value": "agent"
+      },
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": null,
+            "first_at": null,
+            "last_at": null,
+            "status": "unavailable"
+          },
+          "tokens": {
+            "cache_creation": null,
+            "cache_read": null,
+            "input": null,
+            "output": null,
+            "status": "unavailable",
+            "total": null
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:00:30.000Z",
+            "last_at": "2026-09-17T08:00:30.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 700,
+            "output": 10,
+            "status": "available",
+            "total": 710
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:00:30.000Z",
+            "last_at": "2026-09-17T08:00:30.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 700,
+            "output": 10,
+            "status": "available",
+            "total": 710
+          }
+        }
+      },
+      "start": {
+        "at": "2026-09-17T08:00:30.000Z",
+        "status": "observed"
+      },
+      "tool_calls": 1,
+      "worktree": {
+        "label": null,
+        "locations": [],
+        "status": "unknown"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "session": {
+    "key": {
+      "harness": "claude-code",
+      "session_id": "aaaaaaaa-1111-4111-8111-111111111111"
+    },
+    "source_epochs": [
+      {
+        "captured_at": "2026-09-17T08:00:30.000Z",
+        "id": "epoch:d51de31930c2d3fcd66ee20dbe16f9454152d0962f1bb805a2d047377d3321c5",
+        "status": "active"
+      },
+      {
+        "captured_at": "2026-09-17T08:05:00.000Z",
+        "id": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "status": "active"
+      }
+    ],
+    "status": "available",
+    "summary": {
+      "children": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:00:30.000Z",
+          "last_at": "2026-09-17T08:00:30.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 700,
+          "output": 10,
+          "status": "available",
+          "total": 710
+        }
+      },
+      "own": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 60000,
+          "first_at": "2026-09-17T08:00:00.000Z",
+          "last_at": "2026-09-17T08:05:00.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 100,
+          "output": 10,
+          "status": "available",
+          "total": 110
+        }
+      },
+      "subtree": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 60000,
+          "first_at": "2026-09-17T08:00:00.000Z",
+          "last_at": "2026-09-17T08:05:00.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 800,
+          "output": 20,
+          "status": "available",
+          "total": 820
+        }
+      }
+    }
+  },
+  "timeline": {
+    "events": [
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "id": "event:3aa9ca9feec420c1c9a262c93f52a1e69babb04ad09d7a5c65b41687651f6956",
+        "kind": "tool_started",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "id": "event:577c4feebe6327d02657232883d6f333b49cbc216fd730664ec9044b96f8067b",
+        "kind": "tool_started",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "id": "event:e6a8150ffdeab524656d336db4bdfc1b5edf9bdc5e2d9409e86685d543c8b3aa",
+        "kind": "tool_started",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "id": "event:90c0dbc0869870b376d452083a061259150b478076e9f503ae5757867217c29e",
+        "kind": "tool_started",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:00:30.000Z",
+        "id": "event:a09723a3e8c4929285ea3ad6fcb0c2d486104bad12d0448fd5038d15645555d5",
+        "kind": "tool_started",
+        "run_id": "identity:ae16e125fc236c0edde1e019a1a7bc24",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:01:00.000Z",
+        "id": "event:8717c1b0e353e6d146fc0523fbca97840d7481181fcde3dee8c4af8b55ed00f2",
+        "kind": "tool_result",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      },
+      {
+        "at": "2026-09-17T08:05:00.000Z",
+        "id": "event:43f8135d1fc0c575346cce0c5b9d637b93aecff2d1ba39f6a21dfb5fcd8aaf6f",
+        "kind": "tool_started",
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "status": "observed"
+      }
+    ],
+    "gaps": [],
+    "origin": "2026-09-17T08:00:00.000Z",
+    "relationship_edges": [],
+    "wait_intervals": []
+  },
+  "tool_calls": {
+    "items": [
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "evidence": [],
+        "execution": "pending",
+        "id": "call:10dd939afac80854b6be213bae4e8a2eea5c9443d35f59c349d6d53bd6911b58",
+        "input_parts": [
+          {
+            "body_id": "body:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+            "bytes": 2,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "status": "available",
+          "summary": "{}"
+        },
+        "ordinal": 0,
+        "result_parts": [],
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "tool": {
+          "kind": "local",
+          "name": "mcp__touchpoint__list_goals"
+        }
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "evidence": [],
+        "execution": "pending",
+        "id": "call:2b6e4fe02d1aba12baad36b3b3b453a25b67510bfcc237b0bbbd99f29a5b2ce7",
+        "input_parts": [
+          {
+            "body_id": "body:e6c503ef53479dea5216bb581710765d8177bdc25468a13038d46e93cfafbf47",
+            "bytes": 185,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:e6c503ef53479dea5216bb581710765d8177bdc25468a13038d46e93cfafbf47",
+          "status": "available",
+          "summary": "{\"command\":\"python3 -m pytest tests/test_usage_wave3_golden_baseline.py -q && npm run test:bundle -- --reporter=verbose --fixture=wave3-golden-long-tool-input-preserved-before-pruning\"}"
+        },
+        "ordinal": 1,
+        "result_parts": [],
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "tool": {
+          "kind": "local",
+          "name": "Bash"
+        }
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "evidence": [],
+        "execution": "completed",
+        "id": "call:928f604449e160da7c85911d82ea58431f5fcc05c279e1ca48644608504ecbac",
+        "input_parts": [
+          {
+            "body_id": "body:a1d1d82bf6b0c7218bc0d2b5012ba15945c43e278a89a736fbd9508165734a7b",
+            "bytes": 71,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:a1d1d82bf6b0c7218bc0d2b5012ba15945c43e278a89a736fbd9508165734a7b",
+          "status": "available",
+          "summary": "{\"prompt\":\"Inspect the baseline fixture.\",\"subagent_type\":\"researcher\"}"
+        },
+        "ordinal": 2,
+        "result_parts": [
+          {
+            "body_id": "body:d44b981900ca2d53a074f07e22b40791da709ff1d20bbbddbdb8d7c1c083e5dc",
+            "bytes": 61,
+            "content_type": "text/plain",
+            "kind": "tool_result_content",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "B",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "tool": {
+          "kind": "local",
+          "name": "Agent"
+        }
+      },
+      {
+        "at": "2026-09-17T08:00:00.000Z",
+        "evidence": [],
+        "execution": "pending",
+        "id": "call:e669f7b626ea3e8b631bf868567946e611a970995a15f1c5bd1897cdcc2ec8b2",
+        "input_parts": [
+          {
+            "body_id": "body:10fc56dd327d8d35151c1f91544a9a302c105037504ccb5a2234b1d991f17299",
+            "bytes": 22,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:10fc56dd327d8d35151c1f91544a9a302c105037504ccb5a2234b1d991f17299",
+          "status": "available",
+          "summary": "{\"skill\":\"brainstorm\"}"
+        },
+        "ordinal": 3,
+        "result_parts": [],
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "tool": {
+          "kind": "local",
+          "name": "Skill"
+        }
+      },
+      {
+        "at": "2026-09-17T08:00:30.000Z",
+        "evidence": [],
+        "execution": "pending",
+        "id": "identity:970226359aa0f84760201486d6e8d615",
+        "input_parts": [
+          {
+            "body_id": "body:6539fa79f4ef643d877458a554180e3873f6a2cf7dda5e83d51dc420638f908c",
+            "bytes": 163,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:d51de31930c2d3fcd66ee20dbe16f9454152d0962f1bb805a2d047377d3321c5",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:6539fa79f4ef643d877458a554180e3873f6a2cf7dda5e83d51dc420638f908c",
+          "status": "available",
+          "summary": "{\"file_path\":\"usage.py\"}"
+        },
+        "ordinal": 4,
+        "result_parts": [],
+        "run_id": "identity:ae16e125fc236c0edde1e019a1a7bc24",
+        "source_epoch": "epoch:d51de31930c2d3fcd66ee20dbe16f9454152d0962f1bb805a2d047377d3321c5",
+        "tool": {
+          "kind": "local",
+          "name": "Read"
+        }
+      },
+      {
+        "at": "2026-09-17T08:05:00.000Z",
+        "evidence": [],
+        "execution": "pending",
+        "id": "call:b774ae23831afec2cea62dbf748c07c063fd58e969fe1f3853c5712d8bdaff99",
+        "input_parts": [
+          {
+            "body_id": "body:1d6550c0af7dc25d6f90f109a2d715534e23baa4756de1c2b839e7d97cf9e173",
+            "bytes": 76,
+            "content_type": "application/json",
+            "kind": "invocation",
+            "pruned_at": null,
+            "retained_version": false,
+            "retention_tier": "A",
+            "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+            "status": "available"
+          }
+        ],
+        "operation": {
+          "signature": "op:1d6550c0af7dc25d6f90f109a2d715534e23baa4756de1c2b839e7d97cf9e173",
+          "status": "available",
+          "summary": "{\"command\":\"python3 -m pytest tests/test_usage_wave3_golden_baseline.py -q\"}"
+        },
+        "ordinal": 5,
+        "result_parts": [],
+        "run_id": "9ba98e238923cb83c90c838f6668f181e676edd2ad302a5d15cefd662840833c",
+        "source_epoch": "epoch:6f240f811e6680b34f2fff691e4167172526e38396c8deafde017e7d134f4258",
+        "tool": {
+          "kind": "local",
+          "name": "Bash"
+        }
+      }
+    ],
+    "next_after": null,
+    "status": "complete",
+    "total": 6
+  }
+}

@@ -1,0 +1,451 @@
+
+/* ───────────────────────────────────────────────────────────────────────
+   Skill Tree — design tokens
+   See docs/temp/src/styles.css and COMPONENTS.md
+   ─────────────────────────────────────────────────────────────────────── */
+
+/* Registered so a tick-color change on hover/selection interpolates instead of
+   snapping (unsupported engines simply snap — acceptable fallback). */
+@property --tick-c {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+/* Angle of the loading rune-trace that runs a busy button's frame. */
+@property --btn-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  /* Type — Geist via @fontsource-variable */
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "JetBrains Mono", Menlo, monospace;
+  --font-display: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* Surfaces — warm-tinted blacks. --bg-0 deepened (Forged Obsidian) so raised
+     material reads against a darker ground. */
+  --bg-0: #08080d;
+  --bg-1: #101017;
+  --bg-2: #15151e;
+  --bg-3: #1c1c27;
+  --bg-4: #232331;
+  --bg-glass: rgba(20, 20, 28, 0.78);
+
+  /* Text */
+  --fg: #ecedf2;
+  --fg-strong: #ffffff;
+  --fg-mid: #b2b3c0;
+  --fg-mute: #7b7c8c;
+  --fg-dim: #4a4b5c;
+
+  /* Lines */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --border-active: rgba(143, 124, 255, 0.5);
+
+  /* Material — Forged Obsidian (primitives redesign). Light falls from above:
+     every raised control shares a lighter top edge (bevel), a surface gradient
+     that darkens toward the bottom, and a soft ambient drop. Depth carries the
+     hierarchy that hairlines alone used to. */
+  --edge-hi: rgba(255, 255, 255, 0.19);
+  /* Doctrine (iter 5): GUILD owns container surfaces + borders — near-flat
+     panels, uniform hairline, engraved frame, crisp radius. OBSIDIAN owns
+     ambience — page atmosphere, glow, shadow/weight. A container never wears
+     both skins: no bevel top-edge or strong gradient on panels. */
+  --surface-panel: linear-gradient(180deg, #16161f, #13131a);
+  /* The panel gradient's terminal color — anything that must visually "cut"
+     a panel's bottom border (frame-embedded legends) paints this behind itself. */
+  --panel-edge: #13131a;
+  --radius-frame: 6px;
+  --shadow-raise-sm: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 3px 7px rgba(0, 0, 0, 0.45);
+  --shadow-raise-md: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 3px 8px rgba(0, 0, 0, 0.38), 0 14px 34px rgba(0, 0, 0, 0.45);
+
+  /* Runic engraving (Guild × Obsidian blend). --engrave is a dark gap ring plus
+     a second faint frame line — a surface reads as *set into* the page, the way
+     an inventory slot is. --surface-well/--shadow-well are the recessed
+     counterpart that raised cards sit inside. --tick colors the corner marks on
+     crafted/charged panels (stat cards, equipped cards). */
+  --shadow-lift: 0 4px 10px rgba(0, 0, 0, 0.3), 0 16px 36px rgba(0, 0, 0, 0.4);
+  --shadow-ambient: 0 3px 8px rgba(0, 0, 0, 0.35);
+  --shadow-depth: 0 12px 30px rgba(0, 0, 0, 0.38);
+  --shade-35: rgba(0, 0, 0, 0.35);
+  --engrave: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(255, 255, 255, 0.055);
+  --surface-well: linear-gradient(180deg, #0b0b11, #0e0e15);
+  --shadow-well: inset 0 2px 6px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --tick: rgba(255, 255, 255, 0.18);
+  --tick-hover: rgba(255, 255, 255, 0.28);
+
+  /* Chrome frame + layer staircase (shell depth model). The CHROME — header
+     band ∪ rail — is ONE flat ground (--bg-0 under the section wash), so no
+     internal seam or hand-matched fill can exist inside it. The content sits
+     in that frame as plates: navigator (raised middle plate, rounded top-left
+     where it meets the frame's corner) above the screen (base material).
+     Selection SINKS a chrome item onto the surface it controls — the active
+     rail glyph fuses with the navigator's plate, the active nav row fuses
+     with the screen — so "selected" reads as CONNECTED, not highlighted.
+     No hairline seams between columns: the lightness step plus the cast
+     shadow separates, which is what lets a sunk item blend across. */
+  --layer-rail: var(--bg-0);
+  --layer-panel: var(--bg-2);
+  --layer-screen: var(--bg-1);
+  --shadow-cast-sm: inset 10px 0 14px -10px rgba(0, 0, 0, 0.35);
+  --shadow-cast-md: inset 12px 0 18px -12px rgba(0, 0, 0, 0.38);
+  /* The SAME cast AO as --shadow-cast-md, expressed as a background LAYER.
+     A box-shadow always starts at its element's own top edge, and the screen
+     column spans grid rows 1–2 — so the shadow began inside the header band,
+     where nothing casts (the band is ONE chrome surface across all three
+     columns; the plate that casts starts below it). Chromium's rasterisation
+     of an inset shadow with a negative spread happened to hide that inside the
+     dark band; WebKit drew a crisp hairline through the header row, cutting the
+     one horizontal contour the band exists to carry. As a background layer the
+     AO can be positioned to start at the band's bottom edge, and it still
+     paints under every content child exactly like the shadow did.
+     Stops match the shadow's measured falloff (alpha 0.20 at the seam → 0.05
+     at 12px → 0 at 18px, sampled from the captures before the move). */
+  --cast-md-layer: linear-gradient(90deg,
+    color-mix(in oklab, #000000 20%, transparent) 0,
+    color-mix(in oklab, #000000 12%, transparent) 4px,
+    color-mix(in oklab, #000000 5%, transparent) 9px,
+    transparent 18px);
+  /* What a fused item must END in: the color the NEXT plate actually paints at
+     the seam. The screen's edge = base ground + the violet atmosphere tint +
+     the cast AO's darkening; the panel's edge = panel ground + its AO. A fused
+     item's background gradient terminates in these, so the hand-off across the
+     boundary is continuous — no step, no valley. */
+  /* All three are DERIVED, never sampled literals: atmo-tint = the screen's
+     ground under the violet atmosphere (8% matches the radial's contribution
+     where nav rows sit); each edge = that ground darkened by its cast AO at
+     the seam (50% ≈ --shadow-cast-md at x=0; 10% ≈ --shadow-cast-sm's gentler
+     ramp). Retune the percentages if the atmosphere or the cast shadows
+     change — pixel-checked against captures 2026-09-01. */
+  /* NOTE: --chrome-edge is deliberately NOT declared here. It reads --section,
+     and a custom property's var() references resolve on the element that
+     DECLARES it — at :root that is always the DEFAULT section, so the contour
+     came out the same violet on all five groups no matter which one was
+     selected (measured: (101,98,125) on projects, context, guardrails and
+     agents alike). It now lives on `.app`, beside --section-lifted, where
+     --section is the route's own. See shell-scaffold.css § chrome accent. */
+  /* CONTEXT: this is the content atmosphere, not the brand. The pair is
+     RE-DERIVED on `.app` off the content hue (shell-scaffold.css) — these two
+     lines are the overlay/anchor fallback only, for the same reason the --ctx
+     triad below is: a custom property substitutes its var()s where it is
+     DECLARED, and at :root --ctx is the anchor. */
+  --atmo-tint: color-mix(in oklab, var(--ctx) 8%, var(--bg-1));
+  --layer-screen-edge: color-mix(in oklab, #000000 30%, var(--atmo-tint));
+  --layer-panel-edge: color-mix(in oklab, #000000 10%, var(--bg-2));
+
+  /* ─── The LIT SLOT — the Guild selection register ────────────────────────
+     ONE selection grammar for every list row and chip: a violet-lit engraved
+     ring in the item's own shape, a faint fill, and a soft inner glow. Inside
+     the navigator (`.app-side`, shell-nav.css) the same four tokens are
+     re-pointed at the section's lifted hue, so a chosen row there wears the
+     chrome's "where am I" colour instead of brand violet. It is a
+     BORDER language — a selected item stays where it is and LIGHTS UP; it does
+     not sink into a neighbouring surface. Declared here so the navigator,
+     `.resource-row` and `.chip` can never drift apart.
+     Both mixes end in `transparent`, so a slot lights correctly over the panel
+     plate, over the glass, and over a detail compartment. */
+  /* CONTEXT: list/row/chip selection at the :root default. BOTH shell columns
+     re-point these — the navigator onto --section, `.app-main` onto --ctx
+     (i.e. --section-2), shell-scaffold.css — because the substitution happens
+     where the property is declared. What is left reading this copy is the
+     overlay layer, and there context is the anchor. */
+  --slot-ring: color-mix(in oklab, var(--ctx) 45%, transparent);
+  --slot-fill: color-mix(in oklab, var(--ctx) 10%, transparent);
+  --slot-fill-soft: color-mix(in oklab, var(--ctx) 6%, transparent);
+  --slot-glow: inset 0 0 18px color-mix(in oklab, var(--ctx) 8%, transparent);
+
+  /* ─── The navigator plate's material ─────────────────────────────────────
+     `--plate-bg` is the plate surface; `--plate-cut` is what a frame-embedded
+     legend paints behind itself to cut the plaque ring it interrupts, and
+     both must stay the plate's OWN material or the cut reads as a patch.
+     `--plate-blur` is the backdrop treatment; `none` here, re-pointed by the
+     glass block below. */
+  --plate-alpha: 74%;
+  --plate-bg: color-mix(in oklab, var(--layer-panel) var(--plate-alpha), transparent);
+  --plate-cut: var(--plate-bg);
+  /* Blur only — NO saturate(). A backdrop filter is applied by the sheet to
+     whatever is behind it, so any saturation here would be a treatment ONLY
+     the navigator plate gets, and the rail's active tab (which paints the same
+     ground itself, and cannot filter it) would land a few units short at the
+     seam. The saturation is baked into `--panel-backlight` instead, where both
+     surfaces read it. */
+  --plate-blur: blur(22px);
+  /* NOTE: --panel-backlight is declared on `.app` (shell-scaffold.css), not
+     here, for the same reason as the contour above — a custom property resolves
+     its own var()s on the DECLARING element, and at :root --section is always
+     default. Declared here it rendered as a neutral white glow (measured Δ
+     (23,22,21) on the gold group — no hue at all). */
+  /* Apple-glass cues that do NOT fight the chrome contour: a diagonal sheen
+     over the top of the sheet, and a 1px lit inner top edge held far below the
+     `--edge-hi` register (a full-strength rim reads as a second border beside
+     the contour — measured and rejected in iter 4). */
+  --plate-sheen: color-mix(in oklab, #ffffff 2%, transparent);
+  --plate-top-hi: color-mix(in oklab, var(--edge-hi) 30%, transparent);
+
+  /* Accents (oklch-tuned). Three chroma registers keep channels distinct:
+     SEMANTIC accents (chroma ≥0.12) carry meaning — brand/active, status, provenance.
+     IDENTITY ramp (--id-*, chroma ≈0.10) is per-bundle decoration only.
+     SECTION (--sec-*, chroma ≈0.06 in the chrome, lifted to 0.14 for a ring or
+     a line) is "where am I" — the chrome via --section, content via --ctx.
+     The registers never overlap, and the section hues keep clear of the
+     status hues by angle too (see the block below), so a hue's job is legible
+     at a glance. */
+  --violet: oklch(72% 0.18 290);
+  --violet-2: oklch(78% 0.20 290);
+  --violet-glow: oklch(70% 0.22 290 / 0.35);
+
+  /* ─── ANCHOR vs CONTEXT — the brand accent, split in two ─────────────────
+     Body content (everything outside this file) MUST NOT reference --violet
+     directly — reach for --anchor* or --ctx* instead. Two channels, one
+     question each:
+       ANCHOR answers "is this interactive / active / focused / mine?" — the
+       constant brand voice: focus rings, the primary button, Toggle/checkbox/
+       switch, links, the editor cursor, provenance, the brand mark. It is the
+       SAME violet on every screen, always.
+       CONTEXT answers "where am I?" for CONTENT (not chrome — that's still
+       --section) — list/row/card selection, active chip/tab/segmented,
+       ornament ticks and legends, stat/hero accents, drop targets, the
+       `.app-main` atmosphere wash.
+       The --ctx* declared HERE are the ANCHOR FALLBACK, and nothing more.
+       `.app-main` re-declares the triad off the content section's hue
+       (--section-2, shell-scaffold.css § The CONTENT accent), which is where
+       every screen actually reads them. :root keeps the anchor because the
+       elements that inherit from here instead — the portalled Modal/Sheet/
+       ConfirmDialog, and the palette, cheatsheet, tour, toasts and Tweaks
+       panel, all siblings of `.app-main` — are overlays, and an overlay is not
+       a place. Declaring the lift here instead would be the §NOTE trap above:
+       :root's --section is always the default hue. */
+  --anchor: var(--violet);
+  --anchor-2: var(--violet-2);
+  --anchor-glow: var(--violet-glow);
+  --ctx: var(--anchor);
+  --ctx-2: var(--anchor-2);
+  --ctx-glow: var(--anchor-glow);
+
+  --amber: oklch(78% 0.16 75);
+  --green: oklch(76% 0.16 155);
+  --red: oklch(70% 0.20 25);
+  --blue: oklch(73% 0.14 245);
+  --cyan: oklch(78% 0.12 200);
+
+  /* Bundle identity ramp — equal L (72%) + equal C (0.10), hue only. Below the
+     semantic accents' chroma, above the section hues'. Decoration, never meaning. */
+  --id-0: oklch(72% 0.10 15);
+  --id-1: oklch(72% 0.10 60);
+  --id-2: oklch(72% 0.10 105);
+  --id-3: oklch(72% 0.10 150);
+  --id-4: oklch(72% 0.10 195);
+  --id-5: oklch(72% 0.10 240);
+  --id-6: oklch(72% 0.10 285);
+  --id-7: oklch(72% 0.10 330);
+
+  /* Section-chrome hues — one per rail GROUP (`GROUP_IDS` in lib/sections.ts),
+     NOT per destination: at C=0.06 ten hues land ~3 RGB units apart and read as
+     one grey, so the wheel is spent on five values that are actually tellable
+     apart. Equal L + equal C, the lowest chroma register, so they read as
+     atmosphere, never as status. Consumed by the chrome via --section and,
+     since the anchor/context split, by CONTENT via --ctx (lifted to C=0.14 for
+     a ring or a line). That lift is why the hues are placed by HUE DISTANCE
+     from the status colours, not by "the nearest natural colour for the
+     topic": red 25 / amber 75 / green 155 / blue 245 are reserved, every
+     section hue keeps ≥30° from them (projects/blue 20°, the one exception)
+     and ≥50° from each other. That exception was justified as "info blue is
+     the status hue a body almost never shows"; the step-3 sweep DISPROVED the
+     premise — `/project/:name?tab=agent-docs` puts a `data-tone="info"`
+     AGENT DOC pill on the very row whose selection bar is now the projects
+     hue. It is still accepted, because the two are told apart by FORM (a
+     bordered pill carrying a word vs a 2px bar and a ≤22% row wash) and
+     because the blue quadrant has no free angle left: --blue sits at 245 and
+     --cyan at 200, so moving 225 in either direction only trades one
+     collision for the other. Revisit it only by moving projects out of the
+     blue family altogether. Guarded by sectionHueSpacing.test.ts. Before this partition,
+     guardrails sat 5° from red and elsewhere ON green, which was only tellable
+     while section hues stayed out of body content. */
+  --sec-projects: oklch(72% 0.06 225);     /* steel blue                    */
+  --sec-context: oklch(72% 0.06 290);      /* the brand's home hue: on Library
+                                              screens anchor and context
+                                              coincide by design              */
+  --sec-guardrails: oklch(72% 0.06 345);   /* plum-rose — 40° off red        */
+  --sec-agents: oklch(72% 0.06 110);       /* olive — 35° off amber           */
+  --sec-elsewhere: oklch(72% 0.06 185);    /* teal — 30° off green            */
+  --section: var(--sec-context);           /* default; overridden per route  */
+
+  /* Geometry — Forged Obsidian rounds the language one step: controls 8px,
+     cards/panels 12px. --radius-sm stays 4px for tiny inner controls. */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Density */
+  --row-h: 38px;
+  --pad-x: 16px;
+  --pad-y: 12px;
+
+  /* Screen-level gutters — see COMPONENTS.md § Screen layout contract */
+  --pad-screen-x: 24px;
+  --pad-screen-y: 16px;
+  /* Top inset of a document body (editor text, rendered preview, diff) under
+     the editor bar. Unframed text needs more air than a card does, so it is
+     the screen gutter plus 8px; it tracks density through --pad-screen-y. */
+  --pad-doc-top: calc(var(--pad-screen-y) + 8px);
+  /* C4: the fixed Tweaks FAB (`.tweaks-toggle`, 32px at bottom:36/right:18)
+     floats over the bottom-right of the content area. Screen-level scroll roots
+     end with this much clearance so the last row of a scrolled-to-bottom list
+     never sits under it. */
+  --fab-safe: 56px;
+  /* Clearance under the Library's bottom-docked floating search bar: bar ~40px
+     the bar itself is ~40px tall, plus `--pad-screen-y`'s own bottom inset,
+     an 8px gap and 28px slack — a calc() (not a literal) so it tracks
+     density the same way `--pad-screen-y` does. Any screen that mounts a
+     `.floating-search-dock` ends its scroll root with this much padding so
+     the last row can never sit under the CLOSED bar; the OPEN stack adds
+     its own clearance separately (floating-search.css, review M4). */
+  --dock-safe: calc(var(--pad-screen-y) + 40px + 8px + 28px);
+
+  /* Header row heights — see COMPONENTS.md § Screen header */
+  --header-row-1: 56px;
+  --header-row-2: 40px;
+
+  /* THE CONTENT LINE — the y, measured down from the chrome contour (the
+     band's bottom edge), where the first mark in every column sits. The rail
+     and the navigator reach it through different anatomies: a rail row centres
+     a 20px glyph in a 36px box (+8px), and a navigator plaque hangs its carved
+     legend 7px ABOVE its own box (−7px). So each column's padding is written
+     as this ONE number ± its own anatomy constant, never as a literal — that
+     is what stops the two drifting apart again.
+     12px (not 16px): the active Projects tab's fused-plate ring (shell-rail.css
+     `.rail-btn[aria-current]::after`, `top: -1px` off the button's PADDING
+     box, i.e. the button's border-box top) must land its top stroke ON the
+     band's contour row — the band's own last pixel row (border-box, 1px
+     border-bottom). The rail starts on that row (`margin-top: -1px`,
+     shell-scaffold.css) and its padding-top is 0 (12−12), so the first
+     button's border-box top IS the contour row. Measured: 16px left 3px of
+     daylight, 13px still 1px. The navigator's plaque follows the same token. */
+  --content-line: 12px;
+  --rail-glyph-rise: 12px;  /* glyph INK top inside a .rail-btn (measured) */
+  --legend-rise: 7px;       /* carved legend top above its plaque box */
+
+  --sidebar-w: 240px;
+  --rail-w: 56px;
+  /* Rail in labels mode. The longest label ("Permissions") needs ~128px; the
+     rest is deliberate breathing room so the labels column doesn't read as a
+     cramped list. Widen/narrow this and nothing else — every consumer (grid
+     columns, topbar span, off-canvas drawer offsets) reads --rail-w. */
+  --rail-w-expanded: 168px;
+
+  /* Title-bar strip reserves vertical room for the macOS traffic lights across
+     the rail + sidebar columns, so the lights never cross a vertical color
+     seam. Locked to the screen header's title-row height so the strip's bottom
+     border aligns with the main header divider into one continuous line. */
+  --topbar-h: var(--header-row-1);
+  --titlebar-inset: 84px; /* left padding clearing the 3 traffic-light buttons */
+
+  /* ─── Design scales (S7) ──────────────────────────────────────────────
+     Every token below holds the EXACT literal it replaces — nothing here is
+     snapped, merged, or rounded. See COMPONENTS.md § Tokens for the full
+     rationale and the frozen/shrink-only note on the fs-micro and fs-d
+     legacy families below. */
+
+  /* Type — --fs-1..7 is the scale new code uses (the 0.5px UI ramp, 88% of
+     all uses). The fs-micro and fs-d families are a frozen, shrink-only
+     legacy set lifted verbatim from the values already in use. --fs-d-13 is
+     the one addition: Slice C's inline-style migration (S7 §3.5) surfaced a
+     22px heading size that lived only in TSX `style={{}}` objects and so was
+     invisible to the original App.css audit this scale was built from — a
+     genuinely new literal, not an existing one being snapped. */
+  --fs-1: 10px;  --fs-2: 10.5px;  --fs-3: 11px;   --fs-4: 11.5px;
+  --fs-5: 12px;  --fs-6: 12.5px;  --fs-7: 13px;
+  --fs-micro-1: 8px;  --fs-micro-2: 9px;  --fs-micro-3: 9.5px;
+  --fs-d-1: 13.5px; --fs-d-2: 14px;  --fs-d-3: 14.5px; --fs-d-4: 15px;
+  --fs-d-5: 15.5px; --fs-d-6: 16px;  --fs-d-7: 18px;   --fs-d-8: 19px;
+  --fs-d-9: 20px;   --fs-d-10: 23px; --fs-d-11: 24px;  --fs-d-12: 26px;
+  --fs-d-13: 22px;
+  /* The one real display-type decision (redesign motivation: "no focal
+     points"): hero numerals — stat values and equivalent display moments. */
+  --fs-hero: 34px;
+
+  /* Elevation — each token holds the exact literal box-shadow it replaces. */
+  --shadow-menu:        0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-menu-sm:     0 8px 28px rgba(0,0,0,.35);
+  --shadow-popover:     0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-popover-soft:0 12px 40px rgba(0,0,0,.35);
+  --shadow-tip:         0 12px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-picker:      0 24px 40px -16px rgba(0,0,0,0.55);
+  --shadow-snip-picker: 0 24px 60px -18px rgba(0,0,0,0.7);
+  --shadow-overlay:     0 30px 80px -20px rgba(0,0,0,0.7);
+  --shadow-modal:       0 24px 70px -20px rgba(0,0,0,.7);
+  --shadow-sheet:       0 20px 60px rgba(0,0,0,0.45);
+  --shadow-drawer:      0 18px 44px -14px rgba(0,0,0,0.7);
+  --shadow-toast:       0 14px 40px -10px rgba(0,0,0,0.6);
+  --shadow-nav-drawer:  8px 0 24px -8px rgba(0, 0, 0, 0.55);
+  --shadow-split-r:    -8px 0 28px rgba(0, 0, 0, 0.32);
+  --shadow-split-l:     8px 0 28px rgba(0, 0, 0, 0.32);
+  --shadow-hairline-inset: 0 0 0 1px rgba(255,255,255,0.04) inset;
+  --shadow-btn-primary: 0 0 18px -2px var(--anchor-glow);
+  --shadow-btn-signal:  0 0 0 2px rgba(255, 255, 255, 0.28);
+  --shadow-proc:        0 24px 50px -16px rgba(0,0,0,0.85), 0 8px 18px -8px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06) inset;
+  --shadow-proc-glow:   0 14px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset;
+
+  /* Scrims */
+  --scrim: rgba(5, 5, 10, 0.55);
+  --scrim-plain: rgba(0,0,0,0.55);
+  --scrim-split: rgba(0, 0, 0, 0.32);
+
+  /* Z ladder — value-preserving, named by the role each already plays.
+     --z-max (1000, .presets-sheet-backdrop) is an outlier that should really
+     be --z-modal; changing it is a behaviour change — left as a follow-up.
+     --z-toast (95) sits ABOVE --z-modal (90, E3 rev 2 §2.6) — a toast can
+     therefore sit over a right-anchored Sheet's last column while it is
+     open; acceptable because a toast is dismissable and short-lived, and a
+     toast buried under an open modal would be silent, not recoverable.
+     --z-max is the one layer still above it. */
+  --z-below: -1;    --z-base: 1;      --z-raised: 2;     --z-raised-2: 3;
+  --z-scrim-local: 4; --z-float: 5;   --z-popover-local: 10; --z-popover: 20;
+  --z-menu: 30;     --z-tooltip: 40;  --z-nav-scrim: 42; --z-nav-drawer: 45;
+  --z-nav-handle: 46; --z-dropdown: 50; --z-drawer: 60;  --z-toast: 95;
+  --z-tour: 85;     --z-modal: 90;    --z-max: 1000;
+  /* --z-modal-float (91): a popover hung inside a modal must clear --z-modal. */
+  --z-modal-float: 91;
+
+  /* Durations — 0s is left as a literal elsewhere; it disables a transition,
+     it is not a duration on the scale. */
+  --dur-1: 60ms;  --dur-2: 80ms;  --dur-3: 100ms; --dur-4: 120ms; --dur-5: 140ms; --dur-6: 150ms;
+  --dur-7: 160ms; --dur-8: 180ms; --dur-9: 200ms; --dur-10: 250ms; --dur-11: 300ms; --dur-12: 320ms;
+  --dur-fast: var(--dur-4);  --dur-base: var(--dur-5);  --dur-slow: var(--dur-9);
+}
+
+/* ─── Glass fall-backs ─────────────────────────────────────────────────────
+   Without `backdrop-filter` a translucent sheet is just a washed-out panel
+   (nothing blurs behind it), and a viewer who asked the OS for less
+   transparency has said they do not want the effect at all. Both cases fall
+   back to the flat opaque plate — the layout, the ring and the lamp are
+   unchanged, only the sheet stops being see-through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --plate-bg: var(--layer-panel);
+    --plate-cut: var(--layer-panel);
+    --plate-blur: none;
+    --plate-sheen: transparent;
+    --plate-top-hi: transparent;
+    --bg-glass: var(--bg-2);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --plate-bg: var(--layer-panel);
+    --plate-cut: var(--layer-panel);
+    --plate-blur: none;
+    --plate-sheen: transparent;
+    --plate-top-hi: transparent;
+    --bg-glass: var(--bg-2);
+  }
+}
+
+[data-density="compact"] { --row-h: 32px; --pad-x: 12px; --pad-y: 8px; --pad-screen-x: 20px; --pad-screen-y: 12px; --header-row-1: 52px; --header-row-2: 36px; }
+[data-density="cozy"]    { --row-h: 44px; --pad-x: 20px; --pad-y: 16px; --pad-screen-x: 28px; --pad-screen-y: 20px; --header-row-1: 60px; --header-row-2: 44px; }
+

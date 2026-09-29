@@ -1,0 +1,135 @@
+/* ─── Floating unified search (Library) ─────────────────────────────────────
+   Guild owns the container (near-flat surface, ONE hairline, one radius, no
+   bevel / no gradient); Obsidian owns the weight — depth at rest
+   (`--shadow-depth`), lift when charged (`--shadow-lift` + an anchor ring).
+   The bar is a DOCKED SURFACE, not an inline field, so it overrides
+   .search-input's recessed well.
+   Glass fallbacks (no `backdrop-filter` / `prefers-reduced-transparency`) live
+   at the token level (`--bg-glass` in tokens.css), not duplicated here.
+   §11: every result renders in the Library's own body — the bar carries only
+   the query and the kind, never a results list of its own. */
+
+.floating-search-dock {
+  position: absolute;
+  left: var(--pad-screen-x);
+  right: var(--pad-screen-x);
+  bottom: var(--pad-screen-y);
+  z-index: var(--z-float);
+  display: flex; justify-content: center;
+  pointer-events: none;                 /* the dock is a lane, not a lid */
+}
+/* Symmetric lane: the Tweaks FAB clears the right edge, so both edges match
+   its inset rather than only the side it sits on. At narrow the FAB docks
+   into the StatusBar, so the base --pad-screen-x inset is enough there. */
+.app:not([data-narrow="true"]) .floating-search-dock {
+  left: var(--fab-safe);
+  right: var(--fab-safe);
+}
+
+.floating-search {
+  pointer-events: auto;
+  position: relative;
+  width: min(720px, 100%);
+}
+
+/* ── The bar ── */
+.floating-search .search-input.floating-search-bar {
+  min-width: 0;
+  background: var(--bg-glass);
+  backdrop-filter: var(--plate-blur);
+  -webkit-backdrop-filter: var(--plate-blur);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-depth), var(--shadow-hairline-inset);
+  transition:
+    background-color var(--dur-6) ease,
+    box-shadow var(--dur-6) ease,
+    border-color var(--dur-6) ease;
+}
+.floating-search .search-input.floating-search-bar input::placeholder {
+  color: var(--fg-mute);
+}
+/* Charged (value typed, or currently focused): opaque for readability, lift
+   replaces depth. Specificity 0-3-0 beats primitives' `.search-input:focus-
+   within` (0-2-0), so the well shadow is fully replaced, not composed. */
+.floating-search[data-state="focused"] .search-input.floating-search-bar,
+.floating-search[data-state="typing"]  .search-input.floating-search-bar {
+  background: var(--bg-2);
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-lift), var(--shadow-hairline-inset);
+}
+/* The anchor ring is a FOCUS signal, never a "has a query" signal — a
+   blurred bar that still carries typed text stays opaque/lifted (above) but
+   must not claim focus it doesn't have (review M5). `data-focus` mirrors
+   `focusWithin` independently of `data-state`, which is why this needs its
+   own rule instead of folding into the block above. */
+.floating-search[data-focus="true"] .search-input.floating-search-bar {
+  box-shadow:
+    var(--shadow-lift),
+    0 0 0 1px color-mix(in oklab, var(--anchor) 45%, transparent),
+    var(--shadow-hairline-inset);
+}
+.floating-search-clear {
+  background: none; border: 0; padding: 2px; margin: -2px;
+  display: inline-flex; color: var(--fg-dim); cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-4) ease;
+}
+.floating-search-clear:hover { color: var(--fg); }
+.floating-search-clear:focus-visible { outline: 2px solid var(--anchor-2); outline-offset: 1px; }
+
+/* ── The stack: floats ABOVE the bar, absolute so growth never moves the
+      bar. It holds exactly one panel — the kind `Chips` row — since §11
+      dropped the cross-entity hits panel: every match now renders in the
+      Library's own body instead. ── */
+.floating-search-stack {
+  position: absolute;
+  left: 0; right: 0; bottom: calc(100% + 8px);
+  display: flex; flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.floating-search-kinds {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+/* The chip row is a Guild recessed well — `--surface-well` + `--shadow-well`,
+   the same as any other `.chips` strip (§Chips) — and gains only Obsidian's
+   `--shadow-lift` outside it (review m7). */
+.floating-search-kinds .chips { box-shadow: var(--shadow-well), var(--shadow-lift); }
+
+/* ── Motion: a state channel, never decoration (DESIGN.md §5.7). The chip
+      row RISES out of the bar it belongs to. ── */
+@keyframes floatingSearchRise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes floatingSearchFade { from { opacity: 0; } to { opacity: 1; } }
+
+.floating-search-stack > * {
+  animation: floatingSearchRise var(--dur-7) cubic-bezier(.2, .7, .2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-search .search-input.floating-search-bar,
+  .floating-search-clear { transition: none; }
+  .floating-search-stack > * {
+    animation-name: floatingSearchFade;
+    animation-delay: 0s;
+    animation-duration: var(--dur-3);
+  }
+}
+
+/* ── Clearance while the stack is OPEN (review M4): `--dock-safe` alone only
+      reserves room for the BAR. Add the stack's own footprint — the kind
+      row (~36px) plus its 8px gap to the bar — so a scrolled-to-bottom list
+      is never covered while the dock is open. Pure CSS via `:has()`, no
+      extra state. ── */
+.app-main:has(.floating-search[data-open="true"]) .library-body[data-dock] {
+  padding-bottom: calc(var(--dock-safe) + 44px);
+  scroll-padding-bottom: calc(var(--dock-safe) + 44px);
+}
+
+/* ── Collapse ladder (COMPONENTS.md §Responsive; --bp-compact / --bp-tight) ── */
+@container appmain (max-width: 560px) {
+  .floating-search-kinds .chip .chip-label { display: none; }   /* icon + count; title keeps the word */
+}
+@container appmain (max-width: 420px) {
+  .floating-search-kinds .chip .count { display: none; }
+}

@@ -1,0 +1,138 @@
+/* ─── Usage session timeline (design D14.7/D14.9, unit G) ──────────────────
+   The segment compartment is a Guild WELL — --surface-well + --shadow-well
+   under a plain --border hairline — never a lit left-edge stripe. That
+   pattern was deliberately removed from the material doctrine (COMPONENTS.md
+   §Material, "Selection is a lit slot… not a stripe"), and a vertical rail
+   colored down one edge is one word away from bringing it back. */
+
+.usage-timeline { display: grid; gap: 14px; max-width: 900px; }
+.usage-timeline-summary {
+  margin: 0;
+  color: var(--fg-mid);
+  font-size: var(--fs-5);
+  line-height: 1.5;
+}
+.usage-timeline-loading { display: grid; gap: 8px; }
+
+.usage-timeline-dash { color: var(--fg-dim); }
+.usage-timeline-shortid { font-family: var(--font-mono); color: var(--fg-mid); }
+
+.usage-timeline-segments {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usage-timeline-segment {
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.usage-timeline-segment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.usage-timeline-segment-opener {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.usage-timeline-segment-excerpt {
+  margin: 0;
+  color: var(--fg);
+  font-size: var(--fs-5);
+  line-height: 1.5;
+}
+.usage-timeline-marker { flex: 0 0 auto; }
+
+.usage-timeline-segment-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+}
+.usage-timeline-stat { display: flex; flex-direction: column; gap: 2px; }
+.usage-timeline-stat dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.usage-timeline-stat dd {
+  margin: 0;
+  color: var(--fg-strong);
+  font-size: var(--fs-5);
+}
+
+.usage-timeline-events {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.usage-timeline-event {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--border);
+}
+.usage-timeline-event:first-child { border-top: none; }
+.usage-timeline-event-kind {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.usage-timeline-event-name { color: var(--fg-mid); font-size: var(--fs-5); }
+.usage-timeline-event-model {
+  font-family: var(--font-mono);
+  color: var(--fg-dim);
+  font-size: var(--fs-3);
+}
+
+.usage-timeline-subagents { display: grid; gap: 8px; }
+.usage-timeline-subagents h3 {
+  margin: 0;
+  color: var(--fg-strong);
+  font-size: var(--fs-d-6);
+}
+.usage-timeline-subagents ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.usage-timeline-subagent-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+}
+.usage-timeline-subagent-row:first-child { border-top: none; }
+.usage-timeline-subagent-model { font-family: var(--font-mono); color: var(--fg-dim); }
+.usage-timeline-subagent-tokens { margin-left: auto; color: var(--fg-mute); font-size: var(--fs-3); }
+
+.usage-timeline-ambiguous-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* Both "Show N earlier segments" / "Show N more events" folds are a plain
+   height change with no slide (design D14.7/G16) — the reveal itself is a
+   short fade-in on the newly appeared rows so a reader's eye finds them,
+   dropped entirely under reduced motion (G21). */
+.usage-timeline-reveal { animation: usage-timeline-reveal-in var(--dur-2) ease-out; }
+@keyframes usage-timeline-reveal-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .usage-timeline-reveal { animation: none; }
+}

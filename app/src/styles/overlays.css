@@ -1,0 +1,377 @@
+/* ─── Toast ────────────────────────────────────────────────────────────── */
+.toast-host {
+  position: fixed; bottom: 48px; right: 24px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: var(--z-toast); pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 14px;
+  background: var(--bg-glass); backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  box-shadow: var(--shadow-toast);
+  min-width: 280px; max-width: 360px;
+  animation: toastIn .25s cubic-bezier(.2,.7,.2,1);
+  color: var(--fg);
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.toast-content { flex: 1 1 auto; min-width: 0; }
+.toast-title { font-weight: 500; font-size: var(--fs-6); color: var(--fg-strong); }
+.toast-body { font-size: var(--fs-4); color: var(--fg-mute); margin-top: 2px; font-family: var(--font-mono); word-break: break-word; white-space: pre-line; }
+.toast-action {
+  flex-shrink: 0; align-self: center;
+  background: transparent; border: 1px solid var(--border-strong); border-radius: 4px;
+  color: var(--fg-strong); font-family: inherit; font-size: var(--fs-4);
+  padding: 4px 9px; cursor: pointer; transition: background var(--dur-4), border-color var(--dur-4);
+}
+.toast-action:hover { background: var(--bg-3); border-color: var(--fg-dim); }
+.toast-close {
+  flex-shrink: 0; align-self: flex-start;
+  background: transparent; border: 0; padding: 2px; margin: -2px -4px -2px 0;
+  color: var(--fg-dim); cursor: pointer; border-radius: 3px;
+  display: inline-flex; transition: color var(--dur-4), background var(--dur-4);
+}
+.toast-close:hover { color: var(--fg); background: var(--bg-3); }
+.toast.toast-success { border-color: color-mix(in oklab, var(--green) 35%, transparent); }
+.toast.toast-success .toast-icon { color: var(--green); }
+.toast.toast-error { border-color: color-mix(in oklab, var(--red) 35%, transparent); }
+.toast.toast-error .toast-icon { color: var(--red); }
+/* .toast-info is composed dynamically (Toast.tsx: `toast toast-${kind}`,
+   kind can be "info") — reads dead in a static class-name grep, is live at
+   runtime. Restored; not actually part of the S7 dead-class list. */
+.toast.toast-info { border-color: color-mix(in oklab, var(--blue) 35%, transparent); }
+.toast.toast-info .toast-icon { color: var(--blue); }
+
+/* ─── Overlay system: Modal base + ConfirmDialog / Sheet presets ─────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  background: color-mix(in oklab, #000 55%, transparent);
+  backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: modalFade .16s ease;
+}
+.modal-backdrop-right { justify-content: flex-end; align-items: stretch; padding: 0; }
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+.modal {
+  background: var(--bg-1); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-modal);
+  display: flex; flex-direction: column; max-height: 88vh; overflow: hidden;
+  animation: modalIn .18s cubic-bezier(.2,.7,.2,1);
+  color: var(--fg);
+}
+.modal:focus { outline: none; }
+.modal-right {
+  border-radius: 0; max-height: none; height: 100%;
+  animation: sheetIn .2s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes sheetIn { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop, .modal, .modal-right { animation: none; }
+}
+.modal-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.modal-title { font-size: var(--fs-d-2); font-weight: 600; color: var(--fg-strong); flex: 1; min-width: 0; }
+.modal-close { margin: -4px -6px -4px 0; }
+/* C10: same trailing-edge treatment as `.palette-list` — the cheatsheet's row
+   list is the one that got cut mid-glyph ("Dismiss / cancel"). */
+.modal-body {
+  padding: 16px 16px 20px; overflow: auto;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 14px), transparent 100%);
+}
+/* The reason a gated confirm is inert, beside the button rather than inside a
+   tooltip. `margin-right: auto` puts it at the far left of the footer so it
+   reads as a sentence about the dialog, not a label on Cancel. */
+.confirm-scroll-gate {
+  margin-right: auto;
+  font-size: var(--fs-5);
+  color: var(--fg-mute);
+  align-self: center;
+}
+.modal-foot {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+}
+.confirm-body { font-size: var(--fs-7); color: var(--fg-mid); line-height: 1.5; }
+.confirm-blast { margin-top: 12px; font-size: var(--fs-5); }
+
+/* ─── ImportSkillDialog (.skillpack preview) ───────────────────────────────
+   Preview-then-confirm for `hub skill import`. Identifiers (pack name, file
+   paths, sizes) are mono; the description and warnings stay prose. */
+.import-pack { display: flex; flex-direction: column; gap: 12px; }
+/* Plain LTR truncation. The `direction: rtl` trick that keeps the tail visible
+   also reorders leading punctuation — it rendered "/Users/…" as "Users/…/" —
+   and a mangled path in an import preview is worse than a clipped one. The
+   full path stays available as the title tooltip. */
+.import-pack-path {
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-dim);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.import-pack-version {
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg-mute);
+}
+.import-pack-empty { color: var(--fg-mute); font-size: var(--fs-6); }
+.import-pack-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.import-pack-name {
+  font-family: var(--font-mono); font-size: var(--fs-d-4); font-weight: 600;
+  color: var(--fg-strong);
+}
+.import-pack-desc { margin: 0; font-size: var(--fs-6); color: var(--fg-mid); line-height: 1.5; }
+.import-pack-files {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-1);
+}
+.import-pack-files-head {
+  padding: 6px 10px; border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--fs-2);
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-dim);
+}
+.import-pack-files ul {
+  margin: 0; padding: 4px 0; list-style: none;
+  max-height: 168px; overflow-y: auto;
+}
+.import-pack-files li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 3px 10px;
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg-mid);
+}
+.import-pack-file-path { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.import-pack-file-size { flex-shrink: 0; color: var(--fg-dim); }
+.import-pack-collision {
+  padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--amber) 40%, transparent);
+  background: color-mix(in oklab, var(--amber) 10%, transparent);
+  color: var(--amber); font-size: var(--fs-5); line-height: 1.5;
+}
+.import-pack-collision code { font-family: var(--font-mono); }
+.import-pack-errors, .import-pack-error {
+  padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--red) 45%, transparent);
+  background: color-mix(in oklab, var(--red) 10%, transparent);
+  color: var(--red); font-size: var(--fs-5); line-height: 1.5;
+}
+.import-pack-errors ul { margin: 6px 0 0; padding-left: 18px; }
+.import-pack-rename {
+  align-self: flex-start;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--anchor-2); font-size: var(--fs-5); font-family: inherit;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+.doctor-panel-lede { margin: 0 0 12px; color: var(--fg-mute); font-size: var(--fs-5); line-height: 1.5; }
+/* Dialog form scaffolding shared by the project/permission modals (A2/A5). */
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+.readonly-value {
+  font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg-mid);
+  padding: 6px 10px; background: var(--bg-0); border: 1px solid var(--bg-2);
+  border-radius: 6px; word-break: break-all;
+}
+.browse-row { display: flex; gap: 8px; align-items: stretch; }
+.browse-row .readonly-value { flex: 1; display: flex; align-items: center; }
+.browse-row .readonly-value[data-empty="true"] { color: var(--fg-dim); }
+.disable-dialog-body { display: flex; flex-direction: column; }
+.disable-confirm { padding: 8px 0; }
+.disable-confirm-copy { font-size: var(--fs-5); color: var(--amber); }
+
+/* In-button spinner for busy confirm actions. */
+.btn-spinner {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid color-mix(in oklab, #fff 45%, transparent);
+  border-top-color: #fff; animation: btnSpin .7s linear infinite;
+}
+@keyframes btnSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .btn-spinner { animation-duration: 2s; } }
+
+/* ─── CompanionConsequenceDialog (ships_with equip gate, plan 2 §D5) ──────
+   A summary per harness, not a list: `.companion-harness-group` (also
+   carrying `.companion-harness-summary` + `.side-panel-section` — ONE
+   element, so the header/trust-row/fold-line/body DOM order required by
+   A2/C7 is a plain top-to-bottom stack, not header-then-hidden-children) is
+   a hand-rolled chevron head + collapsed body reusing `side-panel-section-*`
+   classes/tokens. `.companion-trust-row` is the never-folded Codex trust
+   row (no disclosure of its own), and `.companion-folded-line` collapses
+   everything else for that harness into one neutral sentence. No new
+   hex/rgba literal — every color traces to a token already declared in
+   tokens.css. */
+.companion-consequence-body { display: flex; flex-direction: column; gap: 10px; }
+.companion-harness-group { display: flex; flex-direction: column; gap: 6px; }
+.companion-harness-group.side-panel-section { padding: 0; border-bottom: 0; }
+.companion-harness-summary-text {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--fg-mute); font-size: var(--fs-5);
+}
+.companion-trust-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 8px 10px; border-radius: var(--radius-frame);
+  background: color-mix(in oklab, var(--amber) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--amber) 32%, transparent);
+}
+.companion-trust-text { flex: 1 1 auto; min-width: 0; font-size: var(--fs-5); color: var(--fg-mid); }
+.companion-folded-line { margin: 0; padding: 0 2px; font-size: var(--fs-4); }
+.companion-item-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.companion-item-list-empty { margin: 0; font-size: var(--fs-4); }
+.companion-item-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 4px 0; font-size: var(--fs-4);
+}
+.companion-item-kind { flex-shrink: 0; }
+.companion-item-name { color: var(--fg-strong); }
+.companion-item-activation { font-size: var(--fs-3); }
+.companion-item-target { flex: 1 1 auto; min-width: 0; font-size: var(--fs-3); word-break: break-word; }
+
+/* ─── RenameRefsDialog (rename cascade, plans/3.md §Editor flow) ──────────
+   `.rename-refs-list` is the referrer well — `--surface-well`/`--shadow-well`/
+   `--radius-frame` (the same recessed-slot language `tokens.css` names for an
+   inventory well), capped so ~8 rows scroll before the footer ever moves.
+   `data-dimmed` (running phase) is opacity-only — no transition, per the
+   design-language table: no new motion for a state the user cannot act on. */
+.rename-refs-list {
+  margin: 10px 0 0; padding: 8px 10px; list-style: none;
+  max-height: 208px; overflow-y: auto;
+  background: var(--surface-well); box-shadow: var(--shadow-well);
+  border: 1px solid var(--border); border-radius: var(--radius-frame);
+}
+.rename-refs-list[data-dimmed] { opacity: 0.5; }
+.rename-refs-group + .rename-refs-group { margin-top: 10px; }
+.rename-refs-group ul { margin: 4px 0 0; padding: 0; list-style: none; }
+.rename-refs-group-head {
+  font-family: var(--font-mono); font-size: var(--fs-2); letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--fg-dim);
+}
+.rename-refs-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 0; font-size: var(--fs-4);
+}
+.rename-refs-row-name { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+.rename-refs-count { color: var(--fg-mute); font-family: var(--font-mono); font-size: var(--fs-3); }
+.rename-refs-snippet-note { margin: 4px 0 0; font-size: var(--fs-3); color: var(--fg-mute); }
+.rename-refs-agent-docs { display: flex; flex-direction: column; gap: 4px; }
+.rename-refs-toggle-hint { margin: 0 0 0 24px; font-size: var(--fs-3); }
+.rename-refs-skipped {
+  margin: 10px 0 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: var(--fs-4); color: var(--fg-mute);
+}
+.rename-refs-step-list { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.rename-refs-step { display: flex; align-items: center; gap: 8px; font-size: var(--fs-5); }
+.rename-refs-step-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--fg-dim);
+  flex-shrink: 0; margin: 0 3px;
+}
+.rename-refs-errors {
+  margin-top: 10px; padding: 8px 10px; border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--red) 40%, transparent);
+  background: color-mix(in oklab, var(--red) 8%, transparent);
+  color: var(--red); font-size: var(--fs-5); display: flex; flex-direction: column; gap: 6px;
+}
+.rename-refs-error-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.rename-refs-errors-note { margin: 0; color: var(--fg-mute); }
+.rename-refs-snippet-link {
+  background: none; border: 0; padding: 0; cursor: pointer; font: inherit;
+  color: var(--anchor-2); text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* ─── Settings dialog ──────────────────────────────────────────────────── */
+.settings-toggle {
+  position: fixed; bottom: 36px; right: 18px;
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  background: var(--bg-glass); backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong); border-radius: 50%;
+  color: var(--fg-mute);
+  cursor: pointer;
+  z-index: var(--z-drawer);
+}
+.settings-toggle:hover { color: var(--fg); }
+.settings-toggle[data-hidden="true"] { display: none; }
+/* W5: at narrow widths the content area is too tight to carry a floating
+   32px FAB — it sat on top of card actions (the Cloud band's "Open harnesses"
+   button). Dock it into the 28px StatusBar rail instead: still one tap away,
+   but the pane below it is the status row, not the screen. Desktop keeps the
+   floating placement. */
+.app[data-narrow="true"] .settings-toggle {
+  bottom: 3px; right: 6px;
+  width: 22px; height: 22px;
+}
+/* …and the status row gives the docked button its corner back. */
+.app[data-narrow="true"] .app-status { padding-right: 34px; }
+
+.settings-dialog { height: 640px; max-height: calc(100dvh - 48px); }
+.settings-dialog .modal-body {
+  display: flex; flex-direction: column; flex: 1; min-height: 0;
+  padding: 0; overflow: hidden; mask-image: none;
+}
+.settings-dialog .modal-body > .settings-content { overflow: auto; }
+.settings-layout {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  flex: 1; min-height: 0;
+}
+.settings-categories {
+  padding: 16px 10px;
+  border-right: 1px solid var(--border);
+  background: var(--surface-panel);
+  overflow: auto;
+}
+.settings-category-buttons { display: flex; flex-direction: column; gap: 4px; }
+.settings-category-buttons button {
+  border: 1px solid transparent;
+  border-radius: var(--radius-frame);
+  background: transparent;
+  color: var(--fg-mute);
+  font: inherit;
+  text-align: left;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+.settings-category-buttons button:hover { color: var(--fg-strong); }
+.settings-category-buttons button[aria-current="page"] {
+  color: var(--fg-strong);
+  border-color: var(--anchor);
+  box-shadow: inset 0 0 12px var(--anchor-glow);
+}
+.settings-category-select-label { display: none; }
+.settings-content { min-width: 0; padding: 22px 24px 28px; }
+.settings-section-heading h2 { margin: 0; color: var(--fg-strong); font-size: var(--fs-7); }
+.settings-section-heading p { margin: 5px 0 20px; color: var(--fg-mute); font-size: var(--fs-5); line-height: 1.45; }
+.settings-control-list, .settings-section { display: flex; flex-direction: column; gap: 14px; }
+.settings-control-list { border-top: 1px solid var(--border); }
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 13px 0; border-bottom: 1px solid var(--border);
+}
+.settings-row > :first-child { min-width: 0; }
+.settings-control-label { color: var(--fg-strong); font-size: var(--fs-5); }
+.settings-help, .settings-muted, .settings-harness-status { color: var(--fg-mute); font-size: var(--fs-3); line-height: 1.4; }
+.settings-segmented { flex-shrink: 0; }
+.settings-section-label { color: var(--fg-dim); font: var(--fs-2) var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.settings-harnesses { margin-bottom: 24px; }
+.settings-harness-label { display: inline-flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
+.settings-harness-name { color: var(--fg-strong); font-family: var(--font-mono); }
+.settings-harness-name[data-enabled] { color: var(--harness-accent); }
+.settings-harness-status { text-transform: uppercase; letter-spacing: .05em; }
+.settings-harness-control { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.settings-row[data-disabled="true"] { opacity: .55; }
+.settings-read-error, .settings-inline-error { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--red); font-size: var(--fs-4); line-height: 1.4; }
+.settings-inline-error { padding: 10px; border: 1px solid color-mix(in oklab, var(--red) 40%, transparent); border-radius: var(--radius-frame); background: color-mix(in oklab, var(--red) 8%, transparent); }
+.settings-doc-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 15px 0; }
+.settings-doc-examples > div { display: flex; flex-direction: column; gap: 5px; padding: 11px; border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-panel); }
+.settings-doc-examples code { color: var(--fg-strong); font-family: var(--font-mono); }
+.settings-doc-examples span { color: var(--fg-mute); font-size: var(--fs-3); line-height: 1.4; }
+.settings-agent-docs .status-badge { align-self: flex-start; white-space: normal; }
+
+@media (max-width: 620px) {
+  .settings-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .settings-categories { border-right: 0; border-bottom: 1px solid var(--border); padding: 12px 16px; }
+  .settings-category-buttons { display: none; }
+  .settings-category-select-label { display: block; color: var(--fg-mute); font-size: var(--fs-3); }
+  .settings-category-select-label .select { margin-top: 5px; }
+  .settings-content { padding: 18px 16px 22px; }
+  .settings-row { align-items: flex-start; }
+  .settings-doc-examples { grid-template-columns: 1fr; }
+}

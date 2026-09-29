@@ -1,0 +1,145 @@
+{
+  "events": [
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 1,
+        "read": 0,
+        "skill": 1,
+        "verify": 0
+      },
+      "at": "2026-09-17T08:10:02.000Z",
+      "edited_without_verify": false,
+      "excerpt": "Read [path] and inspect PR 321.",
+      "invoker": "you",
+      "kind": "human_turn",
+      "model": "gpt-5.6",
+      "name": null,
+      "output_text_len": 185,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "additive": true,
+      "at": "2026-09-17T08:10:02.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "user",
+      "kind": "skill",
+      "model": "gpt-5.6",
+      "name": "verify-it",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 1,
+        "operate": 0,
+        "read": 1,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-17T08:10:03.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "tool",
+      "model": "gpt-5.6",
+      "name": "touchpoint/get_goal",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 0,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 0,
+        "output": 0
+      }
+    },
+    {
+      "activity": {
+        "delegate": 0,
+        "edit": 0,
+        "external": 0,
+        "operate": 0,
+        "read": 0,
+        "skill": 0,
+        "verify": 0
+      },
+      "at": "2026-09-17T08:10:03.000Z",
+      "edited_without_verify": false,
+      "excerpt": "",
+      "invoker": "model",
+      "kind": "tool",
+      "model": "gpt-5.6",
+      "name": "CommandExecution",
+      "output_text_len": 0,
+      "thinking_len": 0,
+      "token_delta": 45,
+      "tokens": {
+        "cache_creation": 0,
+        "cache_read": 0,
+        "input": 40,
+        "output": 5
+      }
+    }
+  ],
+  "harness": "codex",
+  "intent_excerpt": "Read [path] and inspect PR 321.",
+  "ok": true,
+  "project": "alpha",
+  "session_id": "cccccccc-3333-4333-8333-333333333333",
+  "subagents": [
+    {
+      "model": "gpt-5.6",
+      "role": "researcher",
+      "tokens": 77
+    }
+  ],
+  "summary": {
+    "activity": {
+      "delegate": 0,
+      "edit": 0,
+      "external": 1,
+      "operate": 0,
+      "read": 1,
+      "skill": 1,
+      "verify": 0
+    },
+    "cache_hit_ratio": 0.0,
+    "duration_minutes": 1,
+    "loadout_assumed": true,
+    "steering_count": 0,
+    "subagent_token_share": 0.6311475409836066,
+    "thinking_text_share": null,
+    "tokens_total": 45
+  },
+  "transcript_present": true,
+  "window": null
+}

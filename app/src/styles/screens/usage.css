@@ -1,0 +1,630 @@
+/* ─── Usage screen (docs/changes/DESIGN-USAGE/PLAN.md) ──────────────────────────────────
+   Every card here is a Guild container: flat --surface-panel fill, uniform
+   hairline, --engrave frame, --radius-frame. No gradients/glows on any
+   container or mark — weight lives in the shadow stack only. */
+
+.usage-shell { display: grid; gap: 18px; max-width: 1180px; }
+/* Grid items default to min-width:auto, so a wide descendant would stretch
+   the whole column past the viewport instead of scrolling in its own
+   overflow-x container. */
+.usage-shell > *, .usage-dashboard > * { min-width: 0; }
+.usage-dashboard { display: grid; gap: 18px; }
+
+.usage-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  background: var(--surface-panel);
+  box-shadow: var(--engrave);
+  padding: var(--pad-y) var(--pad-x);
+}
+.usage-card h3 { margin: 0; color: var(--fg-strong); font-size: var(--fs-d-6); }
+.usage-kicker {
+  display: block; margin-bottom: 4px;
+  font-family: var(--font-mono); color: var(--fg-dim);
+  font-size: var(--fs-3); text-transform: uppercase; letter-spacing: .08em;
+}
+.usage-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.usage-session-head { align-items: flex-end; }
+.usage-note { margin: 0; color: var(--fg-mute); font-size: var(--fs-5); line-height: 1.5; }
+.usage-provenance-note { margin-top: 6px; }
+.usage-spend-legend-note { margin-top: 10px; }
+.usage-import-banner > span { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.usage-import-banner-text { color: var(--fg-mute); }
+
+/* ─── TokenCompositionBars — the two-level zoom bar (DESIGN-usage-numbers §R1)
+   A ≥90%-dominant composition gets a second, zoomed-in bar over the
+   non-dominant segments so the expensive slice gets real geometry instead of
+   a one-pixel-wide sliver. */
+.usage-zoom-bar {
+  margin-top: 10px;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  animation: usage-zoom-in var(--dur-2) ease-out;
+}
+.usage-zoom-caption {
+  margin: 0 0 6px;
+  color: var(--fg-dim);
+  font-size: var(--fs-3);
+}
+@keyframes usage-zoom-in {
+  from { opacity: 0; transform: scaleY(.96); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .usage-zoom-bar { animation: none; }
+}
+
+/* ─── ModelName — provider glyph + display name + optional store tag
+   (DESIGN-usage-numbers §R2). `.usage-model-text` carries this color and is
+   the one elidable box (REVIEW-W1 #6): `.usage-model-name` is often a child
+   of `.hbar-label`, whose own ellipsis clips TEXT, not an atomic inline-flex
+   box — without its own overflow/ellipsis, a long name hard-cut with no
+   affordance that it was truncated (the `title` on the outer span still
+   recovers it either way). `min-width: 0` on both lets the flex chain
+   actually shrink below its content's natural width instead of overflowing
+   its own row. */
+.usage-model-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+}
+.usage-model-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  color: var(--fg-strong);
+}
+
+/* ─── States (loading / error / first-run / no-usage) ─────────────────── */
+.usage-state {
+  display: grid; gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  background: var(--surface-panel);
+  box-shadow: var(--engrave);
+  padding: var(--pad-y) var(--pad-x);
+  color: var(--fg-mute); font-size: var(--fs-7);
+}
+.usage-state h3 { margin: 0; color: var(--fg-strong); font-size: var(--fs-d-6); }
+.usage-state p { margin: 0; color: var(--fg-mute); font-size: var(--fs-5); line-height: 1.5; }
+.usage-empty { justify-items: start; border-style: dashed; }
+.usage-state-loading { grid-template-columns: auto 1fr; align-items: center; }
+/* The ring itself is the shared <Spinner> atom (.lds-spinner in loading.css),
+   including its reduced-motion handling — this only tints it. */
+.usage-state-loading .lds-spinner { color: var(--anchor); }
+.usage-state-error { color: var(--red); border-color: color-mix(in oklab, var(--red) 35%, transparent); background: color-mix(in oklab, var(--red) 6%, var(--bg-1)); }
+.usage-error-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.usage-refresh-banner-actions { display: inline-flex; gap: 6px; margin-left: 8px; }
+
+/* ─── Controls shelf and static currency row ───────────────────────────── */
+.usage-controls-scope {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: var(--z-float); /* above the cards' own chart layers (z 1–3), below popovers */
+  margin-inline: calc(-1 * var(--pad-screen-x));
+  padding-inline: var(--pad-screen-x);
+  padding-block: 10px 12px; margin-block: -10px 0;
+  background: var(--bg-0);
+  container-type: inline-size; container-name: usagecontrols;
+}
+.usage-controls-scope::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 14px;
+  background: linear-gradient(to bottom, var(--bg-0), transparent);
+  pointer-events: none;
+}
+.usage-controls-currency-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.usage-currency-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.usage-rate-field { display: flex; align-items: center; gap: 6px; }
+.usage-rate-field input {
+  width: 64px; padding: 5px 7px;
+  font-family: var(--font-mono); font-size: var(--fs-5); color: var(--fg);
+  background: var(--surface-well); box-shadow: var(--shadow-well);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.usage-rate-hint { font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim); }
+/* USD selected: the rate field keeps its slot (same width, same hint) so the
+   band does not reflow when the currency switches — it only dims. */
+.usage-rate-field[data-inactive="true"] { opacity: 0.45; }
+.usage-rate-field input:disabled { cursor: default; color: var(--fg-mute); }
+
+/* Icon-only harness chips once the shelf gets tight. Only chips that actually
+   carry a glyph collapse (`:has(.chip-icon)`) — the "All" chip has none and
+   always keeps its text. The label stays the input's accessible name: this
+   is the same clip-rect technique as `.sr-only` (command-layer.css),
+   inlined here rather than toggled via that class, because a container
+   query can apply styles directly but cannot swap a class on its own. */
+@container usagecontrols (max-width: 640px) {
+  .usage-harness-filter .chip:has(.chip-icon) .chip-label-text {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .usage-harness-filter .chip:has(.chip-icon) { padding-inline: 8px; }
+}
+
+/* ─── KPI row ───────────────────────────────────────────────────────────── */
+.usage-kpis { --tile-min: 180px; --tile-gap: 12px; }
+.usage-kpis--six > * { flex-basis: calc((100% - 5 * 12px) / 6); }
+@container tilerow (max-width: 1100px) {
+  .usage-kpis--six > * { flex-basis: calc((100% - 2 * 12px) / 3); }
+}
+@container tilerow (max-width: 640px) {
+  .usage-kpis--six > * { flex-basis: calc((100% - 12px) / 2); }
+}
+/* Five tiles balance 5 / 3+2 / primary-first 1+2+2 as the row (a `tilerow`
+   inline-size container, see rows-cards.css) narrows — never a lone
+   full-width tile beside a run of empty space (COMPONENTS.md §Layout > Tile
+   rows fill). 947px = 5×180 + 4×12 − 1, the width just below which five no
+   longer fit on one line. */
+@container tilerow (max-width: 947px) {
+  .usage-kpis > * { flex-basis: calc((100% - 2 * 12px) / 3); }
+}
+/* 563px = 3×180 + 2×12, the width at which three no longer fit either: drop
+   to halves, and pull the accent (primary) tile onto its own full-width row
+   ahead of the rest — [cost full] [tokens · sessions] [tools · cache]. */
+@container tilerow (max-width: 563px) {
+  .usage-kpis > * { flex-basis: calc((100% - 12px) / 2); }
+  .usage-kpis > .stat-card.accent { flex-basis: 100%; order: -1; }
+}
+
+/* ─── Spend over time ───────────────────────────────────────────────────── */
+.usage-spend-card .usage-section-head { margin-bottom: 12px; }
+/* Measure and Bucket are two independent chip groups sharing the head's
+   trailing slot — one flex row so both hug their own labels rather than
+   splitting the head's `justify-content: space-between` into three. */
+.usage-spend-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* ─── Two-column band (harness breakdown + composition/models) ────────── */
+/* `align-items: start`: each card is its own height. Stretching the harness
+   card to the taller side column left a run of empty panel under its fold. */
+.usage-band { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.usage-band-main { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.usage-band-side { display: grid; gap: 16px; align-content: start; }
+.usage-over-time { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.usage-over-time-main, .usage-over-time-side { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.usage-over-time-card { min-width: 0; }
+.usage-activity-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.usage-over-time-card .chart-legend-item { max-width: 100%; min-width: 0; }
+.usage-over-time-card .chart-legend-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-over-time-card .chart-legend-item > strong { flex-shrink: 0; }
+.usage-skill-picker { display: grid; gap: 12px; max-width: calc(100vw - 8px); max-height: calc(100dvh - 8px); overflow-y: auto; }
+.usage-skill-picker-heading { display: flex; justify-content: space-between; gap: 12px; color: var(--fg-strong); font-size: var(--fs-6); }
+.usage-skill-picker-heading > span { color: var(--fg-mute); font-family: var(--font-mono); font-size: var(--fs-4); }
+.usage-skill-picker-actions { display: flex; align-items: center; gap: 4px; }
+.usage-skill-picker-actions > .usage-note { flex: 1; }
+.usage-skill-picker-results { height: min(240px, 32vh); min-height: 80px; overflow-y: auto; }
+.usage-skill-picker-results .multiselect-meta { gap: 4px; color: var(--fg-mute); font-size: var(--fs-4); font-variant-numeric: tabular-nums; }
+.usage-skill-picker-unit { font-size: var(--fs-3); }
+.usage-peaks-grid-wrap { display: grid; grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto 18px; column-gap: 8px; margin-top: 14px; width: 100%; }
+.usage-peaks-grid { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: 2px; min-width: 0; }
+.usage-peaks-row-labels { display: grid; grid-template-rows: repeat(7, 1fr); align-items: center; color: var(--fg-dim); font: var(--fs-2) var(--font-mono); }
+.usage-peaks-hour-labels { grid-column: 2; display: grid; grid-template-columns: repeat(4, 1fr); color: var(--fg-dim); font: var(--fs-2) var(--font-mono); }
+.usage-peaks-hour-labels span:nth-child(n + 2) { text-align: center; }
+.usage-peaks-cell { aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 2px; cursor: pointer; }
+.usage-peaks-cell:focus-visible { outline: 2px solid var(--anchor); outline-offset: 1px; }
+.usage-over-time-empty { margin-top: 14px; }
+@container appmain (max-width: 760px) {
+  .usage-band { grid-template-columns: 1fr; }
+  .usage-over-time { grid-template-columns: 1fr; }
+}
+
+.usage-activity-card { min-width: 0; }
+.usage-activity-card .usage-section-head { margin-bottom: 12px; }
+.usage-heatmap-scroll { overflow-x: auto; min-width: 0; padding-bottom: 2px; }
+/* 52 fluid columns: the grid fills the card at any width and only scrolls
+   inside `.usage-heatmap-scroll` below its 520px floor (narrow layouts). */
+.usage-heatmap-months { display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 3px; min-width: 520px; height: 18px; color: var(--fg-mute); font: var(--fs-2) var(--font-mono); }
+.usage-heatmap-months span { white-space: nowrap; }
+.usage-heatmap-grid { display: grid; grid-auto-flow: row; gap: 3px; min-width: 520px; }
+.usage-heatmap-row { display: grid; grid-template-columns: repeat(52, minmax(0, 1fr)); gap: 3px; }
+.usage-heatmap-cell { width: 100%; aspect-ratio: 1; height: auto; padding: 0; border: 0; border-radius: 2px; background: var(--bg-3); cursor: pointer; }
+.usage-heatmap-cell:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.usage-heatmap-tooltip { min-height: 18px; margin-top: 10px; color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-3); }
+.usage-peaks-tooltip { display: grid; }
+.usage-peaks-tooltip > span { grid-area: 1 / 1; min-width: 0; }
+.usage-peaks-tooltip-size { visibility: hidden; }
+
+.usage-harness-list { display: grid; gap: 10px; margin-top: 14px; }
+.usage-harness-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 96px auto;
+  align-items: center; gap: 14px;
+  /* An inline-size container so the meta line (sessions · tool calls · model)
+     can drop its separators and stack once the row itself gets narrow,
+     instead of truncating the trailing clause (the model name). */
+  container-type: inline-size; container-name: harnessrow;
+}
+.usage-harness-glyph-fallback { width: 22px; height: 22px; border-radius: 999px; background: var(--bg-3); }
+.usage-harness-info { display: grid; gap: 2px; min-width: 0; }
+.usage-harness-info strong { color: var(--fg-strong); font-family: var(--font-sans); font-size: var(--fs-7); }
+.usage-harness-meta {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px;
+  color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-3);
+}
+/* Each clause never breaks inside itself — it either fits whole or ellipsizes
+   whole; only the separator between clauses is a break point. */
+.usage-harness-meta > span:not(.usage-harness-sep) {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+@container harnessrow (max-width: 520px) {
+  .usage-harness-meta { flex-direction: column; gap: 2px; }
+  .usage-harness-meta .usage-harness-sep { display: none; }
+}
+.usage-share-track { height: 6px; border-radius: var(--radius-sm); background: var(--bg-3); overflow: hidden; }
+.usage-share-fill { height: 100%; border-radius: var(--radius-sm); }
+.usage-row-numbers { display: grid; justify-items: end; gap: 2px; font-family: var(--font-mono); }
+.usage-row-numbers b { color: var(--fg-strong); font-size: var(--fs-7); font-weight: 600; }
+.usage-row-numbers span { color: var(--fg-mute); font-size: var(--fs-3); }
+.usage-row-numbers .usage-share-pct,
+.usage-row-numbers .usage-row-tools { color: var(--fg-dim); }
+/* Marks a harness cost that mixes cost-known and backfilled (cost-unknown)
+   days in the active scope — the row's own `title` carries the full
+   explanation, this is just the discoverable hint. */
+.usage-partial-mark { margin-left: 2px; color: var(--fg-dim); }
+
+.usage-fold { margin-top: 14px; }
+.usage-fold summary {
+  cursor: pointer; color: var(--fg-dim); font-family: var(--font-mono);
+  font-size: var(--fs-3); list-style: none;
+}
+.usage-fold summary::-webkit-details-marker { display: none; }
+.usage-fold summary::before { content: "▸ "; }
+.usage-fold[open] summary::before { content: "▾ "; }
+.usage-fold p { margin-top: 6px; }
+
+/* ─── Sessions ──────────────────────────────────────────────────────────── */
+.usage-session-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0 4px; }
+.usage-session-controls .search-input { max-width: 260px; flex: 1 1 200px; }
+.usage-toggle { align-content: center; grid-auto-flow: column; align-items: center; text-transform: none !important; letter-spacing: 0 !important; font-family: var(--font-sans) !important; }
+.usage-fullpath-hint { margin-top: 8px; }
+.usage-inline-link { display: inline; padding: 0; border: 0; background: none; color: var(--anchor); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.usage-inline-link:hover { color: var(--fg); }
+.usage-inline-link:disabled { color: var(--fg-dim); cursor: default; text-decoration: none; }
+
+.usage-sessions { display: flex; flex-direction: column; gap: 2px; margin-top: 10px; }
+/* Session labels may be whole prompts. Keep metadata and activity independent
+   of their length while retaining ResourceRow's disclosure and totals column. */
+.usage-session-row > .resource-line { flex-wrap: wrap; row-gap: 6px; }
+.usage-session-row > .resource-line > .resource-name { flex: 1 1 100%; }
+.usage-session-row > .resource-line > .resource-desc { display: block; flex: 1 1 240px; }
+.usage-session-row .usage-session-title { display: block; max-width: 72ch; overflow: hidden; text-overflow: ellipsis; }
+.usage-session-row .usage-session-meta > .tag,
+.usage-session-row .usage-session-meta > .usage-meta-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-session-title { font-family: var(--font-sans); color: var(--fg-strong); }
+.usage-session-fallback { color: var(--fg-mid); }
+.usage-session-fallback code { font-family: var(--font-mono); color: var(--fg-dim); }
+/* `min-width: 0` + `flex: 1 1 auto` overrides `.resource-line > * { flex: 0
+   0 auto }` (rows-cards.css) — at rest this cluster still sizes to its own
+   content, but at a narrow width (3 chips: scope, branch, PR) it can now
+   actually shrink and wrap instead of overflowing its own grid track and
+   bleeding into the badges column beside it. */
+.usage-session-meta { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1 1 auto; min-width: 0; }
+.usage-meta-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-2);
+}
+.usage-pr-link {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--anchor); font-family: var(--font-mono); font-size: var(--fs-2);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.usage-pr-link:hover { color: var(--fg); }
+.usage-pr-count, .usage-session-pin { padding: 0; border: 0; background: none; color: var(--fg-dim); font: inherit; font-family: var(--font-mono); font-size: var(--fs-2); cursor: pointer; }
+.usage-pr-count:hover, .usage-session-pin:hover { color: var(--anchor); }
+.usage-session-pin { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; min-height: 24px; border-radius: var(--radius-sm); }
+.usage-session-pin:focus-visible, .usage-pr-count:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.usage-header-actions { display: inline-flex; align-items: center; gap: 8px; }
+
+.usage-sessions-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.usage-show-more {
+  display: inline-flex; align-items: center; gap: 6px;
+  width: auto; padding: 5px 10px;
+  background: transparent; border: 0; cursor: pointer;
+  font: inherit; font-size: var(--fs-3); color: var(--fg-mute);
+  border-radius: var(--radius-sm);
+}
+.usage-show-more:hover { background: var(--bg-2); color: var(--fg); }
+
+/* ─── Session detail (row disclosure) ──────────────────────────────────────
+   A `tile-row` of up to three blocks (Tokens/Models/Activity) inside the
+   session row's `.resource-detail` panel (COMPONENTS.md §Layout > Tile rows
+   fill) — narrower than the KPI row's own tiles, since a block here is a
+   composition bar or a short key/value list, not a stat card. */
+.usage-session-detail { --tile-min: 240px; --tile-gap: 14px; align-items: start; }
+.usage-detail-block { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.usage-detail-block .usage-kicker { margin-bottom: 0; }
+/* Keep model identity above the bar so a narrow detail tile can show the
+   full name and token count without competing with the cost. */
+.usage-session-detail .hbar-row { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; }
+.usage-session-detail .hbar-label-col { grid-column: 1 / -1; }
+.usage-session-detail .hbar-label,
+.usage-session-detail .hbar-sub,
+.usage-session-detail .usage-model-text { white-space: normal; overflow-wrap: anywhere; }
+
+.usage-detail-kv { display: grid; gap: 4px; margin: 0; }
+.usage-detail-kv-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.usage-detail-kv-row dt { flex: 0 0 auto; margin: 0; color: var(--fg-dim); font-size: var(--fs-3); }
+/* `overflow-wrap: anywhere` (not nowrap/ellipsis): unlike the row's own short
+   token/cost figures, a value here can be a long tool tally or a full
+   session id — it wraps to a second line rather than clipping. */
+.usage-detail-kv-row dd {
+  flex: 1 1 auto; margin: 0; min-width: 0;
+  color: var(--fg-mid); font-family: var(--font-mono); font-size: var(--fs-3);
+  text-align: right; overflow-wrap: anywhere;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+@container appmain (max-width: 760px) {
+  .usage-section-head, .usage-session-head { flex-direction: column; align-items: flex-start; }
+  /* The controls band keeps its row direction: its two clusters wrap on
+     their own, and a forced column would stack every chip group even
+     when two of them fit side by side. */
+  .usage-state-loading { grid-template-columns: 1fr; }
+}
+@container appmain (max-width: 560px) {
+  .usage-row-numbers { justify-items: start; }
+  .usage-harness-row { grid-template-columns: auto 1fr; }
+  .usage-harness-row .usage-share-track,
+  .usage-harness-row .usage-row-numbers { grid-column: 1 / -1; }
+}
+
+/* ─── Compact chip groups ──────────────────────────────────────────────────
+   `ChipRadios` is a full-width row by default (its chips share the row). On
+   this screen a chip group is one control among others in a band or a card
+   head, so it hugs its labels and leaves the rest of the line to its
+   neighbours; the head's text block takes the slack instead of collapsing. */
+.usage-controls-scope .chip-radios,
+.usage-currency-group .chip-radios,
+.usage-section-head .chip-radios { width: auto; flex: 0 0 auto; }
+.usage-controls-scope .chip-radio,
+.usage-currency-group .chip-radio,
+.usage-section-head .chip-radio { flex: 0 0 auto; padding-inline: 14px; }
+.usage-section-head > :first-child { flex: 1 1 auto; min-width: 0; }
+
+/* ─── Prices popover (§R4) ──────────────────────────────────────────────── */
+.usage-prices-popover { display: grid; gap: 12px; width: 100%; }
+.usage-prices-section { display: grid; gap: 6px; }
+.usage-prices-path {
+  margin: 0; font-family: var(--font-mono); font-size: var(--fs-3);
+  color: var(--fg-dim); word-break: break-all;
+}
+.usage-prices-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* Stacked, not side-by-side: the rate clause ("in 10.00 · out 50.00 · write
+   12.50 · read 0.25 $/MTok") is wider than the popover itself at 380px, so a
+   single row would overflow the panel instead of wrapping inside it. */
+.usage-prices-list li { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.usage-prices-rates {
+  font-family: var(--font-mono); font-size: var(--fs-4); color: var(--fg-mid);
+}
+
+/* ─── Session drill-down sheet (DESIGN-usage-numbers §R5/W2) ───────────────
+   `UsageSessionSheet` — a `Sheet` (COMPONENTS.md §Sheet) with a fixed header
+   strip, a `ChipRadios` area switch, and one of three area bodies. Every
+   token/radius/color here is an existing one — no new literal. */
+/* REVIEW-W2 F12 / c: the area body must own the REST of the sheet's height,
+   not the shared `.modal-body` primitive's shrink-to-fit default — every
+   other Sheet/Modal consumer keeps that default (their content picks its
+   own height, bounded by `max-height`/`88vh`), so this stretch is scoped to
+   THIS sheet's own `className` rather than touching `overlays.css`. */
+.usage-session-sheet .modal-body {
+  display: flex; flex-direction: column;
+  flex: 1 1 auto; min-height: 0; overflow: hidden;
+}
+.usage-sheet-body { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; gap: 14px; }
+.usage-sheet-head {
+  display: grid; gap: 6px; margin: 0;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  transition: opacity var(--dur-2) ease-out;
+}
+.usage-sheet-head.is-loading { opacity: .5; }
+@media (prefers-reduced-motion: reduce) {
+  .usage-sheet-head { transition: none; }
+}
+.usage-sheet-head-row { display: flex; align-items: baseline; gap: 10px; }
+.usage-sheet-head-row dt {
+  flex: 0 0 auto; width: 74px; margin: 0;
+  color: var(--fg-dim); font-size: var(--fs-3); font-family: var(--font-mono);
+}
+.usage-sheet-head-row dd {
+  flex: 1 1 auto; margin: 0; min-width: 0;
+  color: var(--fg-mid); font-family: var(--font-mono); font-size: var(--fs-3);
+  overflow-wrap: anywhere;
+}
+.usage-sheet-head-count, .usage-sheet-head-incomplete { color: var(--fg-dim); }
+.usage-sheet-footnote { margin-top: 4px; color: var(--fg-dim); font-family: var(--font-sans); }
+
+/* F12/c: `flex: 1` so this area fills whatever height `.usage-sheet-body`
+   has left after the header strip + chip row — the ONE scroll container for
+   either area's content (caption + list together), so Sub-agents and Tool
+   calls scroll the same way instead of one capping an inner box and the
+   other scrolling the whole sheet. */
+.usage-sheet-area-body { flex: 1 1 auto; min-height: 0; overflow: auto; }
+.usage-sheet-skeleton { display: grid; gap: 6px; }
+.usage-sheet-toolbar, .usage-inspection-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.usage-sheet-toolbar .usage-note, .usage-inspection-toolbar .usage-note { flex: 1 1 auto; }
+.usage-inspection-panel { display: grid; gap: 14px; min-height: 0; }
+.usage-inspection-content { display: grid; gap: 14px; min-height: 0; }
+/* Inside the sheet the chip row stays put and the content below it is the
+   one scroll container, the same way `.usage-sheet-area-body` scrolls the
+   legacy areas. The full route keeps page scrolling. */
+.usage-session-sheet .usage-inspection-panel { display: flex; flex-direction: column; flex: 1 1 auto; }
+.usage-session-sheet .usage-inspection-content { flex: 1 1 auto; overflow: auto; align-content: start; padding-right: 2px; }
+.usage-inspection-evidence { display: flex; flex-wrap: wrap; gap: 4px 10px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-inspection-evidence strong { color: var(--fg-mid); }
+.usage-inspection-evidence.is-partial { color: var(--amber); }
+.usage-inspection-evidence.is-unavailable { color: var(--red); }
+.usage-inspection-route, .usage-pinned-route { display: grid; gap: 16px; max-width: 980px; }
+/* --lane-stat-w fits the widest stat a real session produces: a partial
+   token status reads "253.2M · partial tok · 4,395 tools" at 193px (measured
+   at --fs-3 mono). Ellipsis below is the safety net, with the full value on
+   the row's title. */
+.usage-inspection-timeline { display: grid; gap: 12px; --lane-name-w: 200px; --lane-stat-w: 196px; --lane-pad-x: 8px; }
+.usage-inspection-zoom { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; font: var(--fs-3) var(--font-mono); color: var(--fg-dim); }
+.usage-timeline-canvas { overflow-x: auto; }
+.usage-lane-list { display: grid; gap: 2px; min-width: 100%; }
+/* Fixed name and stat columns: each lane is its own grid, so `auto` columns
+   sized per row put every track at a different width and start. */
+.usage-lane { display: grid; grid-template-columns: var(--lane-name-w) minmax(200px, 1fr) var(--lane-stat-w); align-items: center; gap: 12px; min-height: var(--row-h); padding: 3px var(--lane-pad-x); border: 1px solid transparent; border-radius: var(--radius-frame); background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.usage-lane:hover, .usage-lane.is-selected { border-color: var(--ctx); background: color-mix(in oklab, var(--ctx) 8%, transparent); }
+.usage-lane:focus-visible { outline: 2px solid var(--anchor); outline-offset: 1px; }
+.usage-lane-name { display: grid; gap: 1px; min-width: 0; color: var(--fg-strong); }
+.usage-lane-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-lane-model { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--fg-dim); font-size: var(--fs-2); }
+.usage-lane-model .usage-model-text { color: var(--fg-mute); }
+.usage-lane-model.is-unavailable { font-style: italic; }
+.usage-lane-model-more { font-family: var(--font-mono); }
+.usage-lane-track { position: relative; display: block; height: 12px; border-radius: var(--radius-sm); background: var(--bg-3); overflow: hidden; }
+.usage-lane-life, .usage-lane-active { position: absolute; top: 3px; height: 6px; border-radius: var(--radius-sm); }
+.usage-lane-life { background: var(--fg-dim); opacity: .55; }
+.usage-lane-active { top: 2px; height: 8px; background: var(--ctx-2); box-shadow: var(--shadow-proc-glow); }
+.usage-lane-wait { position: absolute; inset-block: 0; width: 2px; transform: translateX(-1px); background: var(--anchor); opacity: .9; }
+.usage-lane-wait-span { position: absolute; inset-block: 0; border-inline: 1px solid var(--anchor); background: color-mix(in oklab, var(--anchor) 14%, transparent); opacity: .9; }
+.usage-lane-gap { position: absolute; inset-block: 0; background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--fg-dim) 22%, transparent) 0 2px, transparent 2px 6px); opacity: .8; }
+.usage-lane-stat { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--fg-dim); font: var(--fs-3) var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.usage-timeline-ticks { display: grid; grid-template-columns: var(--lane-name-w) minmax(200px, 1fr) var(--lane-stat-w); gap: 12px; padding-inline: var(--lane-pad-x); color: var(--fg-dim); font: var(--fs-3) var(--font-mono); }
+.usage-timeline-axis-track { display: flex; justify-content: space-between; margin-inline: 1px; }
+.usage-timeline-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-timeline-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.usage-timeline-legend i { display: inline-block; width: 12px; height: 6px; border-radius: var(--radius-sm); background: var(--fg-dim); }
+.usage-timeline-legend i.is-gap { background: repeating-linear-gradient(135deg, var(--fg-dim) 0 2px, transparent 2px 4px); }
+.usage-timeline-legend .is-active { background: var(--ctx-2); }
+.usage-timeline-legend .is-wait { width: 2px; height: 12px; border-radius: 0; background: var(--anchor); }
+.usage-inspection-selection { display: grid; gap: 8px; padding: var(--pad-y) var(--pad-x); border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-well); box-shadow: var(--shadow-well); }
+.usage-inspection-selection-heading, .usage-inspection-selection-actions { display: flex; align-items: center; gap: 8px; }
+.usage-inspection-selection-heading { justify-content: space-between; }
+.usage-inspection-stats { display: flex; gap: 16px; flex-wrap: wrap; color: var(--fg-mute); font-size: var(--fs-4); }
+.usage-inspection-stats b { color: var(--fg-strong); font-family: var(--font-mono); font-weight: 500; }
+.usage-inspection-tools { display: grid; gap: 10px; }
+.usage-inspection-filter { display: inline-flex; align-items: center; gap: 8px; color: var(--fg-mute); font-size: var(--fs-4); }
+.usage-inspection-filter select { min-width: 170px; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-well); color: var(--fg); font: inherit; }
+.usage-inspection-pr-picker { display: grid; gap: 8px; color: var(--fg-mute); font-size: var(--fs-4); }
+.usage-inspection-pr-picker summary { cursor: pointer; color: var(--fg-dim); }
+.usage-inspection-pr-picker > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.usage-row-pr-picker { display: inline-grid; gap: 6px; }
+.usage-row-pr-picker summary { cursor: pointer; list-style: none; }
+.usage-row-pr-picker summary::-webkit-details-marker { display: none; }
+.usage-row-pr-picker > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.usage-tool-group-list, .usage-inspection-changes, .usage-pinned-list { display: grid; gap: 6px; }
+.usage-tool-group, .usage-inspection-change, .usage-pinned-item { border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-panel); box-shadow: var(--engrave); }
+/* Fixed tool and count columns so the operation text starts on one line
+   across groups, whatever the tool name's length. */
+.usage-tool-group-toggle { display: grid; grid-template-columns: 112px minmax(0, 1fr) 7ch; align-items: center; width: 100%; gap: 10px; padding: 8px 10px; border: 0; background: transparent; color: var(--fg-mid); text-align: left; cursor: pointer; }
+.usage-tool-group-tool { min-width: 0; }
+.usage-tool-group-tool .tag { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-tool-group-count { color: var(--fg-dim); font: var(--fs-3) var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.usage-tool-streaming { color: var(--fg-mute); }
+.usage-tool-group-toggle:hover { background: var(--bg-2); }
+.usage-tool-group-toggle:focus-visible { outline: 2px solid var(--anchor); outline-offset: -2px; }
+.usage-tool-group-toggle code { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-tool-group-items { display: grid; gap: 1px; padding: 0 10px 8px; }
+.usage-tool-item { padding: 8px 0; border-top: 1px solid var(--border); }
+.usage-tool-item header { display: grid; grid-template-columns: 5ch minmax(0, 1fr) auto auto; gap: 10px; color: var(--fg-dim); font: var(--fs-3) var(--font-mono); }
+.usage-tool-item header > span:first-of-type { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.usage-tool-parts { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; margin-top: 6px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-tool-part { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-well); color: var(--fg-mute); font: var(--fs-2) var(--font-mono); cursor: pointer; }
+.usage-tool-part:disabled { cursor: default; opacity: .7; }
+.usage-inspection-change { display: grid; gap: 6px; padding: var(--pad-y) var(--pad-x); }
+.usage-inspection-change-head, .usage-pinned-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.usage-inspection-change ul { margin: 0; padding-left: 18px; color: var(--fg-mute); }
+.usage-inspection-revision { color: var(--fg-dim); overflow-wrap: anywhere; }
+.usage-inspection-body { display: grid; gap: 8px; padding: var(--pad-y) var(--pad-x); border: 1px solid var(--border); border-radius: var(--radius-frame); background: var(--surface-well); box-shadow: var(--shadow-well); }
+.usage-inspection-body header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.usage-inspection-body-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.usage-inspection-body pre { max-height: 320px; margin: 0; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg-mid); font: var(--fs-3) var(--font-mono); }
+.usage-inspection-source { display: inline-flex; align-items: center; gap: 5px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-pinned-item { display: grid; gap: 8px; padding: var(--pad-y) var(--pad-x); }
+.usage-pinned-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--fg-dim); font-size: var(--fs-3); }
+.usage-pinned-breadcrumb span + span::before { content: "/"; margin-right: 6px; color: var(--fg-dim); }
+.usage-pinned-breadcrumb .is-unavailable { color: var(--red); }
+.usage-pinned-actions { justify-content: flex-start; }
+@media (max-width: 720px) { .usage-lane { grid-template-columns: minmax(120px, 1fr) minmax(180px, 2fr); } .usage-lane-stat { grid-column: 1 / -1; text-align: left; } .usage-timeline-ticks { grid-template-columns: minmax(120px, 1fr) minmax(180px, 2fr); } .usage-timeline-axis-stat { display: none; } }
+
+.usage-subagents { display: grid; gap: 2px; }
+/* F10/a/b: a sub-agent's name is the scrubbed DESCRIPTION — prose, not an
+   identifier, so it overrides `.resource-name`'s mono default (AGENTS.md's
+   identifier-vs-prose rule). The model/agent-type/depth tags in `meta` stay
+   mono (real identifiers) via `ModelName`/`Tag`'s own styling, untouched.
+   `.resource-line` wraps so `.resource-desc` (duration · tool calls · edits)
+   drops to its own second line instead of the whole row eliding mid-word —
+   `.resource-desc` gets `flex-basis: 100%` specifically so it is the child
+   that wraps, leaving name+meta together on line one. */
+.usage-subagents .resource-name {
+  font-family: var(--font-sans); white-space: normal; overflow: visible; text-overflow: clip;
+}
+.usage-subagents .resource-line { flex-wrap: wrap; row-gap: 2px; }
+.usage-subagents .resource-desc {
+  flex: 1 1 100%; white-space: normal; overflow: visible; text-overflow: clip;
+}
+.usage-subagent-meta { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.usage-toolcalls-count { margin-bottom: 8px; }
+.usage-toolcall-list {
+  display: grid; gap: 1px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.usage-toolcall-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 10px; outline: none;
+}
+.usage-toolcall-row[aria-current="true"] { background: var(--bg-2); }
+.usage-toolcall-row:focus-visible { box-shadow: inset 0 0 0 1px var(--anchor); }
+.usage-toolcall-index {
+  flex: 0 0 auto; width: 32px;
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim);
+}
+.usage-toolcall-summary {
+  flex: 1 1 auto; min-width: 0;
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mid);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Area 3, Diff (docs/changes/DESIGN-usage-numbers/PLAN.md §R5/W3): a caption, a file
+   list, and one expandable patch. Every token below already exists
+   elsewhere on this screen/sheet — no new literal. */
+.usage-diff { display: grid; gap: 4px; }
+.usage-diff-caption { color: var(--fg-mid); }
+.usage-diff-scope, .usage-diff-truncated { color: var(--fg-dim); }
+.usage-diff-skeleton { display: grid; gap: 6px; }
+
+.usage-diff-files {
+  display: grid; gap: 1px; margin-top: 8px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.usage-diff-file-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 10px; border: none; background: none; width: 100%;
+  font: inherit; text-align: left; cursor: pointer; outline: none;
+}
+.usage-diff-file-row:hover, .usage-diff-file-row.is-active { background: var(--bg-2); }
+.usage-diff-file-row:focus-visible { box-shadow: inset 0 0 0 1px var(--anchor); }
+.usage-diff-file-path {
+  flex: 1 1 auto; min-width: 0;
+  font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-mid);
+  overflow-wrap: anywhere;
+}
+.usage-diff-file-stats {
+  flex: 0 0 auto; display: inline-flex; gap: 4px;
+  font-family: var(--font-mono); font-size: var(--fs-2);
+}
+.usage-diff-add { color: var(--green); }
+.usage-diff-del { color: var(--red); }
+.usage-diff-file-binary {
+  flex: 0 0 auto; color: var(--fg-dim); font-family: var(--font-mono); font-size: var(--fs-2);
+}
+
+.usage-diff-patch-wrap { margin-top: 10px; }
+.usage-diff-patch {
+  margin: 0; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-1);
+  font-family: var(--font-mono); font-size: var(--fs-2); color: var(--fg-dim);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  overflow-x: auto;
+}
+.usage-diff-patch .is-add { color: var(--green); }
+.usage-diff-patch .is-del { color: var(--red); }
+/* A hunk header must read apart from a context line, whose body already sits at --fg-dim. */
+.usage-diff-patch .is-hunk { color: var(--fg-mute); }
+
+.usage-session-detail > .usage-detail-actions { flex-basis: 100%; }

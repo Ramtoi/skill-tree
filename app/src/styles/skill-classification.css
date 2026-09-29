@@ -1,0 +1,93 @@
+.classification-contributions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
+.classification-values { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+.classification-value { min-width: 0; max-width: 100%; padding: 3px 8px; color: var(--fg-mid); background: transparent; border: 1px solid var(--edge-hi); border-radius: var(--radius-frame); font: inherit; cursor: pointer; }
+.classification-value-assigned { background: var(--bg-4); border-color: transparent; }
+.classification-value-direct { background: transparent; border-style: solid; }
+.classification-value-indirect { background: transparent; border-style: dashed; }
+.classification-value-label { display: block; overflow-wrap: anywhere; text-align: left; }
+.classification-value:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.classification-value-direct { border-top-style: solid; border-bottom-style: solid; }
+.classification-value-indirect { border-top-style: dashed; border-bottom-style: dashed; border-right-style: dashed; }
+.classification-facts { display: flex; flex-wrap: wrap; gap: 8px; color: var(--fg-mute); font-size: var(--fs-3); }
+.classification-facts span + span::before { content: "·"; margin-right: 8px; }
+.output-flow { display: inline-flex; align-items: stretch; width: max-content; max-width: 100%; min-width: 0; overflow-x: auto; overflow-y: hidden; border: 1px solid var(--edge-hi); border-radius: var(--radius-frame); }
+.output-flow-leading, .output-flow-item { display: inline-flex; align-items: stretch; min-width: max-content; flex-shrink: 0; }
+.output-flow-leading { align-items: center; padding: 0 9px; color: var(--fg-mute); background: var(--bg-4); }
+.output-flow-leading + .output-flow-item { border-left: 1px solid var(--edge-hi); }
+.output-flow-item + .output-flow-item { border-left: 1px solid var(--edge-hi); }
+.output-flow .classification-value { border: 0; border-radius: 0; padding: 5px 9px; }
+.output-flow .classification-value-assigned { background: var(--bg-4); }
+.output-flow .classification-value-direct { border-top: 1px solid var(--edge-hi); border-bottom: 1px solid var(--edge-hi); }
+.output-flow .classification-value-indirect { border-top: 1px dashed var(--edge-hi); border-bottom: 1px dashed var(--edge-hi); border-right: 1px dashed var(--edge-hi); }
+.output-flow-separator { display: none; }
+.output-flow .classification-value-label { white-space: nowrap; overflow-wrap: normal; }
+.classification-section-body { min-width: 0; margin-top: 16px; }
+.classification-editor-controls { display: grid; gap: 18px; }
+.classification-editor-field { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; color: var(--fg-mid); font-size: var(--fs-3); }
+.classification-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
+.classification-list-field { display: grid; gap: 8px; min-width: 0; }
+.classification-saved-summary { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+.classification-saved-value { max-width: 100%; padding: 3px 8px; color: var(--fg-mid); background: var(--bg-4); border: 1px solid transparent; border-radius: var(--radius-frame); overflow-wrap: anywhere; }
+.classification-list-editor { display: grid; gap: 10px; min-width: 0; padding: 10px; background: var(--surface-panel); border: 1px solid var(--edge-hi); border-radius: var(--radius-frame); box-shadow: var(--shadow-well); }
+.classification-list-editor .search-input { min-width: 0; }
+.classification-list-actions { display: flex; justify-content: flex-end; }
+.classification-choice-list { display: grid; gap: 6px; min-width: 0; max-height: 300px; overflow: auto; }
+.classification-choice { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; align-items: start; min-width: 0; padding: 7px; border: 1px solid var(--edge-hi); border-radius: var(--radius-frame); }
+.classification-choice > .toggle { margin-top: 2px; }
+.classification-choice-label { min-width: 0; color: var(--fg); font-size: var(--fs-3); overflow-wrap: anywhere; cursor: pointer; }
+.classification-choice-description { grid-column: 2; min-width: 0; color: var(--fg-mute); font-size: var(--fs-3); overflow-wrap: anywhere; }
+.classification-choice-alias { display: block; color: var(--fg-mid); }
+.classification-choice-suggestion { border-style: dashed; }
+.classification-custom-input { display: flex; gap: 6px; min-width: 0; }
+.classification-custom-input input { flex: 1; min-width: 0; color: var(--fg); background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--radius-frame); padding: 5px 7px; font: inherit; }
+.classification-custom-input input:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.classification-editor-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.classification-behavior { min-width: 0; border-top: 1px solid var(--edge-hi); }
+.classification-behavior > summary { padding: 8px 0; color: var(--fg-mid); cursor: pointer; }
+.classification-behavior-body { display: grid; gap: 14px; padding-top: 4px; }
+.classification-behavior-foot { margin: 0; color: var(--fg-mute); font-size: var(--fs-3); }
+.classification-behavior-field { display: grid; gap: 6px; min-width: 0; }
+.classification-choice-fieldset { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.classification-choice-fieldset .chips, .classification-choices { display: flex; flex-wrap: wrap; width: 100%; min-width: 0; }
+.classification-choice-fieldset .chip, .classification-choices .chip { flex: 1 1 auto; min-width: 0; max-width: 100%; justify-content: center; white-space: normal; }
+.classification-choice-fieldset .chip-label, .classification-choices .chip-label-text { white-space: normal; overflow-wrap: anywhere; overflow: visible; text-overflow: clip; }
+.classification-custom-input { display: flex; gap: 6px; min-width: 0; }
+.classification-custom-input input { flex: 1; min-width: 0; color: var(--fg); background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--radius-frame); padding: 5px 7px; font: inherit; }
+.classification-custom-input input:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.classification-choice-fieldset:disabled .chip { cursor: not-allowed; }
+.classification-choice-fieldset:disabled .chip:not([aria-pressed="true"]) { opacity: .55; }
+.classification-choice-fieldset:disabled .chip:not([aria-pressed="true"]):hover { color: var(--fg-mute); }
+.classification-reference-values { display: grid; gap: 6px; min-width: 0; color: var(--fg-mute); }
+.classification-field-inspection { display: grid; gap: 4px; min-width: 0; }
+:is(.classification-header-value, .skill-header-class-measure-value), .classification-header-maturity { color: var(--fg-mute); font-size: var(--fs-3); }
+:is(.classification-header-value, .skill-header-class-measure-value) { border: 0; border-radius: var(--radius-frame); padding: 2px 5px; background: transparent; font: inherit; cursor: pointer; }
+:is(.classification-header-value, .skill-header-class-measure-value).classification-value-assigned { background: var(--bg-4); border: 1px solid transparent; }
+:is(.classification-header-value, .skill-header-class-measure-value).classification-value-direct { border: 1px solid var(--edge-hi); }
+:is(.classification-header-value, .skill-header-class-measure-value).classification-value-indirect { border: 1px dashed var(--edge-hi); }
+:is(.classification-header-value, .skill-header-class-measure-value):focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.classification-editor-field small { color: var(--fg-mute); }
+.classification-error { color: var(--red); font-size: var(--fs-3); }
+.classification-path-inspector { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-frame); color: var(--fg-mute); font-size: var(--fs-3); }
+.classification-contributors { display: flex; flex-wrap: wrap; gap: 5px; }
+.classification-contributors button, .classification-path-inspector > button { color: var(--fg); background: transparent; border: 0; text-decoration: underline; cursor: pointer; }
+.classification-contributors button:focus-visible, .classification-path-inspector > button:focus-visible { outline: 2px solid var(--anchor); outline-offset: 2px; }
+.classification-path { overflow-wrap: anywhere; color: var(--fg-mid); font-family: var(--font-mono); }
+.output-flow-remove { align-self: center; margin-right: 4px; color: var(--fg-mute); background: transparent; border: 0; cursor: pointer; }
+.classification-contributions-compact .classification-values { gap: 4px; }
+.classification-contributions-compact .classification-value { padding: 2px 6px; font-size: var(--fs-3); }
+
+/* Leave room for the skill name; classes consume only the remaining metadata space. */
+.skill-editor-header .header-status { max-width: 55%; }
+.skill-editor-header .title-meta > :not(.skill-header-classes) { flex-shrink: 0; }
+.skill-header-classes { position: relative; display: inline-flex; align-items: center; gap: 5px; flex: 0 1 auto; min-width: 24px; }
+.skill-header-classes > :is(.classification-header-value, .skill-header-class-measure-value),
+.skill-header-classes-measure > :is(.classification-header-value, .skill-header-class-measure-value) { flex: none; white-space: nowrap; }
+.skill-header-classes-measure { position: absolute; display: flex; gap: 5px; width: max-content; visibility: hidden; pointer-events: none; }
+.skill-header-classes-more { min-width: 24px; text-align: center; }
+.skill-header-classes-popover { max-width: min(360px, calc(100vw - 8px)); max-height: min(320px, calc(100vh - 8px)); overflow-y: auto; }
+.skill-header-classes-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.skill-header-classes-list :is(.classification-header-value, .skill-header-class-measure-value) { overflow-wrap: anywhere; text-align: left; }
+@container appmain (max-width: 480px) {
+  .skill-editor-header .header-status .title-meta { display: inline-flex; }
+  .skill-editor-header .title-meta > :not(.skill-header-classes) { display: none; }
+}

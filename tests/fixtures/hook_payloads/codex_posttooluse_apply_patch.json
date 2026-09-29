@@ -1,0 +1,15 @@
+{
+  "session_id": "00000000-0000-0000-0000-0000000000c1",
+  "turn_id": "00000000-0000-0000-0000-0000000000c2",
+  "transcript_path": "/tmp/scratch/proj/.codex/sessions/rollout.jsonl",
+  "cwd": "/tmp/scratch/proj",
+  "hook_event_name": "PostToolUse",
+  "model": "gpt-5.5",
+  "permission_mode": "bypassPermissions",
+  "tool_name": "apply_patch",
+  "tool_input": {
+    "command": "*** Begin Patch\n*** Update File: edit_me.txt\n@@\n-startval\n+newval\n*** End Patch\n"
+  },
+  "tool_response": "Exit code: 0\nWall time: 0.1 seconds\nOutput:\nSuccess. Updated the following files:\nM edit_me.txt\n",
+  "tool_use_id": "call_CODEXFIXTURE00000000"
+}

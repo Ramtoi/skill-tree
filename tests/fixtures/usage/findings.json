@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "window": 30,
+  "findings_window": 30,
+  "last_scan_at": "2026-09-07T12:00:00.000Z",
+  "findings": [
+    {
+      "id": "footprint-skills:claude-code:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "Skill descriptions (1) is 100% of the claude-code prompt (56 bytes).",
+      "numbers": {
+        "harness": "claude-code",
+        "part": "skills",
+        "share": 1.0,
+        "bytes": 56,
+        "bytes_total": 56
+      },
+      "moves": [
+        {
+          "label": "Review",
+          "kind": "review",
+          "targets": []
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": []
+      }
+    },
+    {
+      "id": "footprint-skill-brainstorm:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "brainstorm is 100% of the claude-code prompt (56 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "brainstorm",
+        "share": 1.0,
+        "bytes": 56,
+        "bytes_total": 56
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "brainstorm"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "brainstorm"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "brainstorm"
+        ]
+      }
+    }
+  ],
+  "analysed_sessions": [
+    "claude-code:aaaaaaaa-2222-4222-8222-222222222222"
+  ]
+}

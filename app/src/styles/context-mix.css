@@ -1,0 +1,110 @@
+/* ─── Context chrome: the SECOND section hue ───────────────────────────────
+   Two groups can be on screen at once. The CHROME group (`data-section`) is
+   the section the user is IN — the rail pill, the navigator, the hue of the
+   whole shell. The CONTENT group (`data-content-section`) is the section the
+   route's own entity belongs to. They differ whenever a screen is shown IN
+   PLACE inside another section: guardrails ▸ permissions ▸ project permissions
+   is a projects screen wearing guardrails chrome.
+
+   `--section-2` is that content hue, derived through EXACTLY the same ladder
+   as `--section` — same lift, same @supports guard, same 85% contour mix — so
+   the two are the same material at two temperatures, never a primary token and
+   a hand-tuned partner.
+
+       --sec-<group>  →  --section-2  →  --section-2-lifted  →  --chrome-edge-2
+
+   REUSE (3 lines): anything that must say "the content is from THERE" reads
+   `--section-2-lifted` where its chrome sibling reads `--section-lifted`, at
+   the same percentage — a breadcrumb chip at 18% (the `.header-glyph`
+   register), the area strip's active card at 14% (the band-wash register), an
+   in-place back arrow at 100%. Read `--chrome-edge-2` for any 1px contour.
+   Guard every one with `.app[data-context-mix="true"]`: without the attribute
+   `--section-2` collapses onto `--section` and the derivation is a no-op, so a
+   consumer that forgets the guard silently paints the chrome hue twice.
+
+   DECLARED ON `.app`, NOT `:root` — a custom property's var() references
+   resolve on the element that DECLARES it, and at :root `--section-2` would
+   always be the default hue no matter which route is open. Same trap that made
+   `--chrome-edge` violet on all five groups (tokens.css §NOTE). */
+
+/* The reveal's strength, 0 → 1. Registered so it interpolates as a NUMBER
+   (an unregistered custom property is a token stream and snaps). `inherits:
+   false` keeps it on the one element that animates it. */
+@property --mix-strength {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/* Default: the content hue IS the chrome hue. Every derivation below then
+   collapses to its primary, so a route with no mix costs nothing. */
+.app { --section-2: var(--section); }
+
+/* One rule per rail GROUP, mirroring the `data-section` block in
+   shell-scaffold.css § chrome hue. `data-content-section` is ALWAYS set. */
+.app[data-content-section="projects"]   { --section-2: var(--sec-projects); }
+.app[data-content-section="context"]    { --section-2: var(--sec-context); }
+.app[data-content-section="guardrails"] { --section-2: var(--sec-guardrails); }
+.app[data-content-section="agents"]     { --section-2: var(--sec-agents); }
+.app[data-content-section="elsewhere"]  { --section-2: var(--sec-elsewhere); }
+
+/* The sanctioned accent lift, applied a second time to the content hue —
+   byte-identical derivation to `--section-lifted` (shell-scaffold.css:27), so
+   the two hues can never land in different registers. */
+@supports (color: oklch(from red l c h)) {
+  .app { --section-2-lifted: oklch(from var(--section-2) 72% 0.14 h); }
+}
+
+.app {
+  /* The content hue's contour tone. Same 85% as `--chrome-edge`: at 60% the
+     lifted hue is diluted by the dark chrome ground back into a neutral.
+     Measured over --bg-0: 5.65:1 (guardrails) … 6.38:1 (elsewhere), the same
+     five numbers as the primary because it is the same arithmetic. */
+  --chrome-edge-2: color-mix(in oklab, var(--section-2-lifted, var(--section-2)) 85%, transparent);
+
+  /* WHERE THE LINE CHANGES HANDS. The band's bottom stroke holds the chrome
+     tone flat to --mix-line-start, ramps, and is settled in the content tone by
+     --mix-line-end.
+
+     The screen header BELONGS to the content. The chrome hue already owns the
+     rail strip, the navigator head and the rail's whole right edge, so the
+     stroke under the content column has to be the content's or the mix reads
+     as decoration on someone else's band. 8% / 28% at 1440px = a 229px ramp
+     between x≈92 and x≈320 of the screen header: the flat chrome anchor
+     covers the identity column (which ends at x≈52) and nothing more, and the
+     content tone then runs unbroken to the right edge — under the status chips,
+     the actions and the corner. An earlier 35/75 put the hand-off UNDER the
+     action cluster, which read as a corner tint rather than a second context.
+
+     Two flat anchors stay the point — a stroke that ramps edge-to-edge reads as
+     one muddled hue and names neither. Percentages, not px, so the ramp keeps
+     its proportions at every width. */
+  --mix-line-start: 8%;
+  --mix-line-end: 28%;
+
+  /* THE CONTENT LAMP's register + reach. The chrome lamp is 14% over a 1000px
+     radial anchored at the window's top-left; this one is 23% over 1600px
+     anchored at the band's right end. Both numbers are deliberate:
+       · 23%, not 14%, because this field is read THROUGH the chrome lamp,
+         which is still painted underneath and is nearer its own corner. Matched
+         at 14% the two cancelled across the middle and the content hue survived
+         only in the last ~15% of the width — the "corner tint" reading.
+       · 1600px, not 1000, because a radial's colour is gone by its 70% stop:
+         1000px from the right edge dies at x≈444 of a 1144px header, 1600px
+         reaches x≈24 — the header's own left padding. The field then covers
+         the content column instead of its corner.
+     The chrome lamp's 70% stop still lands at x≈404, so the two fields overlap
+     across the first third: one ground, two light sources, never a stripe. */
+  --mix-lamp-register: 23%;
+  --mix-lamp-reach: 1600px;
+}
+
+/* The reveal. Driven as an ANIMATION, not a transition: a route change mounts a
+   new `.main-header` element, and a transition on a freshly-mounted element
+   never runs — it starts at its final computed value. An animation plays on
+   mount AND on an in-place attribute flip, which is both of the ways this
+   state is entered. */
+@keyframes context-mix-reveal {
+  from { --mix-strength: 0; }
+  to   { --mix-strength: 1; }
+}

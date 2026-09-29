@@ -1,0 +1,16 @@
+# Example registry. Real user data lives in ~/.skill-hub/registry.yaml
+# and is populated by `hub bootstrap`. This file exists only as a
+# minimal seed/reference — Skill Tree never reads it at runtime.
+
+version: '1'
+
+bootstrap:
+  completed_at: null
+
+harnesses_global: []
+
+skills: {}
+
+bundles: {}
+
+projects: {}

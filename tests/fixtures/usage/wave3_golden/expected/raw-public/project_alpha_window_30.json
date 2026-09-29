@@ -1,0 +1,346 @@
+{
+  "ok": true,
+  "project": "alpha",
+  "window": 30,
+  "findings_window": 30,
+  "last_scan_at": "2026-09-17T12:00:00.000Z",
+  "harnesses": [
+    "claude-code"
+  ],
+  "footprint": {
+    "claude-code": {
+      "observed": 100,
+      "parts": [
+        {
+          "part": "skills",
+          "label": "Skill descriptions (2)",
+          "text": "brainstorm: Synthetic skill for Usage capture (.claude/skills/brainstorm)\nverify-it: Synthetic verification skill for Usage capture (.claude/skills/verify-it)",
+          "bytes": 158
+        },
+        {
+          "part": "agent_docs",
+          "label": "CLAUDE.md + 0 imports",
+          "text": "",
+          "bytes": 0
+        },
+        {
+          "part": "mcp_schemas",
+          "label": "MCP tool schemas (0 servers)",
+          "text": "",
+          "bytes": 0
+        }
+      ],
+      "unknown": [],
+      "bytes_total": 158,
+      "approx_tokens": 40
+    }
+  },
+  "utilization": [
+    {
+      "key": "brainstorm",
+      "count": 1,
+      "you": 0,
+      "model": 1,
+      "script": 0,
+      "last_used_at": "2026-09-17T08:00:00.000Z",
+      "trail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "sessions_with_skill": 4,
+      "footprint_bytes": 73,
+      "harnesses": [
+        "claude-code"
+      ],
+      "idle": false
+    },
+    {
+      "key": "verify-it",
+      "count": 1,
+      "you": 0,
+      "model": 0,
+      "script": 0,
+      "last_used_at": "2026-09-17T08:10:00.000Z",
+      "trail": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "sessions_with_skill": 4,
+      "footprint_bytes": 84,
+      "harnesses": [
+        "claude-code"
+      ],
+      "idle": false
+    }
+  ],
+  "subagents": [
+    {
+      "subagent_type": null,
+      "model": "gpt-5.6",
+      "count": 0,
+      "tokens": 77
+    },
+    {
+      "subagent_type": "unknown",
+      "model": "claude-sonnet-4-20250514",
+      "count": 1,
+      "tokens": 710
+    }
+  ],
+  "outcomes": {
+    "sessions": 4,
+    "tokens_per_session": 50,
+    "cache_hit_ratio": 0.0,
+    "steering_per_session": 0.0,
+    "subagent_token_share": 0.798984771573604,
+    "activity": {
+      "read": 0.125,
+      "edit": 0.0,
+      "verify": 0.25,
+      "operate": 0.0,
+      "delegate": 0.125,
+      "skill": 0.25,
+      "external": 0.25
+    },
+    "thinking_text_share": 0.0,
+    "files_read_median": 0.0,
+    "files_edited_median": 0.0,
+    "verified_edit_session_ratio": null,
+    "editing_sessions": 0,
+    "unverified_editing_sessions": 0,
+    "tracked_files": 1,
+    "median_all_projects": {
+      "activity": {
+        "read": 0.125,
+        "edit": 0.0,
+        "verify": 0.25,
+        "operate": 0.0,
+        "delegate": 0.125,
+        "skill": 0.25,
+        "external": 0.25
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "footprint-skills:claude-code:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "Skill descriptions (2) is 100% of the claude-code prompt (158 bytes).",
+      "numbers": {
+        "harness": "claude-code",
+        "part": "skills",
+        "share": 1.0,
+        "bytes": 158,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Review",
+          "kind": "review",
+          "targets": []
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": []
+      }
+    },
+    {
+      "id": "footprint-skill-brainstorm:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "brainstorm is 46% of the claude-code prompt (73 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "brainstorm",
+        "share": 0.4620253164556962,
+        "bytes": 73,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "brainstorm"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "brainstorm"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "brainstorm"
+        ]
+      }
+    },
+    {
+      "id": "footprint-skill-verify-it:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "verify-it is 53% of the claude-code prompt (84 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "verify-it",
+        "share": 0.5316455696202531,
+        "bytes": 84,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "verify-it"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "verify-it"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "verify-it"
+        ]
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "session_id": "aaaaaaaa-1111-4111-8111-111111111111",
+      "harness": "claude-code",
+      "parent_session_id": null,
+      "started_at": "2026-09-17T08:00:00.000Z",
+      "last_activity_at": "2026-09-17T08:05:00.000Z",
+      "tokens_total": 110,
+      "cache_hit_ratio": 0.0,
+      "steering_count": 0,
+      "loadout_assumed": false,
+      "analysed": true
+    },
+    {
+      "session_id": "ffffffff-6666-4666-8666-666666666666",
+      "harness": "claude-code",
+      "parent_session_id": null,
+      "started_at": "2026-09-16T09:00:00.000Z",
+      "last_activity_at": "2026-09-16T09:15:00.000Z",
+      "tokens_total": 10,
+      "cache_hit_ratio": null,
+      "steering_count": null,
+      "loadout_assumed": null,
+      "analysed": true
+    },
+    {
+      "session_id": "cccccccc-3333-4333-8333-333333333333",
+      "harness": "codex",
+      "parent_session_id": null,
+      "started_at": "2026-09-17T08:10:00.000Z",
+      "last_activity_at": "2026-09-17T08:11:03.000Z",
+      "tokens_total": 45,
+      "cache_hit_ratio": 0.0,
+      "steering_count": 0,
+      "loadout_assumed": true,
+      "analysed": true
+    },
+    {
+      "session_id": "dddddddd-4444-4444-8444-444444444444",
+      "harness": "codex",
+      "parent_session_id": "cccccccc-3333-4333-8333-333333333333",
+      "started_at": "2026-09-17T08:11:00.000Z",
+      "last_activity_at": "2026-09-17T08:11:03.000Z",
+      "tokens_total": 77,
+      "cache_hit_ratio": 0.0,
+      "steering_count": 0,
+      "loadout_assumed": true,
+      "analysed": true
+    },
+    {
+      "session_id": "eeeeeeee-5555-4555-8555-555555555555",
+      "harness": "codex",
+      "parent_session_id": null,
+      "started_at": "2026-09-17T08:12:00.000Z",
+      "last_activity_at": "2026-09-17T08:12:02.000Z",
+      "tokens_total": 33,
+      "cache_hit_ratio": 0.0,
+      "steering_count": 0,
+      "loadout_assumed": true,
+      "analysed": true
+    }
+  ],
+  "not_analysed": []
+}

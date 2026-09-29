@@ -1,0 +1,4396 @@
+{
+  "body": {
+    "body_id": "body:input",
+    "chunks": [
+      {
+        "base64": "eyJjb21tYW5kIjoiZ2l0IHN0YXR1cyJ9",
+        "bytes": 24,
+        "seq": 0
+      }
+    ],
+    "content_type": "application/json",
+    "next_after_chunk": null,
+    "ok": true,
+    "status": "available",
+    "total_bytes": 24
+  },
+  "captured_contract": {
+    "claude-code": {
+      "bodies": {
+        "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4": {
+          "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoicHJpbnRmIGNoaWxkIn0=",
+              "bytes": 26,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 26
+        },
+        "body:1fb9f4097256db2d7b1e13aff79cee44339891a31c556b9cf6093885773b3618": {
+          "body_id": "body:1fb9f4097256db2d7b1e13aff79cee44339891a31c556b9cf6093885773b3618",
+          "chunks": [
+            {
+              "base64": "ZWRpdGVk",
+              "bytes": 6,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 6
+        },
+        "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df": {
+          "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "chunks": [
+            {
+              "base64": "b2s=",
+              "bytes": 2,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 2
+        },
+        "body:3f605a985e468cece59837abdca71c4196a17259cf1dc10cb9bee2e020d7826f": {
+          "body_id": "body:3f605a985e468cece59837abdca71c4196a17259cf1dc10cb9bee2e020d7826f",
+          "chunks": [
+            {
+              "base64": "eyJleGl0X2NvZGUiOjAsInN0ZG91dCI6ImVkaXRlZCJ9",
+              "bytes": 33,
+              "seq": 0
+            }
+          ],
+          "content_type": "application/json",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 33
+        },
+        "body:b53b34ab4238dc30ccadb2973a3a825819edbbd1a86b526dc785752587d6af6c": {
+          "body_id": "body:b53b34ab4238dc30ccadb2973a3a825819edbbd1a86b526dc785752587d6af6c",
+          "chunks": [
+            {
+              "base64": "eyJleGl0X2NvZGUiOjAsInN0ZG91dCI6ImNoaWxkIn0=",
+              "bytes": 32,
+              "seq": 0
+            }
+          ],
+          "content_type": "application/json",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 32
+        },
+        "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3": {
+          "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+          "chunks": [
+            {
+              "base64": "Y2hpbGQ=",
+              "bytes": 5,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 5
+        },
+        "body:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287": {
+          "body_id": "body:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoiZ2l0IHN0YXR1cyJ9",
+              "bytes": 24,
+              "seq": 0
+            }
+          ],
+          "content_type": "application/json",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 24
+        },
+        "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df": {
+          "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+          "chunks": [
+            {
+              "base64": "eyJmaWxlX3BhdGgiOiJkZW1vLnR4dCIsIm5ld19zdHJpbmciOiJiIiwib2xkX3N0cmluZyI6ImEifQ==",
+              "bytes": 58,
+              "seq": 0
+            }
+          ],
+          "content_type": "application/json",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 58
+        },
+        "body:f783aff66e1a025de5f2dc188390b103a43a91909f6b84798e87f1aff5b3dd23": {
+          "body_id": "body:f783aff66e1a025de5f2dc188390b103a43a91909f6b84798e87f1aff5b3dd23",
+          "chunks": [
+            {
+              "base64": "eyJleGl0X2NvZGUiOjAsInN0ZG91dCI6Im9rIn0=",
+              "bytes": 29,
+              "seq": 0
+            }
+          ],
+          "content_type": "application/json",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 29
+        }
+      },
+      "body": {
+        "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "chunks": [
+          {
+            "base64": "b2s=",
+            "bytes": 2,
+            "seq": 0
+          }
+        ],
+        "content_type": "text/plain",
+        "next_after_chunk": null,
+        "ok": true,
+        "status": "available",
+        "total_bytes": 2
+      },
+      "changes": {
+        "changes": [
+          {
+            "attribution": "confirmed",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:10:01.000Z",
+            "files": [
+              "demo.txt"
+            ],
+            "id": "<captured-change>",
+            "kind": "tool_patch",
+            "merge_base_id": null,
+            "patch": {
+              "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+              "bytes": 58,
+              "content_type": "application/json",
+              "kind": "invocation",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "available"
+            },
+            "repository_id": null,
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          }
+        ],
+        "ok": true,
+        "schema_version": 1
+      },
+      "overview": {
+        "changes": [
+          {
+            "attribution": "confirmed",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:10:01.000Z",
+            "files": [
+              "demo.txt"
+            ],
+            "id": "<captured-change>",
+            "kind": "tool_patch",
+            "merge_base_id": null,
+            "patch": {
+              "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+              "bytes": 58,
+              "content_type": "application/json",
+              "kind": "invocation",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "available"
+            },
+            "repository_id": null,
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          }
+        ],
+        "evidence": {
+          "notices": [],
+          "status": "complete"
+        },
+        "ok": true,
+        "pins": [
+          {
+            "breadcrumb": [
+              {
+                "label": null,
+                "status": "available"
+              }
+            ],
+            "harness": "claude-code",
+            "root_session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "root_type": "agent",
+            "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+            "scopes": {
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              }
+            },
+            "session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "status": "available"
+          }
+        ],
+        "prs": [],
+        "runs": [
+          {
+            "activity_intervals": [
+              {
+                "end": "2026-09-07T12:00:02.000Z",
+                "start": "2026-09-07T12:00:01.000Z",
+                "status": "observed"
+              },
+              {
+                "end": "2026-09-07T12:10:02.000Z",
+                "start": "2026-09-07T12:10:01.000Z",
+                "status": "observed"
+              }
+            ],
+            "depth": 0,
+            "edits": 1,
+            "evidence": [],
+            "id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+            "label": "Main session",
+            "lifespan": {
+              "end": "2026-09-07T12:00:01.000Z",
+              "start": "2026-09-07T12:00:01.000Z",
+              "status": "observed"
+            },
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "parent_id": null,
+            "role": {
+              "status": "unavailable",
+              "value": null
+            },
+            "scopes": {
+              "children": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              },
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 6.46e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 2000,
+                  "first_at": "2026-09-07T12:00:01.000Z",
+                  "last_at": "2026-09-07T12:10:02.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 2,
+                  "cache_read": 8,
+                  "input": 4,
+                  "output": 5,
+                  "status": "available",
+                  "total": 19
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 0.00014060000000000003
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 3000,
+                  "first_at": "2026-09-07T12:00:01.000Z",
+                  "last_at": "2026-09-07T12:10:02.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 2,
+                  "cache_read": 8,
+                  "input": 7,
+                  "output": 12,
+                  "status": "available",
+                  "total": 29
+                }
+              }
+            },
+            "start": {
+              "at": "2026-09-07T12:00:01.000Z",
+              "status": "observed"
+            },
+            "tool_calls": 2,
+            "worktree": {
+              "label": null,
+              "locations": [],
+              "status": "unknown"
+            }
+          },
+          {
+            "activity_intervals": [
+              {
+                "end": "2026-09-07T12:00:04.000Z",
+                "start": "2026-09-07T12:00:03.000Z",
+                "status": "observed"
+              }
+            ],
+            "depth": 1,
+            "edits": 0,
+            "evidence": [],
+            "id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+            "label": "agent",
+            "lifespan": {
+              "end": "2026-09-07T12:00:03.000Z",
+              "start": "2026-09-07T12:00:03.000Z",
+              "status": "observed"
+            },
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "parent_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+            "role": {
+              "status": "observed",
+              "value": "agent"
+            },
+            "scopes": {
+              "children": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unpriced",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": null,
+                  "first_at": null,
+                  "last_at": null,
+                  "status": "unavailable"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              }
+            },
+            "start": {
+              "at": "2026-09-07T12:00:03.000Z",
+              "status": "observed"
+            },
+            "tool_calls": 1,
+            "worktree": {
+              "label": null,
+              "locations": [],
+              "status": "unknown"
+            }
+          }
+        ],
+        "schema_version": 1,
+        "session": {
+          "key": {
+            "harness": "claude-code",
+            "session_id": "eeeeeeee-6666-4666-8666-666666666666"
+          },
+          "source_epochs": [
+            {
+              "captured_at": "2026-09-07T12:00:04.000Z",
+              "id": "<captured-epoch>",
+              "status": "active"
+            },
+            {
+              "captured_at": "2026-09-07T12:10:02.000Z",
+              "id": "<captured-epoch>",
+              "status": "active"
+            }
+          ],
+          "status": "available",
+          "summary": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 7.6e-05
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 1000,
+                "first_at": "2026-09-07T12:00:03.000Z",
+                "last_at": "2026-09-07T12:00:04.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 3,
+                "output": 7,
+                "status": "available",
+                "total": 10
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 6.46e-05
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 2000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:10:02.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 2,
+                "cache_read": 8,
+                "input": 4,
+                "output": 5,
+                "status": "available",
+                "total": 19
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 0.00014060000000000003
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 3000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:10:02.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 2,
+                "cache_read": 8,
+                "input": 7,
+                "output": 12,
+                "status": "available",
+                "total": 29
+              }
+            }
+          }
+        },
+        "timeline": {
+          "events": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:02.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:04.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:10:01.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:10:02.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "status": "observed"
+            }
+          ],
+          "gaps": [
+            {
+              "duration_ms": 597000,
+              "end": "2026-09-07T12:10:01.000Z",
+              "start": "2026-09-07T12:00:04.000Z"
+            }
+          ],
+          "origin": "2026-09-07T12:00:01.000Z",
+          "relationship_edges": [],
+          "wait_intervals": []
+        },
+        "tool_calls": {
+          "items": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:a3d9741ad5e45fab10bf7009a93b6bf62def9213af63fdcc8ddcfc70fce5f8bb",
+              "input_parts": [
+                {
+                  "body_id": "body:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+                  "bytes": 24,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+                "status": "available",
+                "summary": "{\"command\":\"git status\"}"
+              },
+              "ordinal": 0,
+              "result_parts": [
+                {
+                  "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                  "bytes": 2,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:f783aff66e1a025de5f2dc188390b103a43a91909f6b84798e87f1aff5b3dd23",
+                  "bytes": 29,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Bash"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "<captured-call:claude-code:1>",
+              "input_parts": [
+                {
+                  "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                  "bytes": 26,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "status": "available",
+                "summary": "{\"command\":\"printf child\"}"
+              },
+              "ordinal": 1,
+              "result_parts": [
+                {
+                  "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                  "bytes": 5,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:b53b34ab4238dc30ccadb2973a3a825819edbbd1a86b526dc785752587d6af6c",
+                  "bytes": 32,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Bash"
+              }
+            },
+            {
+              "at": "2026-09-07T12:10:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:64fe575fa881391bef6d9a57c534280c9ef9ccaafcb0d43cbfbdc15b67ae08ce",
+              "input_parts": [
+                {
+                  "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+                  "bytes": 58,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+                "status": "available",
+                "summary": "Edit demo.txt"
+              },
+              "ordinal": 2,
+              "result_parts": [
+                {
+                  "body_id": "body:1fb9f4097256db2d7b1e13aff79cee44339891a31c556b9cf6093885773b3618",
+                  "bytes": 6,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:3f605a985e468cece59837abdca71c4196a17259cf1dc10cb9bee2e020d7826f",
+                  "bytes": 33,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Edit"
+              }
+            }
+          ],
+          "next_after": null,
+          "status": "complete",
+          "total": 3
+        }
+      },
+      "pin_mutation": {
+        "action": "add",
+        "ok": true,
+        "pin": {
+          "harness": "claude-code",
+          "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+          "session_id": "eeeeeeee-6666-4666-8666-666666666666"
+        },
+        "schema_version": 1
+      },
+      "pins": {
+        "evidence": {
+          "notices": [],
+          "status": "complete"
+        },
+        "items": [
+          {
+            "breadcrumb": [
+              {
+                "label": "Main session",
+                "status": "available"
+              }
+            ],
+            "harness": "claude-code",
+            "root_session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "root_type": "agent",
+            "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+            "scopes": {
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              }
+            },
+            "session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "status": "available"
+          }
+        ],
+        "next_after": null,
+        "ok": true,
+        "schema_version": 1
+      },
+      "session_id": "eeeeeeee-6666-4666-8666-666666666666",
+      "tools": {
+        "items": [
+          {
+            "at": "2026-09-07T12:00:01.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:a3d9741ad5e45fab10bf7009a93b6bf62def9213af63fdcc8ddcfc70fce5f8bb",
+            "input_parts": [
+              {
+                "body_id": "body:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+                "bytes": 24,
+                "content_type": "application/json",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+              "status": "available",
+              "summary": "{\"command\":\"git status\"}"
+            },
+            "ordinal": 0,
+            "result_parts": [
+              {
+                "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                "bytes": 2,
+                "content_type": "text/plain",
+                "kind": "tool_result_content",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              },
+              {
+                "body_id": "body:f783aff66e1a025de5f2dc188390b103a43a91909f6b84798e87f1aff5b3dd23",
+                "bytes": 29,
+                "content_type": "application/json",
+                "kind": "tool_use_result",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "local",
+              "name": "Bash"
+            }
+          },
+          {
+            "at": "2026-09-07T12:00:03.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "<captured-call:claude-code:1>",
+            "input_parts": [
+              {
+                "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "bytes": 26,
+                "content_type": "application/json",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+              "status": "available",
+              "summary": "{\"command\":\"printf child\"}"
+            },
+            "ordinal": 1,
+            "result_parts": [
+              {
+                "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                "bytes": 5,
+                "content_type": "text/plain",
+                "kind": "tool_result_content",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              },
+              {
+                "body_id": "body:b53b34ab4238dc30ccadb2973a3a825819edbbd1a86b526dc785752587d6af6c",
+                "bytes": 32,
+                "content_type": "application/json",
+                "kind": "tool_use_result",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "local",
+              "name": "Bash"
+            }
+          },
+          {
+            "at": "2026-09-07T12:10:01.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:64fe575fa881391bef6d9a57c534280c9ef9ccaafcb0d43cbfbdc15b67ae08ce",
+            "input_parts": [
+              {
+                "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+                "bytes": 58,
+                "content_type": "application/json",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+              "status": "available",
+              "summary": "Edit demo.txt"
+            },
+            "ordinal": 2,
+            "result_parts": [
+              {
+                "body_id": "body:1fb9f4097256db2d7b1e13aff79cee44339891a31c556b9cf6093885773b3618",
+                "bytes": 6,
+                "content_type": "text/plain",
+                "kind": "tool_result_content",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              },
+              {
+                "body_id": "body:3f605a985e468cece59837abdca71c4196a17259cf1dc10cb9bee2e020d7826f",
+                "bytes": 33,
+                "content_type": "application/json",
+                "kind": "tool_use_result",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "local",
+              "name": "Edit"
+            }
+          }
+        ],
+        "next_after": null,
+        "ok": true,
+        "schema_version": 1,
+        "status": "complete",
+        "tool_calls": {
+          "items": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:a3d9741ad5e45fab10bf7009a93b6bf62def9213af63fdcc8ddcfc70fce5f8bb",
+              "input_parts": [
+                {
+                  "body_id": "body:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+                  "bytes": 24,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:e0d3e391760d0a9b6c24bf66cecfc5a66557784782cbc704052385bf6e9bb287",
+                "status": "available",
+                "summary": "{\"command\":\"git status\"}"
+              },
+              "ordinal": 0,
+              "result_parts": [
+                {
+                  "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                  "bytes": 2,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:f783aff66e1a025de5f2dc188390b103a43a91909f6b84798e87f1aff5b3dd23",
+                  "bytes": 29,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Bash"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "<captured-call:claude-code:1>",
+              "input_parts": [
+                {
+                  "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                  "bytes": 26,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "status": "available",
+                "summary": "{\"command\":\"printf child\"}"
+              },
+              "ordinal": 1,
+              "result_parts": [
+                {
+                  "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                  "bytes": 5,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:b53b34ab4238dc30ccadb2973a3a825819edbbd1a86b526dc785752587d6af6c",
+                  "bytes": 32,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Bash"
+              }
+            },
+            {
+              "at": "2026-09-07T12:10:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:64fe575fa881391bef6d9a57c534280c9ef9ccaafcb0d43cbfbdc15b67ae08ce",
+              "input_parts": [
+                {
+                  "body_id": "body:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+                  "bytes": 58,
+                  "content_type": "application/json",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:f52fdec5fcba00dd759dd8b25275ee57def6c30488896788590658d8f79f35df",
+                "status": "available",
+                "summary": "Edit demo.txt"
+              },
+              "ordinal": 2,
+              "result_parts": [
+                {
+                  "body_id": "body:1fb9f4097256db2d7b1e13aff79cee44339891a31c556b9cf6093885773b3618",
+                  "bytes": 6,
+                  "content_type": "text/plain",
+                  "kind": "tool_result_content",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                },
+                {
+                  "body_id": "body:3f605a985e468cece59837abdca71c4196a17259cf1dc10cb9bee2e020d7826f",
+                  "bytes": 33,
+                  "content_type": "application/json",
+                  "kind": "tool_use_result",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "Edit"
+              }
+            }
+          ],
+          "next_after": null,
+          "status": "complete",
+          "total": 3
+        },
+        "total": 3
+      }
+    },
+    "codex": {
+      "bodies": {
+        "body:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e": {
+          "body_id": "body:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoiZ2ggcHIgY3JlYXRlIC0tcmVwbyBhY21lL2RlbW8ifQ==",
+              "bytes": 43,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 43
+        },
+        "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4": {
+          "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoicHJpbnRmIGNoaWxkIn0=",
+              "bytes": 26,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 26
+        },
+        "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df": {
+          "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "chunks": [
+            {
+              "base64": "b2s=",
+              "bytes": 2,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 2
+        },
+        "body:4ae9e01d3de069ed6791826f691dfac83c3f3698475f018f79290caa5e8786f0": {
+          "body_id": "body:4ae9e01d3de069ed6791826f691dfac83c3f3698475f018f79290caa5e8786f0",
+          "chunks": [
+            {
+              "base64": "aHR0cHM6Ly9naXRodWIuY29tL2FjbWUvb3RoZXIvcHVsbC80Mg==",
+              "bytes": 37,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 37
+        },
+        "body:560dd71035b96c8cf5ac01a364338950cd34b3c4863ed60d669d54d16eee9fa1": {
+          "body_id": "body:560dd71035b96c8cf5ac01a364338950cd34b3c4863ed60d669d54d16eee9fa1",
+          "chunks": [
+            {
+              "base64": "aHR0cHM6Ly9naXRodWIuY29tL2FjbWUvZGVtby9wdWxsLzQy",
+              "bytes": 36,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 36
+        },
+        "body:86ce87bf2eb406a1648c883939ef84c029c64907922e9973d2d11a37cf658c43": {
+          "body_id": "body:86ce87bf2eb406a1648c883939ef84c029c64907922e9973d2d11a37cf658c43",
+          "chunks": [
+            {
+              "base64": "aHR0cHM6Ly9naXRodWIuY29tL2FjbWUvZGVtby9wdWxsLzQz",
+              "bytes": 36,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 36
+        },
+        "body:c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97": {
+          "body_id": "body:c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+          "chunks": [
+            {
+              "base64": "eyJzdWNjZXNzIjp0cnVlfQ==",
+              "bytes": 16,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 16
+        },
+        "body:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67": {
+          "body_id": "body:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoiZ2ggcHIgY3JlYXRlIC0tcmVwbyBhY21lL290aGVyIn0=",
+              "bytes": 44,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 44
+        },
+        "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3": {
+          "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+          "chunks": [
+            {
+              "base64": "Y2hpbGQ=",
+              "bytes": 5,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 5
+        },
+        "body:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42": {
+          "body_id": "body:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+          "chunks": [
+            {
+              "base64": "eyJjbWQiOiJnaXQgc3RhdHVzIiwid29ya2RpciI6Ii93b3Jrc3BhY2Uvc2tpbGwtaHViIn0=",
+              "bytes": 53,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 53
+        },
+        "body:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933": {
+          "body_id": "body:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+          "chunks": [
+            {
+              "base64": "eyJjb21tYW5kIjoiZ2ggcHIgcmV2aWV3IC0tcmVwbyBhY21lL2RlbW8gLS1hcHByb3ZlIn0=",
+              "bytes": 53,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 53
+        },
+        "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75": {
+          "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+          "chunks": [
+            {
+              "base64": "KioqIEJlZ2luIFBhdGNoCioqKiBVcGRhdGUgRmlsZTogZGVtby50eHQKKioqIEVuZCBQYXRjaA==",
+              "bytes": 55,
+              "seq": 0
+            }
+          ],
+          "content_type": "text/plain",
+          "next_after_chunk": null,
+          "ok": true,
+          "status": "available",
+          "total_bytes": 55
+        }
+      },
+      "body": {
+        "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "chunks": [
+          {
+            "base64": "b2s=",
+            "bytes": 2,
+            "seq": 0
+          }
+        ],
+        "content_type": "text/plain",
+        "next_after_chunk": null,
+        "ok": true,
+        "status": "available",
+        "total_bytes": 2
+      },
+      "changes": {
+        "changes": [
+          {
+            "attribution": "confirmed",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:00:05.000Z",
+            "files": [
+              "demo.txt"
+            ],
+            "id": "<captured-change>",
+            "kind": "tool_patch",
+            "merge_base_id": null,
+            "patch": {
+              "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+              "bytes": 55,
+              "content_type": "text/plain",
+              "kind": "invocation",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "available"
+            },
+            "repository_id": null,
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:10:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/demo",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:11:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/demo",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:12:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/other",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          }
+        ],
+        "ok": true,
+        "schema_version": 1
+      },
+      "overview": {
+        "changes": [
+          {
+            "attribution": "confirmed",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:00:05.000Z",
+            "files": [
+              "demo.txt"
+            ],
+            "id": "<captured-change>",
+            "kind": "tool_patch",
+            "merge_base_id": null,
+            "patch": {
+              "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+              "bytes": 55,
+              "content_type": "text/plain",
+              "kind": "invocation",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "available"
+            },
+            "repository_id": null,
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:10:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/demo",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:11:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/demo",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          },
+          {
+            "attribution": "associated",
+            "base_id": null,
+            "captured_at": "2026-09-07T12:12:05.000Z",
+            "files": [],
+            "id": "<captured-change>",
+            "kind": "pr_change",
+            "merge_base_id": null,
+            "patch": {
+              "bytes": 0,
+              "content_type": "text/x-diff",
+              "kind": "pr_change",
+              "pruned_at": null,
+              "retained_version": false,
+              "retention_tier": "B",
+              "source_epoch": "<captured-epoch>",
+              "status": "unavailable"
+            },
+            "repository_id": "github.com/acme/other",
+            "revision_id": null,
+            "source": "<captured-epoch>"
+          }
+        ],
+        "evidence": {
+          "notices": [],
+          "status": "complete"
+        },
+        "ok": true,
+        "pins": [
+          {
+            "breadcrumb": [
+              {
+                "label": null,
+                "status": "available"
+              }
+            ],
+            "harness": "codex",
+            "root_session_id": "ffffffff-7777-4777-8777-777777777777",
+            "root_type": "agent",
+            "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+            "scopes": {
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              }
+            },
+            "session_id": "ffffffff-7777-4777-8777-777777777777",
+            "status": "available"
+          }
+        ],
+        "prs": [
+          {
+            "first_seen": "2026-09-07T12:12:05.000Z",
+            "last_evidenced_at": "2026-09-07T12:12:05.000Z",
+            "number": 42,
+            "relationship": "created",
+            "repository_id": "github.com/acme/other",
+            "url": "https://github.com/acme/other/pull/42"
+          },
+          {
+            "first_seen": "2026-09-07T12:11:05.000Z",
+            "last_evidenced_at": "2026-09-07T12:11:05.000Z",
+            "number": 43,
+            "relationship": "reviewed",
+            "repository_id": "github.com/acme/demo",
+            "url": "https://github.com/acme/demo/pull/43"
+          },
+          {
+            "first_seen": "2026-09-07T12:10:05.000Z",
+            "last_evidenced_at": "2026-09-07T12:10:05.000Z",
+            "number": 42,
+            "relationship": "created",
+            "repository_id": "github.com/acme/demo",
+            "url": "https://github.com/acme/demo/pull/42"
+          }
+        ],
+        "runs": [
+          {
+            "activity_intervals": [
+              {
+                "end": "2026-09-07T12:00:02.000Z",
+                "start": "2026-09-07T12:00:01.000Z",
+                "status": "observed"
+              },
+              {
+                "end": "2026-09-07T12:00:06.000Z",
+                "start": "2026-09-07T12:00:05.000Z",
+                "status": "observed"
+              },
+              {
+                "end": "2026-09-07T12:10:06.000Z",
+                "start": "2026-09-07T12:10:05.000Z",
+                "status": "observed"
+              },
+              {
+                "end": "2026-09-07T12:11:06.000Z",
+                "start": "2026-09-07T12:11:05.000Z",
+                "status": "observed"
+              },
+              {
+                "end": "2026-09-07T12:12:06.000Z",
+                "start": "2026-09-07T12:12:05.000Z",
+                "status": "observed"
+              }
+            ],
+            "depth": 0,
+            "edits": 1,
+            "evidence": [],
+            "id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "label": "Main session",
+            "lifespan": {
+              "end": "2026-09-07T12:12:06.000Z",
+              "start": "2026-09-07T12:00:01.000Z",
+              "status": "observed"
+            },
+            "models": [],
+            "parent_id": null,
+            "role": {
+              "status": "unavailable",
+              "value": null
+            },
+            "scopes": {
+              "children": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 5000,
+                  "first_at": "2026-09-07T12:00:01.000Z",
+                  "last_at": "2026-09-07T12:12:06.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 6000,
+                  "first_at": "2026-09-07T12:00:01.000Z",
+                  "last_at": "2026-09-07T12:12:06.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              }
+            },
+            "start": {
+              "at": "2026-09-07T12:00:01.000Z",
+              "status": "observed"
+            },
+            "tool_calls": 5,
+            "worktree": {
+              "label": "/workspace/skill-hub",
+              "locations": [
+                {
+                  "basis": "command_workdir",
+                  "id": "/workspace/skill-hub",
+                  "label": "/workspace/skill-hub"
+                }
+              ],
+              "status": "observed"
+            }
+          },
+          {
+            "activity_intervals": [
+              {
+                "end": "2026-09-07T12:00:04.000Z",
+                "start": "2026-09-07T12:00:03.000Z",
+                "status": "observed"
+              }
+            ],
+            "depth": 1,
+            "edits": 0,
+            "evidence": [],
+            "id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+            "label": "Agent",
+            "lifespan": {
+              "end": "2026-09-07T12:00:04.000Z",
+              "start": "2026-09-07T12:00:03.000Z",
+              "status": "observed"
+            },
+            "models": [],
+            "parent_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "role": {
+              "status": "unavailable",
+              "value": null
+            },
+            "scopes": {
+              "children": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unpriced",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": null,
+                  "first_at": null,
+                  "last_at": null,
+                  "status": "unavailable"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              }
+            },
+            "start": {
+              "at": "2026-09-07T12:00:03.000Z",
+              "status": "observed"
+            },
+            "tool_calls": 1,
+            "worktree": {
+              "label": null,
+              "locations": [],
+              "status": "unknown"
+            }
+          }
+        ],
+        "schema_version": 1,
+        "session": {
+          "key": {
+            "harness": "codex",
+            "session_id": "ffffffff-7777-4777-8777-777777777777"
+          },
+          "source_epochs": [
+            {
+              "captured_at": "2026-09-07T12:00:04.000Z",
+              "id": "<captured-epoch>",
+              "status": "active"
+            },
+            {
+              "captured_at": "2026-09-07T12:12:06.000Z",
+              "id": "<captured-epoch>",
+              "status": "active"
+            }
+          ],
+          "status": "available",
+          "summary": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 1000,
+                "first_at": "2026-09-07T12:00:03.000Z",
+                "last_at": "2026-09-07T12:00:04.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 5000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:12:06.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 6000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:12:06.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            }
+          }
+        },
+        "timeline": {
+          "events": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:02.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:04.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:05.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:00:06.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:10:05.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:10:06.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:11:05.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:11:06.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:12:05.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_started",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            },
+            {
+              "at": "2026-09-07T12:12:06.000Z",
+              "id": "<captured-event>",
+              "kind": "tool_result",
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "status": "observed"
+            }
+          ],
+          "gaps": [
+            {
+              "duration_ms": 599000,
+              "end": "2026-09-07T12:10:05.000Z",
+              "start": "2026-09-07T12:00:06.000Z"
+            }
+          ],
+          "origin": null,
+          "relationship_edges": [],
+          "wait_intervals": []
+        },
+        "tool_calls": {
+          "items": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:a9e63c068cdd1f2c864d9bbf9713020e66da5840cefbb73301105753375724c6",
+              "input_parts": [
+                {
+                  "body_id": "body:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+                  "bytes": 53,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+                "status": "available",
+                "summary": "{\"cmd\":\"git status\",\"workdir\":\"skill-hub\"}"
+              },
+              "ordinal": 0,
+              "result_parts": [
+                {
+                  "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                  "bytes": 2,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "exec_command"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:b06dca8c94b49ec925abcf5e89df241bd63a82384453d137018734d0806f5b3f",
+              "input_parts": [
+                {
+                  "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                  "bytes": 26,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "status": "available",
+                "summary": "{\"command\":\"printf child\"}"
+              },
+              "ordinal": 1,
+              "result_parts": [
+                {
+                  "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                  "bytes": 5,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:226da6ce5cb9bcfa56bb9b1466d87cc63f96710a22317332757c49399fc6755c",
+              "input_parts": [
+                {
+                  "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+                  "bytes": 55,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+                "status": "available",
+                "summary": "apply_patch"
+              },
+              "ordinal": 2,
+              "result_parts": [
+                {
+                  "body_id": "body:c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+                  "bytes": 16,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "apply_patch"
+              }
+            },
+            {
+              "at": "2026-09-07T12:10:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:20b4e71595e61b8086b3e9c86d40f5d5a3235140a5947e347c842acb7044bdba",
+              "input_parts": [
+                {
+                  "body_id": "body:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+                  "bytes": 43,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr create --repo acme/demo\"}"
+              },
+              "ordinal": 3,
+              "result_parts": [
+                {
+                  "body_id": "body:560dd71035b96c8cf5ac01a364338950cd34b3c4863ed60d669d54d16eee9fa1",
+                  "bytes": 36,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:11:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:b3b84ecf7acfb0702f7dbabd63b31c71300efd3568a4742029375c246fb5bde6",
+              "input_parts": [
+                {
+                  "body_id": "body:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+                  "bytes": 53,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr review --repo acme/demo --approve\"}"
+              },
+              "ordinal": 4,
+              "result_parts": [
+                {
+                  "body_id": "body:86ce87bf2eb406a1648c883939ef84c029c64907922e9973d2d11a37cf658c43",
+                  "bytes": 36,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:12:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:7e45c854135ed4ea717fd1b5fb0a16f334e5c19406fc524447e7663e12dde22a",
+              "input_parts": [
+                {
+                  "body_id": "body:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+                  "bytes": 44,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr create --repo acme/other\"}"
+              },
+              "ordinal": 5,
+              "result_parts": [
+                {
+                  "body_id": "body:4ae9e01d3de069ed6791826f691dfac83c3f3698475f018f79290caa5e8786f0",
+                  "bytes": 37,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            }
+          ],
+          "next_after": null,
+          "status": "complete",
+          "total": 6
+        }
+      },
+      "pin_mutation": {
+        "action": "add",
+        "ok": true,
+        "pin": {
+          "harness": "codex",
+          "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+          "session_id": "ffffffff-7777-4777-8777-777777777777"
+        },
+        "schema_version": 1
+      },
+      "pins": {
+        "evidence": {
+          "notices": [],
+          "status": "complete"
+        },
+        "items": [
+          {
+            "breadcrumb": [
+              {
+                "label": "Main session",
+                "status": "available"
+              }
+            ],
+            "harness": "claude-code",
+            "root_session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "root_type": "agent",
+            "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+            "scopes": {
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "known",
+                  "value": 7.6e-05
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": 0,
+                  "cache_read": 0,
+                  "input": 3,
+                  "output": 7,
+                  "status": "available",
+                  "total": 10
+                }
+              }
+            },
+            "session_id": "eeeeeeee-6666-4666-8666-666666666666",
+            "status": "available"
+          },
+          {
+            "breadcrumb": [
+              {
+                "label": "Main session",
+                "status": "available"
+              }
+            ],
+            "harness": "codex",
+            "root_session_id": "ffffffff-7777-4777-8777-777777777777",
+            "root_type": "agent",
+            "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+            "scopes": {
+              "own": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              },
+              "subtree": {
+                "cost": {
+                  "currency": "USD",
+                  "status": "unavailable",
+                  "value": null
+                },
+                "evidence": [],
+                "timing": {
+                  "active_ms": 1000,
+                  "first_at": "2026-09-07T12:00:03.000Z",
+                  "last_at": "2026-09-07T12:00:04.000Z",
+                  "status": "observed"
+                },
+                "tokens": {
+                  "cache_creation": null,
+                  "cache_read": null,
+                  "input": null,
+                  "output": null,
+                  "status": "unavailable",
+                  "total": null
+                }
+              }
+            },
+            "session_id": "ffffffff-7777-4777-8777-777777777777",
+            "status": "available"
+          }
+        ],
+        "next_after": null,
+        "ok": true,
+        "schema_version": 1
+      },
+      "session_id": "ffffffff-7777-4777-8777-777777777777",
+      "tools": {
+        "items": [
+          {
+            "at": "2026-09-07T12:00:01.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:a9e63c068cdd1f2c864d9bbf9713020e66da5840cefbb73301105753375724c6",
+            "input_parts": [
+              {
+                "body_id": "body:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+                "bytes": 53,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+              "status": "available",
+              "summary": "{\"cmd\":\"git status\",\"workdir\":\"skill-hub\"}"
+            },
+            "ordinal": 0,
+            "result_parts": [
+              {
+                "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                "bytes": 2,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "function",
+              "name": "exec_command"
+            }
+          },
+          {
+            "at": "2026-09-07T12:00:03.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:b06dca8c94b49ec925abcf5e89df241bd63a82384453d137018734d0806f5b3f",
+            "input_parts": [
+              {
+                "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "bytes": 26,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+              "status": "available",
+              "summary": "{\"command\":\"printf child\"}"
+            },
+            "ordinal": 1,
+            "result_parts": [
+              {
+                "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                "bytes": 5,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "function",
+              "name": "shell"
+            }
+          },
+          {
+            "at": "2026-09-07T12:00:05.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:226da6ce5cb9bcfa56bb9b1466d87cc63f96710a22317332757c49399fc6755c",
+            "input_parts": [
+              {
+                "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+                "bytes": 55,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+              "status": "available",
+              "summary": "apply_patch"
+            },
+            "ordinal": 2,
+            "result_parts": [
+              {
+                "body_id": "body:c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+                "bytes": 16,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "local",
+              "name": "apply_patch"
+            }
+          },
+          {
+            "at": "2026-09-07T12:10:05.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:20b4e71595e61b8086b3e9c86d40f5d5a3235140a5947e347c842acb7044bdba",
+            "input_parts": [
+              {
+                "body_id": "body:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+                "bytes": 43,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+              "status": "available",
+              "summary": "{\"command\":\"gh pr create --repo acme/demo\"}"
+            },
+            "ordinal": 3,
+            "result_parts": [
+              {
+                "body_id": "body:560dd71035b96c8cf5ac01a364338950cd34b3c4863ed60d669d54d16eee9fa1",
+                "bytes": 36,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "function",
+              "name": "shell"
+            }
+          },
+          {
+            "at": "2026-09-07T12:11:05.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:b3b84ecf7acfb0702f7dbabd63b31c71300efd3568a4742029375c246fb5bde6",
+            "input_parts": [
+              {
+                "body_id": "body:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+                "bytes": 53,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+              "status": "available",
+              "summary": "{\"command\":\"gh pr review --repo acme/demo --approve\"}"
+            },
+            "ordinal": 4,
+            "result_parts": [
+              {
+                "body_id": "body:86ce87bf2eb406a1648c883939ef84c029c64907922e9973d2d11a37cf658c43",
+                "bytes": 36,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "function",
+              "name": "shell"
+            }
+          },
+          {
+            "at": "2026-09-07T12:12:05.000Z",
+            "evidence": [],
+            "execution": "completed",
+            "id": "call:7e45c854135ed4ea717fd1b5fb0a16f334e5c19406fc524447e7663e12dde22a",
+            "input_parts": [
+              {
+                "body_id": "body:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+                "bytes": 44,
+                "content_type": "text/plain",
+                "kind": "invocation",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "A",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "operation": {
+              "signature": "op:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+              "status": "available",
+              "summary": "{\"command\":\"gh pr create --repo acme/other\"}"
+            },
+            "ordinal": 5,
+            "result_parts": [
+              {
+                "body_id": "body:4ae9e01d3de069ed6791826f691dfac83c3f3698475f018f79290caa5e8786f0",
+                "bytes": 37,
+                "content_type": "text/plain",
+                "kind": "function_output",
+                "pruned_at": null,
+                "retained_version": false,
+                "retention_tier": "B",
+                "source_epoch": "<captured-epoch>",
+                "status": "available"
+              }
+            ],
+            "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+            "source_epoch": "<captured-epoch>",
+            "tool": {
+              "kind": "function",
+              "name": "shell"
+            }
+          }
+        ],
+        "next_after": null,
+        "ok": true,
+        "schema_version": 1,
+        "status": "complete",
+        "tool_calls": {
+          "items": [
+            {
+              "at": "2026-09-07T12:00:01.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:a9e63c068cdd1f2c864d9bbf9713020e66da5840cefbb73301105753375724c6",
+              "input_parts": [
+                {
+                  "body_id": "body:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+                  "bytes": 53,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:e8fc1c6b90304af1c3e13bfb3d05686f3911eb86e0a7c6ae24fd38098c9b4c42",
+                "status": "available",
+                "summary": "{\"cmd\":\"git status\",\"workdir\":\"skill-hub\"}"
+              },
+              "ordinal": 0,
+              "result_parts": [
+                {
+                  "body_id": "body:2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+                  "bytes": 2,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "exec_command"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:03.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:b06dca8c94b49ec925abcf5e89df241bd63a82384453d137018734d0806f5b3f",
+              "input_parts": [
+                {
+                  "body_id": "body:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                  "bytes": 26,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:1bd4acc5d89769779801b310c313b3fd4a38c9dccb1d0069f5ffc0bb61f08db4",
+                "status": "available",
+                "summary": "{\"command\":\"printf child\"}"
+              },
+              "ordinal": 1,
+              "result_parts": [
+                {
+                  "body_id": "body:ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3",
+                  "bytes": 5,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:00:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:226da6ce5cb9bcfa56bb9b1466d87cc63f96710a22317332757c49399fc6755c",
+              "input_parts": [
+                {
+                  "body_id": "body:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+                  "bytes": 55,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:ef152478c0fc8c5a701216b61c9a42fa05b85e850662c5be84ac8f75879adb75",
+                "status": "available",
+                "summary": "apply_patch"
+              },
+              "ordinal": 2,
+              "result_parts": [
+                {
+                  "body_id": "body:c955e57777ec0d73639dca6748560d00aa5eb8e12f13ebb2ed9656add3908f97",
+                  "bytes": 16,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "local",
+                "name": "apply_patch"
+              }
+            },
+            {
+              "at": "2026-09-07T12:10:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:20b4e71595e61b8086b3e9c86d40f5d5a3235140a5947e347c842acb7044bdba",
+              "input_parts": [
+                {
+                  "body_id": "body:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+                  "bytes": 43,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:040d8167c37073a17103a955b4eaf357807ecbf5abc47a0ded289cf1fc67266e",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr create --repo acme/demo\"}"
+              },
+              "ordinal": 3,
+              "result_parts": [
+                {
+                  "body_id": "body:560dd71035b96c8cf5ac01a364338950cd34b3c4863ed60d669d54d16eee9fa1",
+                  "bytes": 36,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:11:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:b3b84ecf7acfb0702f7dbabd63b31c71300efd3568a4742029375c246fb5bde6",
+              "input_parts": [
+                {
+                  "body_id": "body:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+                  "bytes": 53,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:eed0955758143d1d2ee290923b487c0c178570b31a2c64d693de9cbc0ea32933",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr review --repo acme/demo --approve\"}"
+              },
+              "ordinal": 4,
+              "result_parts": [
+                {
+                  "body_id": "body:86ce87bf2eb406a1648c883939ef84c029c64907922e9973d2d11a37cf658c43",
+                  "bytes": 36,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            },
+            {
+              "at": "2026-09-07T12:12:05.000Z",
+              "evidence": [],
+              "execution": "completed",
+              "id": "call:7e45c854135ed4ea717fd1b5fb0a16f334e5c19406fc524447e7663e12dde22a",
+              "input_parts": [
+                {
+                  "body_id": "body:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+                  "bytes": 44,
+                  "content_type": "text/plain",
+                  "kind": "invocation",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "A",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "operation": {
+                "signature": "op:d76df29d30856b559511eadcff308e440b3de9bb0948116b2d87aca3cc8fab67",
+                "status": "available",
+                "summary": "{\"command\":\"gh pr create --repo acme/other\"}"
+              },
+              "ordinal": 5,
+              "result_parts": [
+                {
+                  "body_id": "body:4ae9e01d3de069ed6791826f691dfac83c3f3698475f018f79290caa5e8786f0",
+                  "bytes": 37,
+                  "content_type": "text/plain",
+                  "kind": "function_output",
+                  "pruned_at": null,
+                  "retained_version": false,
+                  "retention_tier": "B",
+                  "source_epoch": "<captured-epoch>",
+                  "status": "available"
+                }
+              ],
+              "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+              "source_epoch": "<captured-epoch>",
+              "tool": {
+                "kind": "function",
+                "name": "shell"
+              }
+            }
+          ],
+          "next_after": null,
+          "status": "complete",
+          "total": 6
+        },
+        "total": 6
+      }
+    },
+    "index": {
+      "evidence": {
+        "notices": [],
+        "status": "complete"
+      },
+      "ok": true,
+      "schema_version": 1,
+      "sessions": [
+        {
+          "additional_pr_count": 0,
+          "agents": [
+            {
+              "additional_pr_count": 0,
+              "latest_pr": null,
+              "native": {
+                "children": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "unavailable",
+                    "tool_calls": "unavailable"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "unavailable",
+                  "tool_breakdown": [],
+                  "tool_calls": null
+                },
+                "own": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "observed",
+                    "tool_calls": "observed"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "observed",
+                  "tool_breakdown": [
+                    {
+                      "count": 1,
+                      "name": "Bash"
+                    }
+                  ],
+                  "tool_calls": 1
+                },
+                "subtree": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "observed",
+                    "tool_calls": "observed"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "observed",
+                  "tool_breakdown": [
+                    {
+                      "count": 1,
+                      "name": "Bash"
+                    }
+                  ],
+                  "tool_calls": 1
+                }
+              },
+              "prs": [],
+              "run_id": "identity:a30df04dd89ca502393cdaebf3dfd4f6",
+              "scopes": {
+                "children": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "unpriced",
+                    "value": null
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": null,
+                    "first_at": null,
+                    "last_at": null,
+                    "status": "unavailable"
+                  },
+                  "tokens": {
+                    "cache_creation": null,
+                    "cache_read": null,
+                    "input": null,
+                    "output": null,
+                    "status": "unavailable",
+                    "total": null
+                  }
+                },
+                "own": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "known",
+                    "value": 7.6e-05
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": 1000,
+                    "first_at": "2026-09-07T12:00:03.000Z",
+                    "last_at": "2026-09-07T12:00:04.000Z",
+                    "status": "observed"
+                  },
+                  "tokens": {
+                    "cache_creation": 0,
+                    "cache_read": 0,
+                    "input": 3,
+                    "output": 7,
+                    "status": "available",
+                    "total": 10
+                  }
+                },
+                "subtree": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "known",
+                    "value": 7.6e-05
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": 1000,
+                    "first_at": "2026-09-07T12:00:03.000Z",
+                    "last_at": "2026-09-07T12:00:04.000Z",
+                    "status": "observed"
+                  },
+                  "tokens": {
+                    "cache_creation": 0,
+                    "cache_read": 0,
+                    "input": 3,
+                    "output": 7,
+                    "status": "available",
+                    "total": 10
+                  }
+                }
+              },
+              "session_id": "11111111-8888-4888-8888-888888888888",
+              "status": "available"
+            }
+          ],
+          "harness": "claude-code",
+          "latest_pr": null,
+          "native": {
+            "children": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 1,
+                  "name": "Bash"
+                }
+              ],
+              "tool_calls": 1
+            },
+            "own": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 1,
+                  "name": "Bash"
+                },
+                {
+                  "count": 1,
+                  "name": "Edit"
+                }
+              ],
+              "tool_calls": 2
+            },
+            "subtree": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 2,
+                  "name": "Bash"
+                },
+                {
+                  "count": 1,
+                  "name": "Edit"
+                }
+              ],
+              "tool_calls": 3
+            }
+          },
+          "pinned": true,
+          "prs": [],
+          "root_session_id": "eeeeeeee-6666-4666-8666-666666666666",
+          "run_id": "a27867c5fd3bd4647578e0c4273ed65f72679dcdc4c426afc0b1f488752ed2fa",
+          "scopes": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 7.6e-05
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 1000,
+                "first_at": "2026-09-07T12:00:03.000Z",
+                "last_at": "2026-09-07T12:00:04.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 0,
+                "cache_read": 0,
+                "input": 3,
+                "output": 7,
+                "status": "available",
+                "total": 10
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 6.46e-05
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 2000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:10:02.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 2,
+                "cache_read": 8,
+                "input": 4,
+                "output": 5,
+                "status": "available",
+                "total": 19
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "known",
+                "value": 0.00014060000000000003
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 3000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:10:02.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": 2,
+                "cache_read": 8,
+                "input": 7,
+                "output": 12,
+                "status": "available",
+                "total": 29
+              }
+            }
+          },
+          "session_id": "eeeeeeee-6666-4666-8666-666666666666",
+          "status": "available"
+        },
+        {
+          "additional_pr_count": 2,
+          "agents": [
+            {
+              "additional_pr_count": 0,
+              "latest_pr": null,
+              "native": {
+                "children": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "unavailable",
+                    "tool_calls": "unavailable"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "unavailable",
+                  "tool_breakdown": [],
+                  "tool_calls": null
+                },
+                "own": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "observed",
+                    "tool_calls": "observed"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "observed",
+                  "tool_breakdown": [
+                    {
+                      "count": 1,
+                      "name": "shell"
+                    }
+                  ],
+                  "tool_calls": 1
+                },
+                "subtree": {
+                  "branch": null,
+                  "duration_ms": null,
+                  "field_status": {
+                    "branch": "unavailable",
+                    "duration_ms": "unavailable",
+                    "lines_added": "unavailable",
+                    "lines_removed": "unavailable",
+                    "tool_breakdown": "observed",
+                    "tool_calls": "observed"
+                  },
+                  "lines_added": null,
+                  "lines_removed": null,
+                  "status": "observed",
+                  "tool_breakdown": [
+                    {
+                      "count": 1,
+                      "name": "shell"
+                    }
+                  ],
+                  "tool_calls": 1
+                }
+              },
+              "prs": [],
+              "run_id": "4db5438779b6b2b909c1c9aae388e9c5e22c2544ff0fb4424ba0e3e75d433eba",
+              "scopes": {
+                "children": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "unpriced",
+                    "value": null
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": null,
+                    "first_at": null,
+                    "last_at": null,
+                    "status": "unavailable"
+                  },
+                  "tokens": {
+                    "cache_creation": null,
+                    "cache_read": null,
+                    "input": null,
+                    "output": null,
+                    "status": "unavailable",
+                    "total": null
+                  }
+                },
+                "own": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "unavailable",
+                    "value": null
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": 1000,
+                    "first_at": "2026-09-07T12:00:03.000Z",
+                    "last_at": "2026-09-07T12:00:04.000Z",
+                    "status": "observed"
+                  },
+                  "tokens": {
+                    "cache_creation": null,
+                    "cache_read": null,
+                    "input": null,
+                    "output": null,
+                    "status": "unavailable",
+                    "total": null
+                  }
+                },
+                "subtree": {
+                  "cost": {
+                    "currency": "USD",
+                    "status": "unavailable",
+                    "value": null
+                  },
+                  "evidence": [],
+                  "timing": {
+                    "active_ms": 1000,
+                    "first_at": "2026-09-07T12:00:03.000Z",
+                    "last_at": "2026-09-07T12:00:04.000Z",
+                    "status": "observed"
+                  },
+                  "tokens": {
+                    "cache_creation": null,
+                    "cache_read": null,
+                    "input": null,
+                    "output": null,
+                    "status": "unavailable",
+                    "total": null
+                  }
+                }
+              },
+              "session_id": "22222222-9999-4999-8999-999999999999",
+              "status": "available"
+            }
+          ],
+          "harness": "codex",
+          "latest_pr": {
+            "first_seen": "2026-09-07T12:12:05.000Z",
+            "last_evidenced_at": "2026-09-07T12:12:05.000Z",
+            "number": 42,
+            "relationship": "created",
+            "repository_id": "github.com/acme/other",
+            "url": "https://github.com/acme/other/pull/42"
+          },
+          "native": {
+            "children": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 1,
+                  "name": "shell"
+                }
+              ],
+              "tool_calls": 1
+            },
+            "own": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 3,
+                  "name": "shell"
+                },
+                {
+                  "count": 1,
+                  "name": "apply_patch"
+                },
+                {
+                  "count": 1,
+                  "name": "exec_command"
+                }
+              ],
+              "tool_calls": 5
+            },
+            "subtree": {
+              "branch": null,
+              "duration_ms": null,
+              "field_status": {
+                "branch": "unavailable",
+                "duration_ms": "unavailable",
+                "lines_added": "unavailable",
+                "lines_removed": "unavailable",
+                "tool_breakdown": "observed",
+                "tool_calls": "observed"
+              },
+              "lines_added": null,
+              "lines_removed": null,
+              "status": "observed",
+              "tool_breakdown": [
+                {
+                  "count": 4,
+                  "name": "shell"
+                },
+                {
+                  "count": 1,
+                  "name": "apply_patch"
+                },
+                {
+                  "count": 1,
+                  "name": "exec_command"
+                }
+              ],
+              "tool_calls": 6
+            }
+          },
+          "pinned": true,
+          "prs": [
+            {
+              "first_seen": "2026-09-07T12:12:05.000Z",
+              "last_evidenced_at": "2026-09-07T12:12:05.000Z",
+              "number": 42,
+              "relationship": "created",
+              "repository_id": "github.com/acme/other",
+              "url": "https://github.com/acme/other/pull/42"
+            },
+            {
+              "first_seen": "2026-09-07T12:11:05.000Z",
+              "last_evidenced_at": "2026-09-07T12:11:05.000Z",
+              "number": 43,
+              "relationship": "reviewed",
+              "repository_id": "github.com/acme/demo",
+              "url": "https://github.com/acme/demo/pull/43"
+            },
+            {
+              "first_seen": "2026-09-07T12:10:05.000Z",
+              "last_evidenced_at": "2026-09-07T12:10:05.000Z",
+              "number": 42,
+              "relationship": "created",
+              "repository_id": "github.com/acme/demo",
+              "url": "https://github.com/acme/demo/pull/42"
+            }
+          ],
+          "root_session_id": "ffffffff-7777-4777-8777-777777777777",
+          "run_id": "7d914e55d3d2b4fca5623f138f784f7afe3f1990361ac95e334b0fa74b5df893",
+          "scopes": {
+            "children": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 1000,
+                "first_at": "2026-09-07T12:00:03.000Z",
+                "last_at": "2026-09-07T12:00:04.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "own": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 5000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:12:06.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            },
+            "subtree": {
+              "cost": {
+                "currency": "USD",
+                "status": "unavailable",
+                "value": null
+              },
+              "evidence": [],
+              "timing": {
+                "active_ms": 6000,
+                "first_at": "2026-09-07T12:00:01.000Z",
+                "last_at": "2026-09-07T12:12:06.000Z",
+                "status": "observed"
+              },
+              "tokens": {
+                "cache_creation": null,
+                "cache_read": null,
+                "input": null,
+                "output": null,
+                "status": "unavailable",
+                "total": null
+              }
+            }
+          },
+          "session_id": "ffffffff-7777-4777-8777-777777777777",
+          "status": "available"
+        }
+      ]
+    }
+  },
+  "codex": {
+    "body": {
+      "content_type": "text/plain",
+      "text": "codex output",
+      "total_bytes": 12
+    },
+    "missing_session_id": "dddddddd-5555-4555-8555-555555555555",
+    "overview": {
+      "required_keys": [
+        "ok",
+        "schema_version",
+        "session",
+        "runs",
+        "timeline",
+        "tool_calls",
+        "changes",
+        "prs",
+        "pins",
+        "evidence"
+      ]
+    },
+    "session_id": "bbbbbbbb-3333-4333-8333-333333333333",
+    "tools": {
+      "operation_summary": "{\"command\":\"git status\"}",
+      "total": 1
+    }
+  },
+  "index": {
+    "evidence": {
+      "notices": [],
+      "status": "complete"
+    },
+    "ok": true,
+    "schema_version": 1,
+    "sessions": [
+      {
+        "additional_pr_count": 0,
+        "harness": "claude-code",
+        "latest_pr": {
+          "last_evidenced_at": "2026-09-06T10:01:00.000Z",
+          "number": 42,
+          "relationship": "associated",
+          "repository_id": "github.com/acme/demo",
+          "url": "https://github.com/acme/demo/pull/42"
+        },
+        "pinned": false,
+        "root_session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "run_id": "run:main",
+        "scopes": {
+          "children": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": null,
+              "last_at": null,
+              "status": "unavailable"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 0,
+              "status": "available",
+              "total": 0
+            }
+          },
+          "own": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0.001
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": "2026-09-06T10:00:00.000Z",
+              "last_at": "2026-09-06T10:01:00.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 2,
+              "cache_read": 8,
+              "input": 4,
+              "output": 20,
+              "status": "available",
+              "total": 34
+            }
+          },
+          "subtree": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0.001
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": "2026-09-06T10:00:00.000Z",
+              "last_at": "2026-09-06T10:01:00.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 2,
+              "cache_read": 8,
+              "input": 4,
+              "output": 20,
+              "status": "available",
+              "total": 34
+            }
+          }
+        },
+        "session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "status": "available"
+      }
+    ]
+  },
+  "overview": {
+    "changes": [
+      {
+        "attribution": "confirmed",
+        "base_id": null,
+        "captured_at": "2026-09-06T10:00:50.000Z",
+        "files": [
+          "src/demo.py"
+        ],
+        "id": "change:1",
+        "kind": "tool_patch",
+        "merge_base_id": null,
+        "patch": {
+          "body_id": "body:patch",
+          "bytes": 12,
+          "content_type": "text/plain",
+          "kind": "patch",
+          "status": "available"
+        },
+        "repository_id": "github.com/acme/demo",
+        "revision_id": null,
+        "source": "epoch:main"
+      }
+    ],
+    "evidence": {
+      "notices": [],
+      "status": "complete"
+    },
+    "ok": true,
+    "pins": [
+      {
+        "breadcrumb": [
+          {
+            "label": "Main session",
+            "status": "available"
+          }
+        ],
+        "harness": "claude-code",
+        "root_session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "root_type": "agent",
+        "run_id": "run:child",
+        "scopes": {
+          "own": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          },
+          "subtree": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          }
+        },
+        "session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "status": "available"
+      }
+    ],
+    "prs": [
+      {
+        "first_seen": "2026-09-06T10:01:00.000Z",
+        "last_evidenced_at": "2026-09-06T10:01:00.000Z",
+        "number": 42,
+        "relationship": "associated",
+        "repository_id": "github.com/acme/demo",
+        "url": "https://github.com/acme/demo/pull/42"
+      }
+    ],
+    "runs": [
+      {
+        "activity_intervals": [],
+        "depth": 0,
+        "edits": 0,
+        "evidence": [],
+        "id": "run:main",
+        "label": "Main session",
+        "lifespan": {
+          "end": "2026-09-06T10:01:00.000Z",
+          "start": "2026-09-06T10:00:00.000Z",
+          "status": "observed"
+        },
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "parent_id": null,
+        "role": {
+          "status": "unavailable",
+          "value": null
+        },
+        "scopes": {
+          "children": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": null,
+              "last_at": null,
+              "status": "unavailable"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 0,
+              "status": "available",
+              "total": 0
+            }
+          },
+          "own": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0.001
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": "2026-09-06T10:00:00.000Z",
+              "last_at": "2026-09-06T10:01:00.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 2,
+              "cache_read": 8,
+              "input": 4,
+              "output": 20,
+              "status": "available",
+              "total": 34
+            }
+          },
+          "subtree": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0.001
+            },
+            "timing": {
+              "active_ms": 0,
+              "first_at": "2026-09-06T10:00:00.000Z",
+              "last_at": "2026-09-06T10:01:00.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 2,
+              "cache_read": 8,
+              "input": 4,
+              "output": 20,
+              "status": "available",
+              "total": 34
+            }
+          }
+        },
+        "start": {
+          "at": "2026-09-06T10:00:00.000Z",
+          "status": "observed"
+        },
+        "tool_calls": 1,
+        "worktree": {
+          "label": null,
+          "status": "unknown"
+        }
+      },
+      {
+        "activity_intervals": [
+          {
+            "end": "2026-09-06T10:00:45.000Z",
+            "start": "2026-09-06T10:00:40.000Z",
+            "status": "observed"
+          }
+        ],
+        "depth": 1,
+        "edits": 0,
+        "evidence": [],
+        "id": "run:child",
+        "label": "Worker",
+        "lifespan": {
+          "end": "2026-09-06T10:00:45.000Z",
+          "start": "2026-09-06T10:00:40.000Z",
+          "status": "observed"
+        },
+        "models": [
+          "claude-sonnet-5"
+        ],
+        "parent_id": "run:main",
+        "role": {
+          "status": "observed",
+          "value": "worker"
+        },
+        "scopes": {
+          "children": {
+            "cost": {
+              "currency": "USD",
+              "status": "unpriced",
+              "value": null
+            },
+            "timing": {
+              "active_ms": null,
+              "first_at": null,
+              "last_at": null,
+              "status": "unavailable"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 0,
+              "status": "unavailable",
+              "total": 0
+            }
+          },
+          "own": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          },
+          "subtree": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          }
+        },
+        "start": {
+          "at": "2026-09-06T10:00:40.000Z",
+          "status": "observed"
+        },
+        "tool_calls": 0,
+        "worktree": {
+          "label": null,
+          "status": "unknown"
+        }
+      }
+    ],
+    "schema_version": 1,
+    "session": {
+      "key": {
+        "harness": "claude-code",
+        "session_id": "aaaaaaaa-2222-4222-8222-222222222222"
+      },
+      "source_epochs": [
+        {
+          "captured_at": "2026-09-06T10:01:00.000Z",
+          "id": "epoch:main",
+          "status": "active"
+        }
+      ],
+      "status": "available",
+      "summary": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "known",
+            "value": 0
+          },
+          "timing": {
+            "active_ms": 0,
+            "first_at": null,
+            "last_at": null,
+            "status": "unavailable"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 0,
+            "output": 0,
+            "status": "available",
+            "total": 0
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "known",
+            "value": 0.001
+          },
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-06T10:00:00.000Z",
+            "last_at": "2026-09-06T10:01:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 2,
+            "cache_read": 8,
+            "input": 4,
+            "output": 20,
+            "status": "available",
+            "total": 34
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "known",
+            "value": 0.001
+          },
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-06T10:00:00.000Z",
+            "last_at": "2026-09-06T10:01:00.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 2,
+            "cache_read": 8,
+            "input": 4,
+            "output": 20,
+            "status": "available",
+            "total": 34
+          }
+        }
+      }
+    },
+    "timeline": {
+      "events": [
+        {
+          "at": "2026-09-06T10:00:20.000Z",
+          "id": "event:wait",
+          "kind": "wait_result",
+          "label": "wait completed",
+          "run_id": "run:main",
+          "status": "observed"
+        }
+      ],
+      "gaps": [],
+      "origin": "2026-09-06T10:00:00.000Z",
+      "relationship_edges": [
+        {
+          "at": "2026-09-06T10:00:20.000Z",
+          "from_run_id": "run:main",
+          "kind": "targeted_wait",
+          "status": "observed",
+          "to_run_id": "run:child"
+        }
+      ]
+    },
+    "tool_calls": {
+      "items": [
+        {
+          "at": "2026-09-06T10:00:30.000Z",
+          "evidence": [],
+          "execution": "completed",
+          "id": "call:1",
+          "input_parts": [
+            {
+              "body_id": "body:input",
+              "bytes": 24,
+              "content_type": "application/json",
+              "kind": "invocation",
+              "status": "available"
+            }
+          ],
+          "operation": {
+            "signature": "git status",
+            "status": "available",
+            "summary": "git status"
+          },
+          "ordinal": 1,
+          "result_parts": [
+            {
+              "body_id": "body:result",
+              "bytes": 3,
+              "content_type": "text/plain",
+              "kind": "tool_result_content",
+              "status": "available"
+            }
+          ],
+          "run_id": "run:main",
+          "source_epoch": "epoch:main",
+          "tool": {
+            "kind": "local",
+            "name": "Bash"
+          }
+        }
+      ],
+      "next_after": null,
+      "status": "complete",
+      "total": 1
+    }
+  },
+  "pins": {
+    "evidence": {
+      "notices": [],
+      "status": "complete"
+    },
+    "items": [
+      {
+        "breadcrumb": [
+          {
+            "label": "Main session",
+            "status": "available"
+          }
+        ],
+        "harness": "claude-code",
+        "root_session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "root_type": "agent",
+        "run_id": "run:child",
+        "scopes": {
+          "own": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          },
+          "subtree": {
+            "cost": {
+              "currency": "USD",
+              "status": "known",
+              "value": 0
+            },
+            "timing": {
+              "active_ms": 5000,
+              "first_at": "2026-09-06T10:00:40.000Z",
+              "last_at": "2026-09-06T10:00:45.000Z",
+              "status": "observed"
+            },
+            "tokens": {
+              "cache_creation": 0,
+              "cache_read": 0,
+              "input": 0,
+              "output": 5,
+              "status": "available",
+              "total": 5
+            }
+          }
+        },
+        "session_id": "aaaaaaaa-2222-4222-8222-222222222222",
+        "status": "available"
+      }
+    ],
+    "next_after": null,
+    "ok": true,
+    "schema_version": 1
+  }
+}

@@ -1,0 +1,367 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   REMOTES — off-machine connector surfaces (group hue: --sec-elsewhere)
+   Status colors only: green=ok, blue=local-ahead/info, amber=needs-attention,
+   red=conflict/unreachable. Section hue lives on the rail pill + header.
+   ───────────────────────────────────────────────────────────────────────── */
+.remotes-screen,
+.remote-detail {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px var(--pad-screen-x) var(--fab-safe);
+}
+.remotes-loading { color: var(--fg-mute); font-size: var(--fs-7); padding: 24px; }
+
+.remotes-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.remote-card {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 14px; text-align: left;
+  background: var(--bg-1); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); cursor: pointer;
+  transition: border-color var(--dur-4) ease, background var(--dur-4) ease;
+}
+.remote-card:hover { border-color: var(--border-strong); background: var(--bg-2); }
+.remote-card[data-sync="off"] { opacity: .82; }
+.remote-card-head { display: flex; align-items: center; gap: 10px; }
+.remote-card-glyph {
+  display: grid; place-items: center; width: 34px; height: 34px;
+  border-radius: var(--radius); flex-shrink: 0;
+  color: var(--section);
+  background: color-mix(in oklab, var(--section) 14%, transparent);
+}
+.remote-card-id { min-width: 0; flex: 1; }
+.remote-card-name { font-size: var(--fs-d-2); color: var(--fg-strong); }
+.remote-card-sub { font-size: var(--fs-4); color: var(--fg-mute); display: flex; gap: 6px; align-items: center; }
+.remote-card-sub .sep { color: var(--fg-dim); }
+
+.remote-sync-pill,
+.remote-health-chip,
+.remote-health-result[data-state] { font-family: var(--font-mono); font-size: var(--fs-2); }
+.remote-sync-pill .dot,
+.remote-health-chip .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0;
+}
+.remote-sync-pill { color: var(--fg-mute); background: var(--bg-3); }
+.remote-sync-pill[data-on] { color: var(--green); background: color-mix(in oklab, var(--green) 14%, transparent); }
+
+/* "Apply global skills" opt-in toggle (D15) — a state toggle that reads as a
+   sibling of the adjacent soft `Equip…` button: SAME height, corner radius
+   (var(--radius), not a pill), and sans typographic treatment as `.btn-sm`. The
+   dot + violet-when-on fill carry the on/off state (brand violet = active). */
+.remote-applyglobal-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 11.5px/1.4 var(--font-sans);
+  padding: 4px 8px; border-radius: var(--radius); white-space: nowrap;
+  border: 1px solid transparent; background: var(--bg-2); color: var(--fg-mid);
+  cursor: pointer; transition: color var(--dur-4), background var(--dur-4), border-color var(--dur-4);
+}
+.remote-applyglobal-toggle .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0;
+}
+.remote-applyglobal-toggle:hover:not(:disabled) { color: var(--fg); background: var(--bg-3); }
+.remote-applyglobal-toggle[data-on] {
+  color: var(--anchor); border-color: color-mix(in oklab, var(--anchor) 40%, transparent);
+  background: color-mix(in oklab, var(--anchor) 14%, transparent);
+}
+.remote-applyglobal-toggle:disabled { opacity: .55; cursor: default; }
+
+.remote-card-meta { display: flex; flex-direction: column; gap: 5px; }
+.remote-meta-row, .remote-summary-row {
+  display: flex; justify-content: space-between; font-size: var(--fs-5);
+}
+.remote-meta-row > span:first-child,
+.remote-summary-row > span:first-child { color: var(--fg-mute); }
+.remote-card-foot { display: flex; gap: 8px; align-items: center; }
+.remote-card-foot .btn-ghost { margin-left: auto; }
+
+/* Health chip tones (header + banner). Amber is reserved for direct-equip
+   provenance (§5.2): unreachable/not-ready is a neutral absence, auth-fail is a
+   red error — never amber. The legacy `warn` tone folds into neutral. */
+.remote-health-chip[data-tone="ok"]      { color: var(--green); background: color-mix(in oklab, var(--green) 14%, transparent); }
+.remote-health-chip[data-tone="warn"]    { color: var(--fg-mute); background: var(--bg-3); }
+.remote-health-chip[data-tone="error"]   { color: var(--red);   background: color-mix(in oklab, var(--red) 14%, transparent); }
+.remote-health-chip[data-tone="neutral"] { color: var(--fg-mute); background: var(--bg-3); }
+/* Initial probe in flight: neutral surface + spinner (already inline). */
+.remote-health-chip[data-loading] { color: var(--fg-mute); background: var(--bg-3); }
+
+/* The card health chip is an interactive "re-check" button when a probe action
+   is available — give it a clickable affordance (pill padding matching the
+   header variant + a hover lift that reads through its tone). */
+button.remote-health-chip[data-action="check"] {
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  transition: background var(--dur-4), box-shadow var(--dur-4);
+}
+button.remote-health-chip[data-action="check"]:hover {
+  background: color-mix(in oklab, currentColor 20%, var(--bg-3));
+}
+button.remote-health-chip[data-action="check"]:focus-visible {
+  outline: 2px solid var(--anchor); outline-offset: 1px;
+}
+
+/* ── Remote doctor (W3): list-level danger banner remotes + detail findings ── */
+.remote-doctor-banner-remotes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.remote-doctor-banner-link {
+  font-family: var(--font-mono); font-size: var(--fs-3);
+  padding: 1px 8px; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--red) 40%, transparent);
+  background: color-mix(in oklab, var(--red) 12%, transparent);
+  color: var(--red); cursor: pointer;
+  text-decoration: none;
+}
+.remote-doctor-banner-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+.remote-doctor-banner-link:focus-visible { outline: 2px solid var(--anchor); outline-offset: 1px; }
+
+.remote-doctor-clean {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: var(--fs-5); color: var(--fg-mute);
+}
+.remote-doctor-clean svg { color: var(--green); }
+
+.remote-doctor-list { display: flex; flex-direction: column; gap: 8px; }
+.remote-doctor-finding {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border); border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-1);
+}
+/* Left border tints by severity, mirroring the permissions doctor rows. */
+.remote-doctor-finding[data-severity="danger"]  { border-left-color: var(--red); }
+.remote-doctor-finding[data-severity="warning"] { border-left-color: var(--amber); }
+.remote-doctor-finding-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.remote-doctor-finding-head { font-family: var(--font-sans); font-size: var(--fs-6); color: var(--fg-strong); }
+.remote-doctor-finding-detail { font-family: var(--font-mono); font-size: var(--fs-3); color: var(--fg-dim); word-break: break-all; }
+
+/* Header STATE cluster (C5) — SYNC-OFF pill + health chip + optional
+   global-sync indicator, composed into ScreenHeader's `state` slot and pinned
+   right of the title inside `.header-status`. It is NOT the header-right action
+   cluster: that cluster is for actions, and a status group parked there also
+   escaped the narrow-width collapse rules (which only target `.btn`). Its own
+   shed rules are in the `@container appmain` ladder near `.header-status`. */
+.remote-header-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+/* In the header, the health chip gets a proper pill shape (scoped here so the
+   RemotesScreen card chips stay exactly as they are). */
+.remote-header-status .remote-health-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+}
+/* Subtle "a global sync is running" indicator (info channel, motion-carried). */
+.remote-syncing-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: var(--fs-2); white-space: nowrap;
+  padding: 2px 8px; border-radius: 999px;
+  color: var(--blue); background: color-mix(in oklab, var(--blue) 12%, transparent);
+}
+
+/* Section-level in-progress placeholder (initial diff/health probe). */
+.remote-section-loading {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 12px; color: var(--fg-mute); font-size: var(--fs-6);
+}
+
+.remote-section-hint {
+  padding: 12px; color: var(--fg-mute); font-size: var(--fs-6); line-height: 1.5;
+}
+
+.remote-health-banner {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 9px 12px; border-radius: var(--radius);
+  font-size: var(--fs-6); margin-bottom: 14px;
+}
+.remote-health-banner[data-tone="warn"],
+.remote-health-banner[data-tone="neutral"] { color: var(--fg-mid); background: var(--bg-2); border: 1px solid var(--border); }
+.remote-health-banner[data-tone="error"] { color: var(--red);   background: color-mix(in oklab, var(--red) 10%, transparent);   border: 1px solid color-mix(in oklab, var(--red) 30%, transparent); }
+.remote-health-banner-body { display: flex; flex-direction: column; gap: 7px; min-width: 0; flex: 1; }
+.remote-health-banner-detail { word-break: break-all; font-size: var(--fs-4); }
+.remote-health-banner-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Recovery: install-key result (persistent) + copyable fallback */
+.remote-keyresult {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  background: var(--bg-1); border: 1px solid var(--border); color: var(--fg-mid);
+}
+.remote-keyresult[data-ok] { border-color: color-mix(in oklab, var(--green) 30%, transparent); }
+.remote-keyresult-fallback { display: flex; flex-direction: column; gap: 5px; }
+.remote-copyrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.remote-copyrow code { color: var(--cyan); word-break: break-all; }
+
+/* Re-pin confirm: old vs new fingerprints */
+.remote-pin-fprs { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.remote-pin-fprs > div { display: flex; flex-direction: column; gap: 2px; }
+.remote-pin-fprs code { color: var(--cyan); word-break: break-all; font-size: var(--fs-5); }
+.remote-pin-fprs .text-dim { font-size: var(--fs-3); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.remote-section { margin-top: 22px; }
+.remote-bundle-strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.remote-skill-list { display: flex; flex-direction: column; gap: 2px; }
+/* B5: the merged "Skills on this remote" list rides plain `SkillRow`/
+   `ResourceRow` (`.remote-unit`/`.remote-unit-orphan` styling lives in
+   unit-rows.css — this surface adds only what's unique to it below). */
+.remote-detail .action-label { font-size: var(--fs-2); }
+/* A drift that needs an explicit decision keeps its resolve actions visible
+   without hover — `.resource-actions` is hover-revealed by default, wrong for
+   a decision the user must act on (B5-c). */
+.remote-detail .resource-row[data-drift="needs-resolve"] .resource-actions {
+  display: inline-flex;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* Drift surface */
+.remote-drift-callout {
+  display: flex; gap: 8px; align-items: center; margin: 8px 0 10px;
+  font-size: var(--fs-5); color: var(--fg-mid);
+  padding: 8px 10px; border-radius: var(--radius);
+  background: var(--bg-2);
+  border: 1px solid var(--border-strong);
+}
+.remote-import-row .spacer,
+.remote-doc-pane-head .spacer,
+.ad-modal-head .spacer { flex: 1; }
+.remote-resolve-actions { display: flex; gap: 2px; flex-wrap: wrap; }
+
+/* Import candidates */
+.remote-import-list { display: flex; flex-direction: column; gap: 4px; }
+.remote-import-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: var(--radius);
+  background: var(--bg-1); border: 1px solid var(--border);
+}
+.remote-import-row[data-cat="INVALID_NAME"],
+.remote-import-row[data-cat="ALREADY_REGISTERED"] { opacity: .72; }
+.remote-import-row .name { font-size: var(--fs-6); color: var(--fg-strong); }
+.remote-import-row .text-dim { font-size: var(--fs-3); }
+
+/* Agent-doc editor pane (REVIEW-B #2) — one per doc, mounted only inside its
+   row's own `.resource-detail` panel (which already frames it: border,
+   padding, background), so this owns layout only, no second frame. Replaces
+   the retired `.remote-doc-editor`/`.remote-doc-list`/`.remote-doc-tab*`
+   picker, which duplicated the row list above it. */
+.remote-doc-pane { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.remote-doc-pane-head {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
+.remote-doc-note {
+  display: flex; gap: 7px; align-items: flex-start; padding: 6px 8px;
+  font-size: var(--fs-4); color: var(--fg-mute);
+}
+.remote-doc-note .remote-doc-size { margin-left: auto; white-space: nowrap; padding-left: 10px; cursor: help; }
+.remote-doc-body { height: 280px; display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.remote-doc-body > * { flex: 1; min-width: 0; overflow: auto; }
+
+/* ── Add-remote wizard (Sheet preset, A2) ── */
+.remote-wizard.modal-right { width: min(640px, 92vw); }
+.remote-wizard-body { min-height: 280px; }
+.remote-wizard-title { display: flex; align-items: center; gap: 8px; width: 100%; }
+.remote-wizard-title .remote-wizard-steps { margin-left: auto; }
+.modal-foot-spacer { flex: 1; }
+.remote-wizard-steps { font-size: var(--fs-3); }
+.remote-wizard-lede { color: var(--fg-mute); font-size: var(--fs-6); margin: 0 0 14px; }
+.remote-wizard-step { display: flex; flex-direction: column; gap: 12px; }
+
+.remote-connector-cards { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+.remote-connector-card {
+  display: flex; flex-direction: column; gap: 8px; text-align: left;
+  padding: 14px; border-radius: var(--radius-lg);
+  border: 1px solid var(--border); background: var(--bg-1); cursor: pointer;
+  transition: border-color var(--dur-4) ease;
+}
+.remote-connector-card:hover:not([data-disabled]) { border-color: var(--border-strong); }
+.remote-connector-card[data-selected] { border-color: var(--ctx); background: color-mix(in oklab, var(--ctx) 8%, transparent); }
+.remote-connector-card[data-disabled] {
+  cursor: not-allowed; opacity: .55;
+  border-style: dashed;
+}
+.remote-connector-card-head { display: flex; align-items: center; gap: 8px; }
+.remote-connector-card-name { font-size: var(--fs-d-1); font-weight: 600; color: var(--fg-strong); }
+.remote-connector-transport { margin-left: auto; font-size: var(--fs-2); color: var(--fg-mute); padding: 2px 6px; background: var(--bg-3); border-radius: 4px; }
+.remote-connector-soon { margin-left: auto; font-size: var(--fs-1); text-transform: uppercase; letter-spacing: .06em; color: var(--fg-dim); }
+.remote-connector-card-desc { margin: 0; font-size: var(--fs-4); color: var(--fg-mute); line-height: 1.5; }
+
+.remote-field { display: flex; flex-direction: column; gap: 5px; }
+.remote-field > span { font-size: var(--fs-4); color: var(--fg-mute); }
+.remote-input {
+  padding: 8px 10px; border-radius: var(--radius);
+  background: var(--bg-0); border: 1px solid var(--border); color: var(--fg-strong);
+  font-size: var(--fs-7);
+}
+.remote-input:focus { outline: none; border-color: var(--anchor); }
+.remote-field-err { font-size: var(--fs-3); color: var(--red); }
+
+.remote-tofu { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.remote-fpr {
+  font-size: var(--fs-4); padding: 5px 8px; border-radius: var(--radius);
+  background: var(--bg-0); border: 1px solid var(--border); color: var(--cyan);
+  word-break: break-all;
+}
+.remote-tofu-known {
+  display: flex; gap: 7px; align-items: flex-start; font-size: var(--fs-4);
+  color: var(--fg-mute); padding: 8px 10px; border-radius: var(--radius);
+  background: var(--bg-0); border: 1px solid var(--border);
+}
+.remote-tofu-known .match { color: var(--green); }
+.remote-tofu-known .nomatch { color: var(--red); }
+.remote-tofu-known code { color: var(--cyan); word-break: break-all; }
+
+.remote-copyid { display: flex; align-items: center; gap: 8px; font-size: var(--fs-6); flex-wrap: wrap; }
+.remote-confirm.toggle-field { align-items: flex-start; font-size: var(--fs-6); }
+.remote-copyid code, .remote-confirm code { color: var(--cyan); }
+
+/* Out-of-band TOFU guidance when no documented fingerprint exists */
+.remote-tofu-verify {
+  display: flex; gap: 6px; align-items: flex-start;
+  font-size: var(--fs-5); color: var(--fg-mid); line-height: 1.5;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  background: var(--bg-2); border: 1px solid var(--border);
+}
+.remote-tofu-verify code { color: var(--cyan); word-break: break-all; }
+
+/* Persistent ssh-copy-id error panel (R1/R2) */
+.remote-copyid-error {
+  display: flex; flex-direction: column; gap: 8px; margin: 10px 0;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--red) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--red) 28%, transparent);
+  font-size: var(--fs-6); color: var(--fg-mid);
+}
+.remote-copyid-error-head { display: flex; align-items: center; gap: 6px; color: var(--red); }
+.remote-copyid-error-msg {
+  margin: 0; white-space: pre-wrap; word-break: break-word;
+  font-size: var(--fs-4); color: var(--fg-mid);
+  max-height: 160px; overflow: auto;
+}
+.remote-copyid-error code { color: var(--cyan); word-break: break-all; }
+.remote-copyid-fallback { display: flex; flex-direction: column; gap: 5px; }
+
+/* Test-connection affordance (R10) */
+.remote-testconn { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 10px 0; font-size: var(--fs-6); }
+.remote-testconn-result { display: inline-flex; align-items: center; gap: 6px; }
+.remote-testconn-result[data-state="ok"]   { color: var(--green); }
+.remote-testconn-result[data-state="fail"] { color: var(--red); }
+
+.remote-summary {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px;
+  border-radius: var(--radius); background: var(--bg-0); border: 1px solid var(--border);
+}
+.remote-summary-row { font-size: var(--fs-6); }
+.remote-summary-row > span:last-child { color: var(--fg-strong); }
+
+.remote-health-result {
+  display: flex; gap: 8px; align-items: center; font-size: var(--fs-6);
+  padding: 9px 12px; border-radius: var(--radius);
+}
+.remote-health-result[data-state="ok"]       { color: var(--green); background: color-mix(in oklab, var(--green) 10%, transparent); }
+.remote-health-result[data-state="checking"] { color: var(--blue);  background: color-mix(in oklab, var(--blue) 10%, transparent); }
+.remote-health-result[data-state="fail"]      { color: var(--red); background: color-mix(in oklab, var(--red) 10%, transparent); }
+
+

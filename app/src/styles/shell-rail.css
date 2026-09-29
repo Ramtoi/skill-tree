@@ -1,0 +1,314 @@
+/* ─── Rail (icon nav) ──────────────────────────────────────────────────── */
+.rail-btn {
+  width: 36px; height: 36px;
+  /* Flex in BOTH modes (never `display:grid`) so expand/collapse is a length
+     change the browser can ease, not a layout-mode flip it has to pop. The
+     button's own 1px border eats 2px from the 36px box first (border-box
+     sizing), leaving 34px for a 16px icon to centre in — 9px either side —
+     so `justify-content:flex-start` + `padding-left:9px` here reproduces
+     `place-items:center`'s exact pixel position (measured: icon left edge
+     at x=20 either way). The collapsed rail renders identically to before
+     this change. */
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 0; padding: 0 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--fg-mute);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--dur-4), color var(--dur-4), border-color var(--dur-4),
+    width var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    gap var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    padding var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+  /* Where the glint points on the rail: the section hue. Engines without
+     relative color syntax keep the plain low-chroma section hue (guarded
+     below with @supports — a same-rule second declaration would NOT fall
+     back, custom properties accept any token stream at parse time). */
+  --live-accent: var(--section);
+}
+/* The glyph never squeezes as the row widens or narrows. */
+.rail-btn > svg { flex-shrink: 0; }
+.header-glyph { --live-accent: var(--section); }
+@supports (color: oklch(from red l c h)) {
+  .rail-btn, .header-glyph { --live-accent: oklch(from var(--section) 78% 0.19 h); }
+}
+/* Zero-chrome second tips-tour anchor (see IconRail `extraTour`): reports the
+   button's own rect so the tour ring lands exactly on the button. */
+.rail-tour-anchor { position: absolute; inset: 0; pointer-events: none; }
+.rail-btn:hover { color: var(--fg-mid); background: var(--bg-2); }
+/* Selection SINKS the glyph one layer down: the active button takes the
+   NAVIGATOR's material and fuses with it — flat panel surface, right corners
+   opened, and an ::after tongue bridging the gap to the rail's edge so the two
+   surfaces read as one. A soft section-hue glow inside the left edge carries
+   the charge. Never a left stripe, never a sealing ring (a ring would cut the
+   fused surface apart again). */
+.rail-btn[aria-current="true"] {
+  /* Fusion target: the navigator's material and its color AT the seam. The
+     nav-hidden/narrow variants re-point these two props and everything —
+     plate, scoops — follows. The panel is a glass sheet now, so the tab that
+     carries it is the SAME glass: same translucent mix, same backdrop blur
+     (below). A tab painted in flat panel colour beside a translucent panel
+     stops reading as the panel's own tongue. */
+  --fuse-mid: var(--plate-bg);
+  --fuse-edge: var(--plate-bg);
+  color: var(--section);
+  background: none; /* the ::after plate paints the whole fused surface */
+  border-radius: var(--radius) 0 0 var(--radius);
+  z-index: 1;
+}
+/* ONE plate from the tile's left edge to the seam — a single gradient, so
+   there is no joint where a separate tongue box could band: section-hue glow
+   on the left, settling into the fused surface, then ramping to the seam
+   color over the last stretch and HOLDING it (a plateau of matched color
+   against the panel's edge). Offsets are relative to the PADDING box and the
+   button carries a 1px transparent border: -1px re-covers the border box, and
+   right overshoots by border + gutter (1 + 10px collapsed) — the rail's
+   overflow clips the overshoot at its edge exactly. */
+.rail-btn[aria-current="true"]::after {
+  content: "";
+  position: absolute;
+  left: -1px; top: -1px; bottom: -1px; right: -11px;
+  /* Labels mode pulls the mouth in to -9px (below) as the row gets its own
+     8px inline padding — `right` is a plain length, so easing it here keeps
+     the ring's open seam from flashing shut mid-transition. */
+  transition: right var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+  z-index: -1;
+  /* The chrome-edge line traces the tab: stroke on top/left/bottom, OPEN on
+     the seam side (the mouth) — the scoop rings carry the line's curve back
+     onto the rail edge above and below. */
+  border: 1px solid var(--chrome-edge);
+  border-right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  /* ONE SHEET, ONE GROUND. The tab is not "like" the navigator plate — it is
+     the SAME recipe over the SAME ground: the translucent `--plate-bg` sheet on
+     top, then the backlight and the chrome lamp, then the chrome ground.
+     The two ground layers are `background-attachment: fixed`, which is the
+     whole trick: a fixed layer is positioned against the VIEWPORT, so this
+     tile reproduces the field at its own window position without knowing what
+     that position is — and the rail can hold ten buttons at ten different y's.
+     The ground stays OPAQUE (rather than letting a backdrop-filter sample the
+     rail): the rail paints the chrome-edge contour along its own right edge,
+     and the tab must COVER that line to open its mouth. A purely translucent
+     tab let the line read straight through (measured 30,30,40 against the
+     tab's 19,19,26) and the seam sealed itself shut again.
+     No sheen and no inner top highlight here: both are whole-sheet gestures
+     (46% of the plate's height, and its top edge) that mean nothing on a 36px
+     tile — and a white inner top line would double the ring. Measured cost at
+     the seam: under 1 RGB unit. */
+  background-image:
+    /* (1) the sheet's sheen — the same viewport-fixed field the plate paints */
+    linear-gradient(158deg, var(--plate-sheen) 0%, transparent 46%),
+    linear-gradient(90deg,
+      color-mix(in oklab, var(--section) 16%, var(--fuse-mid)) 0%,
+      var(--fuse-mid) 55%,
+      var(--fuse-mid) calc(100% - 24px),
+      var(--fuse-edge) calc(100% - 6px),
+      var(--fuse-edge) 100%),
+    radial-gradient(320px 480px at var(--panel-x) var(--header-row-1),
+      var(--panel-backlight), transparent 70%),
+    radial-gradient(1000px 560px at 0 0,
+      color-mix(in oklab, var(--section-lifted, var(--section)) 14%, transparent), transparent 70%);
+  background-attachment: fixed, scroll, fixed, fixed;
+  background-color: var(--layer-rail);
+}
+/* No flared shoulders: the tab meets the seam SQUARE. A shoulder fillet sits
+   exactly where two different grounds meet (rail wash on one side, panel AO
+   on the other), so no fill can match both — three rounds of corner blocks
+   proved it. The contour simply turns at right angles where the rail line
+   meets the plate's top/bottom strokes, which rhymes with the Guild corner
+   ticks; the rounded-contour motif lives at the chrome corner fillet, where
+   the ground behind it is uniform. */
+/* When there is no navigator beside the rail, the next surface down IS the
+   screen: fuse to that instead. (Narrow keeps this even with the drawer open —
+   the drawer floats OVER the page; the rail's standing neighbor is the screen.) */
+.app[data-nav="false"] .rail-btn[aria-current="true"],
+.app[data-narrow="true"] .rail-btn[aria-current="true"] {
+  --fuse-mid: var(--atmo-tint);
+  --fuse-edge: var(--layer-screen-edge);
+}
+/* ─── Live-point accent (`.live-glint`) ─────────────────────────────────────
+   Reusable selected-state glint for section glyphs (contract: COMPONENTS.md
+   §Icons > Live-point accent). Every section icon tags one charged detail
+   with `ic-live` (top gem, pennant, keyhole, visor slit, tent doorway…).
+   Any interactive host opts in by adding `.live-glint`; when the host is
+   selected — [aria-current]/[aria-pressed]/[aria-selected]="true" or
+   data-live="true" — the detail brightens to `--live-accent` (brand violet
+   by default; hosts may re-point it), closed shapes fill in translucently,
+   and it pops with a small spring. Idle, the detail rides the host's text
+   color, so non-opted-in surfaces render the glyphs exactly as before.
+   Degenerate note: straight-line details (harness visor, keyhole stem) have
+   zero-area fill-boxes, where some engines skip the transform — they still
+   get the full color/fill glint, so degradation is graceful. */
+.live-glint .ic-live {
+  transition:
+    color var(--dur-8) ease,
+    fill var(--dur-8) ease,
+    transform var(--dur-11) cubic-bezier(.3, 1.8, .5, 1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.live-glint:is([aria-current="true"], [aria-pressed="true"], [aria-selected="true"], [data-live="true"]) .ic-live {
+  color: var(--live-accent, var(--anchor-2));
+  transform: scale(1.15);
+}
+/* Fill-in lands ONLY on closed shapes: open-path live details set an explicit
+   fill="none" attribute in icons.ts, which this selector skips; filled dots
+   carry fill="currentColor" and are likewise skipped (they pop via color). */
+.live-glint:is([aria-current="true"], [aria-pressed="true"], [aria-selected="true"], [data-live="true"]) .ic-live:not([fill]) {
+  fill: color-mix(in oklab, currentColor 30%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-glint .ic-live { transition: none; }
+  .live-glint:is([aria-current="true"], [aria-pressed="true"], [aria-selected="true"], [data-live="true"]) .ic-live { transform: none; }
+}
+
+.rail-sep { flex: 1; }
+.rail-divider { width: 20px; height: 1px; background: var(--border); margin: 4px 0; flex-shrink: 0; }
+
+/* ─── Group captions ───────────────────────────────────────────────────────
+   One per intent-group boundary (IconRail `RailCaption`). Collapsed it is
+   geometrically the `.rail-divider` above — 56px cannot hold a word and a
+   truncated caption is worse than none — so the text is hidden and only the
+   hairline reads. Expanded, the label REPLACES the rule: a caption stacked on
+   a divider reads as two separators.
+   The swap is a CROSSFADE, not a pop: the hairline is a `background` fill and
+   the labelled divider is a `border-top` stroke, both declared on every
+   state (transparent where inactive) so `background-color`/`border-top-color`
+   — plain colors — ease between them instead of one property vanishing and
+   the other appearing mid-frame. Width/height/margin/padding are plain
+   lengths throughout, so they ease too; only `display:none → block` on the
+   text (below) can't, which is why that one is a separate opacity fade. */
+.rail-caption {
+  width: 20px; height: 1px;
+  background: var(--border);
+  border-top: 1px solid transparent;
+  margin: 4px 0;
+  padding: 0;
+  flex-shrink: 0;
+  transition:
+    width var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    height var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    margin var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    padding var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    background-color var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    border-top-color var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+}
+/* Always rendered (never `display:none`): a fixed collapsed size keeps the
+   hairline's geometry unchanged, and the fade-in is opacity + a small
+   downward settle, not a pop. */
+.rail-caption > span {
+  display: block;
+  opacity: 0;
+  transform: translateY(2px);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro-2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  white-space: nowrap;
+  transition:
+    opacity var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    transform var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+}
+/* Explicit target sizes (not `width/height:auto`), so both dimensions are
+   plain lengths the transition above can interpolate to — measured against
+   the rendered expanded caption (152px row, 22px tall). */
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-caption {
+  width: calc(var(--rail-w-expanded) - 16px);
+  height: 22px;
+  background: transparent;
+  border-top-color: var(--border);
+  margin: 8px 0 2px;
+  padding: 6px 8px 2px;
+}
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-caption > span {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Rail labels mode ─────────────────────────────────────────────────────
+   The label is always in the DOM and rendered (never `display:none`, which
+   cannot transition) — collapsed it is a zero-max-width, zero-opacity sliver
+   clipped by `overflow:hidden`, so it takes no space and cannot be read
+   visually, but its max-width/opacity/transform can EASE open instead of
+   popping. max-width (not `width:auto`, which can't ease either) lets each
+   label keep its own content width, so all of them hang left off the glyph
+   gap. */
+.rail-label {
+  display: block;
+  flex-shrink: 0;
+  /* Content-sized, clipped by max-width rather than a fixed width: a fixed
+     box centred the text (a <button> is text-align:center by default) and
+     "Permissions" started 60px left of "Hooks". Left-aligned, so every label
+     hangs off the same glyph gap. */
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  opacity: 0;
+  transform: translateX(-4px);
+  font-family: var(--font-sans);
+  font-size: var(--fs-6);
+  line-height: 1.2;         /* room for descenders (Snippets, Palette) — the row is a fixed 36px anyway */
+  white-space: nowrap;      /* a wrapped rail label is a layout bug, not a fallback */
+  /* Inherits the button's color so hover / aria-current tint the whole row as
+     one unit (a fixed label color would desync from the icon in those states). */
+  color: inherit;
+  transition:
+    max-width var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    opacity var(--dur-10) cubic-bezier(.2, .7, .2, 1),
+    transform var(--dur-10) cubic-bezier(.2, .7, .2, 1);
+}
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-label {
+  /* Room left in a 168px row after the rail's 8px inline padding, the button's
+     8px padding, the 16px glyph and the 10px gap. */
+  max-width: 110px;
+  opacity: 1;
+  transform: translateX(0);
+}
+/* Items reach the rail width via an explicit calc'd target, not `align-items:
+   stretch` + `width:100%` — `.rail-btn` is flex in BOTH modes now (see
+   below), so its own `width` can EASE from 36px to this the same way the
+   column eases; a stretch swap has nothing to interpolate. Horizontal
+   padding moves from the (previously centered) items onto the rail itself so
+   every row shares one left edge. */
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .app-rail {
+  padding-inline: 8px;
+}
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-btn {
+  width: calc(var(--rail-w-expanded) - 16px);
+  gap: 10px;
+  padding: 0 8px;
+}
+/* Labels mode: rows start at the rail's 8px inline padding, so the fused
+   plate only has 8px (+1px border) to bridge to the seam. */
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-btn[aria-current="true"]::after {
+  right: -9px;
+}
+/* A 20px stub under full-width rows reads as a stray tick: span the rail. */
+.app[data-rail-expanded="true"]:not([data-narrow="true"]) .rail-divider {
+  width: auto;
+  align-self: stretch;
+}
+/* The brand mark moved up into the title strip (`.topbar-logo`, scaffold) —
+   the band cell over the rail column was empty and the mark is title-bar
+   content, not a destination. */
+
+/* Expand/collapse motion, all in one place: the rail-width easing above
+   (the column itself is `.app`'s own transition, shell-scaffold.css) plus
+   every per-row consequence — button width/gap/padding, the ring's `right`
+   offset, the label reveal, the caption crossfade. */
+@media (prefers-reduced-motion: reduce) {
+  /* Keeps the pre-existing hover/selection color transitions (background,
+     color, border-color) — only the newly-added length transitions drop. */
+  .rail-btn {
+    transition: background var(--dur-4), color var(--dur-4), border-color var(--dur-4);
+  }
+  .rail-btn[aria-current="true"]::after,
+  .rail-label,
+  .rail-caption,
+  .rail-caption > span {
+    transition: none;
+  }
+}
+

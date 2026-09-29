@@ -1,0 +1,14 @@
+.mcp-permissions-heading,
+.mcp-permission-toolbar,
+.mcp-permission-row,
+.mcp-permission-manual { display: flex; align-items: center; gap: 8px; }
+.mcp-permissions-heading { justify-content: space-between; flex-wrap: wrap; }
+.mcp-permissions-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mcp-permission-controls { display: grid; gap: 8px; margin-top: 10px; }
+.mcp-permission-toolbar { justify-content: space-between; }
+.mcp-permission-toolbar .search-input,
+.mcp-permission-manual .field { min-width: 0; flex: 1; }
+.mcp-permission-manual { align-items: flex-end; }
+.mcp-permission-row { justify-content: space-between; flex-wrap: wrap; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.mcp-permission-name { display: grid; gap: 2px; min-width: 150px; overflow-wrap: anywhere; }
+.mcp-permission-sheet-scope { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-bottom: 12px; }

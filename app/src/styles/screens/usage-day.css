@@ -1,0 +1,60 @@
+.usage-day-modal .modal-head { padding: 20px 24px; }
+.usage-day-modal .modal-body { padding: 20px 24px 24px; }
+.usage-day-modal .modal-foot { justify-content: space-between; color: var(--fg-mute); font-size: var(--fs-5); }
+.usage-day-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.usage-day-heading { display: grid; gap: 5px; min-width: 0; }
+.usage-day-title { font-size: var(--fs-d-11); font-weight: 550; letter-spacing: -.5px; outline: none; }
+.usage-day-scope { color: var(--fg-mute); font-size: var(--fs-6); font-weight: 400; }
+.usage-day-nav { display: flex; gap: 6px; flex-shrink: 0; }
+.usage-day-nav .btn { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-color: var(--border-strong); }
+/* Existing chevron paths have half-pixel opposing offsets in their viewBox. */
+.usage-day-nav .btn:first-child svg { transform: translateX(.5px); }
+.usage-day-nav .btn:last-child svg { transform: translateX(-.5px); }
+.usage-day-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--border-strong); border-radius: var(--radius-frame); background: var(--surface-panel); box-shadow: var(--engrave); }
+.usage-day-metrics .stat-card { border: 0; border-radius: 0; background: none; box-shadow: none; min-width: 0; padding: 14px 16px; }
+.usage-day-metrics .stat-card + .stat-card { border-left: 1px solid var(--border); }
+.usage-day-metrics .stat-card .value { font-size: var(--fs-d-12); }
+.usage-day-metrics .stat-card .sub { font-size: var(--fs-4); }
+.usage-day-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.usage-day-section-head h3 { margin: 0; font-size: var(--fs-d-4); font-weight: 550; }
+.usage-day-section-head > span, .usage-day-count { font-size: var(--fs-5); color: var(--fg-mute); font-weight: 400; }
+.usage-day-count { margin-left: 5px; font-family: var(--font-mono); }
+.usage-day-composition { margin: 22px 0; }
+.usage-day-composition .comp-bar { height: 6px; }
+.usage-day-breakdowns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding-top: 18px; border-top: 1px solid var(--border); }
+.usage-day-models { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.usage-day-models th { text-align: left; color: var(--fg-mute); font-size: var(--fs-4); font-weight: 400; padding-bottom: 7px; }
+.usage-day-models td { padding: 6px 0; font-size: var(--fs-6); }
+.usage-day-models th:not(:first-child), .usage-day-models td:not(:first-child) { width: 70px; text-align: right; }
+.usage-day-models td:not(:first-child) { font-family: var(--font-mono); color: var(--fg-mid); overflow-wrap: anywhere; }
+.usage-day-model-name { display: flex; align-items: center; gap: 7px; min-width: 0; overflow-wrap: anywhere; }
+.usage-day-model-name .chart-swatch, .usage-day-tool-name .chart-swatch { flex-shrink: 0; }
+.usage-day-tools { list-style: none; margin: 0; padding: 0; }
+.usage-day-tools li { display: grid; grid-template-columns: minmax(0, 1fr) 80px 55px; align-items: center; gap: 10px; padding: 5px 0; font-size: var(--fs-6); }
+.usage-day-tool-name { display: flex; align-items: center; gap: 7px; overflow-wrap: anywhere; min-width: 0; }
+.usage-day-tools li > span:last-child { text-align: right; font-family: var(--font-mono); color: var(--fg-mid); }
+.usage-day-tool-track { height: 3px; background: var(--bg-4); }
+.usage-day-tool-track span { display: block; height: 100%; min-width: 2px; }
+.usage-day-sessions { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.usage-day-sessions .usage-note { font-size: var(--fs-5); }
+.usage-day-session-controls { display: flex; align-items: center; gap: 8px; margin: 14px 0; }
+.usage-day-session-controls .search-input { flex: 1; min-width: 0; }
+.usage-day-session-list { display: grid; gap: 6px; }
+.usage-day-session-list .resource-row { min-width: 0; }
+.usage-day-notice { margin: 0 0 16px; padding: 12px; background: var(--bg-1); border: 1px solid var(--border-strong); border-radius: var(--radius-frame); color: var(--fg-mid); font-size: var(--fs-6); }
+.usage-day-unavailable { color: var(--fg-mute); font-size: var(--fs-6); padding: 12px 0; }
+.usage-day-unavailable .btn { margin-left: 8px; }
+.usage-day-empty { text-align: center; padding: 42px 20px; }
+.usage-day-empty p { max-width: 360px; margin: 10px auto 0; color: var(--fg-mute); }
+@media (max-width: 700px) {
+  .usage-day-modal .modal-head, .usage-day-modal .modal-body { padding: 16px; }
+  .usage-day-title { font-size: var(--fs-d-9); }
+  .usage-day-header { gap: 8px; }
+  .usage-day-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .usage-day-metrics .stat-card:nth-child(3) { border-left: 0; }
+  .usage-day-metrics .stat-card:nth-child(n+3) { border-top: 1px solid var(--border); }
+  .usage-day-breakdowns { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .usage-day-session-controls { flex-wrap: wrap; }
+  .usage-day-session-controls .search-input { flex-basis: 100%; }
+  .usage-day-tools li { grid-template-columns: minmax(0, 1fr) 60px 55px; }
+}

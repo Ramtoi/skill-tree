@@ -1,0 +1,26 @@
+/* Attention explanations use Modal's existing frame and scrolling body. */
+.attention-dialog .modal-body > p { margin: 0; line-height: 1.5; }
+.attention-dialog .attention-impact { color: var(--fg-mid); margin-top: 8px; }
+.attention-dialog h3 { font: 500 var(--fs-4) var(--font-sans); color: var(--fg-strong); margin: 20px 0 8px; }
+.attention-items { list-style: none; margin: 0; padding: 0; }
+.attention-items > li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.attention-item-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.attention-item-copy strong { font: 500 var(--fs-4) var(--font-mono); color: var(--fg-strong); }
+.attention-item-copy p { margin: 4px 0 0; color: var(--fg-mid); white-space: pre-wrap; overflow-wrap: anywhere; }
+.attention-items .btn { flex-shrink: 0; }
+@media (max-width: 520px) { .attention-items > li { flex-direction: column; gap: 8px; } }
+
+/* Sync failures keep project actions visible; raw reports are opt-in. */
+.attention-next-step { margin-top: 16px; padding: 12px 14px; background: var(--surface-panel); border: 1px solid var(--border); border-radius: var(--radius-frame); }
+.attention-dialog .attention-next-step h3 { margin: 0 0 4px; }
+.attention-next-step p { margin: 0; color: var(--fg-mid); line-height: 1.5; }
+.attention-items > .attention-failure { display: block; min-width: 0; padding: 16px 0; }
+.attention-failure-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.attention-failure-head strong { min-width: 0; overflow-wrap: anywhere; font: 500 var(--fs-4) var(--font-mono); color: var(--fg-strong); }
+.attention-failure-summary { margin-top: 8px; }
+.attention-failure-summary > span { color: var(--red); font-weight: 500; }
+.attention-failure-summary p, .attention-other-errors { margin: 4px 0 8px; color: var(--fg-mid); overflow-wrap: anywhere; line-height: 1.5; }
+.attention-other-errors { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.attention-diagnostics { margin-top: 8px; }
+.attention-diagnostics pre { margin: 8px 0 0; padding: 12px; max-height: 240px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: var(--fs-3)/1.6 var(--font-mono); color: var(--fg-mid); background: var(--surface-well); border: 1px solid var(--border); border-radius: var(--radius-frame); box-shadow: var(--shadow-well); }
+@media (max-width: 520px) { .attention-failure-head { align-items: flex-start; flex-wrap: wrap; } }

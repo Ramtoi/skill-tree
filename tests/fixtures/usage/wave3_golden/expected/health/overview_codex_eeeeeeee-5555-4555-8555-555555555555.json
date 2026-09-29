@@ -1,0 +1,207 @@
+{
+  "changes": [],
+  "evidence": {
+    "notices": [],
+    "status": "complete"
+  },
+  "ok": true,
+  "pins": [],
+  "prs": [],
+  "runs": [
+    {
+      "activity_intervals": [],
+      "depth": 0,
+      "edits": 0,
+      "evidence": [],
+      "id": "096732b6eea9cfb46b501e363ecbb18f3d9a636c0dac74a8a6f3bc6a824dfe9c",
+      "label": "Main session",
+      "lifespan": {
+        "end": "2026-09-17T08:12:02.000Z",
+        "start": "2026-09-17T08:12:02.000Z",
+        "status": "observed"
+      },
+      "models": [
+        "gpt-5.6"
+      ],
+      "parent_id": null,
+      "role": {
+        "status": "unavailable",
+        "value": null
+      },
+      "scopes": {
+        "children": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": null,
+            "first_at": null,
+            "last_at": null,
+            "status": "unavailable"
+          },
+          "tokens": {
+            "cache_creation": null,
+            "cache_read": null,
+            "input": null,
+            "output": null,
+            "status": "unavailable",
+            "total": null
+          }
+        },
+        "own": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:12:02.000Z",
+            "last_at": "2026-09-17T08:12:02.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 33,
+            "output": 0,
+            "status": "available",
+            "total": 33
+          }
+        },
+        "subtree": {
+          "cost": {
+            "currency": "USD",
+            "status": "unpriced",
+            "value": null
+          },
+          "evidence": [],
+          "timing": {
+            "active_ms": 0,
+            "first_at": "2026-09-17T08:12:02.000Z",
+            "last_at": "2026-09-17T08:12:02.000Z",
+            "status": "observed"
+          },
+          "tokens": {
+            "cache_creation": 0,
+            "cache_read": 0,
+            "input": 33,
+            "output": 0,
+            "status": "available",
+            "total": 33
+          }
+        }
+      },
+      "start": {
+        "at": "2026-09-17T08:12:02.000Z",
+        "status": "observed"
+      },
+      "tool_calls": 0,
+      "worktree": {
+        "label": null,
+        "locations": [],
+        "status": "unknown"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "session": {
+    "key": {
+      "harness": "codex",
+      "session_id": "eeeeeeee-5555-4555-8555-555555555555"
+    },
+    "source_epochs": [
+      {
+        "captured_at": "2026-09-17T08:12:02.000Z",
+        "id": "epoch:5306852e225a5963238987de0632f8b93d936c333731f987589fc521eb0ae533",
+        "status": "active"
+      }
+    ],
+    "status": "available",
+    "summary": {
+      "children": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": null,
+          "first_at": null,
+          "last_at": null,
+          "status": "unavailable"
+        },
+        "tokens": {
+          "cache_creation": null,
+          "cache_read": null,
+          "input": null,
+          "output": null,
+          "status": "unavailable",
+          "total": null
+        }
+      },
+      "own": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:12:02.000Z",
+          "last_at": "2026-09-17T08:12:02.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 33,
+          "output": 0,
+          "status": "available",
+          "total": 33
+        }
+      },
+      "subtree": {
+        "cost": {
+          "currency": "USD",
+          "status": "unpriced",
+          "value": null
+        },
+        "evidence": [],
+        "timing": {
+          "active_ms": 0,
+          "first_at": "2026-09-17T08:12:02.000Z",
+          "last_at": "2026-09-17T08:12:02.000Z",
+          "status": "observed"
+        },
+        "tokens": {
+          "cache_creation": 0,
+          "cache_read": 0,
+          "input": 33,
+          "output": 0,
+          "status": "available",
+          "total": 33
+        }
+      }
+    }
+  },
+  "timeline": {
+    "events": [],
+    "gaps": [],
+    "origin": null,
+    "relationship_edges": [],
+    "wait_intervals": []
+  },
+  "tool_calls": {
+    "items": [],
+    "next_after": null,
+    "status": "complete",
+    "total": 0
+  }
+}

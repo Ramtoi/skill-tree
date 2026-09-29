@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "window": 30,
+  "findings_window": 30,
+  "last_scan_at": "2026-09-17T12:00:00.000Z",
+  "findings": [
+    {
+      "id": "footprint-skills:claude-code:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "Skill descriptions (2) is 100% of the claude-code prompt (158 bytes).",
+      "numbers": {
+        "harness": "claude-code",
+        "part": "skills",
+        "share": 1.0,
+        "bytes": 158,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Review",
+          "kind": "review",
+          "targets": []
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": []
+      }
+    },
+    {
+      "id": "footprint-skill-brainstorm:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "brainstorm is 46% of the claude-code prompt (73 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "brainstorm",
+        "share": 0.4620253164556962,
+        "bytes": 73,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "brainstorm"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "brainstorm"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "brainstorm"
+        ]
+      }
+    },
+    {
+      "id": "footprint-skill-verify-it:alpha",
+      "kind": "footprint",
+      "project": "alpha",
+      "observation": "verify-it is 53% of the claude-code prompt (84 bytes).",
+      "numbers": {
+        "harnesses": [
+          "claude-code"
+        ],
+        "skill": "verify-it",
+        "share": 0.5316455696202531,
+        "bytes": 84,
+        "bytes_total": 158
+      },
+      "moves": [
+        {
+          "label": "Unequip",
+          "kind": "unequip",
+          "targets": [
+            "verify-it"
+          ]
+        },
+        {
+          "label": "Set user-only",
+          "kind": "invocation",
+          "targets": [
+            "verify-it"
+          ]
+        }
+      ],
+      "review": {
+        "area": "loadout",
+        "project": "alpha",
+        "highlight": [
+          "verify-it"
+        ]
+      }
+    }
+  ],
+  "analysed_sessions": [
+    "claude-code:aaaaaaaa-1111-4111-8111-111111111111",
+    "claude-code:ffffffff-6666-4666-8666-666666666666",
+    "codex:cccccccc-3333-4333-8333-333333333333",
+    "codex:dddddddd-4444-4444-8444-444444444444",
+    "codex:eeeeeeee-5555-4555-8555-555555555555"
+  ]
+}

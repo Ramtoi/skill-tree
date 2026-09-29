@@ -1,0 +1,79 @@
+/* Styleguide (dev-only) — layout for the primitive iteration surface. */
+.sg-root {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--pad-screen-y) * 2);
+  max-width: 1080px;
+}
+
+.sg-section .sg-body {
+  padding-top: var(--pad-y);
+}
+
+.sg-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  align-items: flex-end;
+}
+
+/* `.sg-grid` is a grid; the cards row is a tile row, so it re-states flex. */
+.sg-grid-cards { display: flex; --tile-min: 200px; --tile-gap: 12px; }
+
+.sg-grid-icons {
+  gap: 10px 14px;
+}
+
+.sg-specimen {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.sg-specimen-demo {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+}
+
+.sg-specimen-label {
+  font: 500 var(--fs-1) / 1 var(--font-mono);
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sg-stack {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  overflow: hidden;
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+}
+
+.sg-frame {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-frame);
+  padding: var(--pad-screen-y) var(--pad-screen-x);
+  background: var(--surface-well);
+  box-shadow: var(--shadow-well);
+}
+
+/* Navigator specimens (NAV-DASHBOARD-SPEC.md §6.4) — the panel's own 240px
+   plate ground, so a tile/plaque/row photographs on its real surface instead
+   of the styleguide's lighter well. */
+.sg-nav-frame {
+  width: 240px;
+  padding: 8px;
+  background: var(--layer-panel);
+}
+
+/* Plaque specimens — the editor side panel's own ground (`--bg-1`), so the
+   corner ticks and copy register photograph on their real surface. */
+.sg-plaque-frame {
+  width: 300px;
+  background: var(--bg-1);
+}
